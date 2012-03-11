@@ -1,8 +1,9 @@
 #include "TextureFactory.h"
-#include <GL/gl.h>
-#include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
+#include "include/SDL/SDL.h"
+#include "include/SDL/SDL_image.h"
+#include "include/GL/glfw.h"
 #include <iostream>
+
 
 TextureFactory::TextureFactory() {}
 
@@ -38,7 +39,7 @@ Texture TextureFactory::loadTexture(std::string name) {
             textureFormat = GL_RGBA;
         }
         else {
-            textureFormat = GL_BGRA;
+	  //   textureFormat = GL_BGRA;
         }
     }
     else {
@@ -46,7 +47,7 @@ Texture TextureFactory::loadTexture(std::string name) {
             textureFormat = GL_RGB;
         }
         else {
-            textureFormat = GL_BGR;
+	  //   textureFormat = GL_BGR;
         }
     }
 

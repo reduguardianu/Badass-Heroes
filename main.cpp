@@ -1,11 +1,12 @@
-#include <GL/glfw.h>
+#include "include/GL/glfw.h"
 #include <iostream>
 #include "ILogger.h"
 #include "StandardLogger.h"
 #include "Renderer.h"
 #include "Sprite.h"
 
-int main(void) {
+// need to define argc and argv or the linker complains on Windows
+int main(int argc, char* argv[]) {
     int width = 800;
     int height = 600;
 
@@ -29,8 +30,8 @@ int main(void) {
     else {
         logger->Debug("Window creation successfull");
     }
-
-    sleep(10);
+    // not cross-platform function
+    //    sleep(10);
 
     delete logger;
     glfwCloseWindow();

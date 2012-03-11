@@ -4,7 +4,7 @@
 #include <string>
 #include <map>
 #include "Texture.h"
-#include <SDL/SDL.h>
+#include "include/SDL/SDL.h"
 
 class TextureFactory {
 public:
