@@ -1,5 +1,6 @@
 #ifndef ILOGGER_H__
 #define ILOGGER_H__
+#include <string>
 
 class ILogger {
 public:

@@ -1,9 +1,9 @@
 #include "include/GL/glfw.h"
 #include <iostream>
-#include "ILogger.h"
 #include "StandardLogger.h"
 #include "Renderer.h"
-#include "Sprite.h"
+#include "Context.h"
+#include "Game.h"
 
 // need to define argc and argv or the linker complains on Windows
 int main(int argc, char* argv[]) {
@@ -11,6 +11,8 @@ int main(int argc, char* argv[]) {
     int height = 600;
 
     ILogger* logger = new StandardLogger();
+    IRenderer* renderer = new Renderer(width, height);
+    Context c(renderer, logger);
 
     if (glfwInit() == GL_FALSE) {
         logger->CriticalError("GLFW inititalization failed. Exiting... ");
@@ -30,8 +32,15 @@ int main(int argc, char* argv[]) {
     else {
         logger->Debug("Window creation successfull");
     }
-    // not cross-platform function
-    //    sleep(10);
+
+    Game game(c);
+    double ms = glfwGetTime() * 1000;;
+    while (game.isRunning()) {
+      double t = glfwGetTime() * 1000;      
+      game.tick(t - ms);
+      ms = t;
+    }
+
 
     delete logger;
     glfwCloseWindow();

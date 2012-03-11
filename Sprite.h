@@ -2,11 +2,11 @@
 #define SPRITE_H__
 #include <string>
 #include "IDrawable.h"
-class IRenderer;
+#include "Context.h"
 
 class Sprite:IDrawable {
 public:
-    explicit Sprite(IRenderer& renderer, std::string textureName);
+  explicit Sprite(Context const& c, std::string textureName);
     int x() const;
     int y() const;
     float scaleX() const;
@@ -16,7 +16,7 @@ public:
     void setPosition(int x, int y);
     void setScale(float scale_x, float scale_y);
 private:
-    IRenderer& m_renderer;
+    Context const& m_context;
     std::string m_texture_name;
     int m_x;
     int m_y;

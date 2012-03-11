@@ -1,7 +1,6 @@
 #include "Sprite.h"
-#include "IRenderer.h"
 
-Sprite::Sprite(IRenderer& renderer, std::string textureName):m_renderer(renderer),
+Sprite::Sprite(Context const& c, std::string textureName):m_context(c),
                                                              m_texture_name(textureName),
                                                              m_x(0),
                                                              m_y(0),
@@ -25,7 +24,7 @@ const char* Sprite::texture() const {
     return m_texture_name.c_str();
 }
 void Sprite::render() {
-    m_renderer.renderSprite(*this);
+    m_context.m_renderer->renderSprite(*this);
 }
 void Sprite::setPosition(int x, int y) {
     m_x = x;

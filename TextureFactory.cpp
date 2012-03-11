@@ -23,10 +23,13 @@ Texture TextureFactory::loadTexture(std::string name) {
     SDL_Surface* textureImage;
     GLuint texture;
 
-    if (!(textureImage=loadImg("assets/"+name))) {
+    if (!(textureImage=loadImg("../assets/"+name))) {
         std::cerr << "Failed to load texture " << name << ". Exiting" << std::endl;
         //TODO: do sth meaningful
         throw 1;
+    }
+    else {
+      std::cout << "Successfully loaded texture " << name << std::endl;
     }
 
     glGenTextures(1, &texture);
@@ -39,6 +42,8 @@ Texture TextureFactory::loadTexture(std::string name) {
             textureFormat = GL_RGBA;
         }
         else {
+	  // not defined on Windows
+	  // TODO: define it :)
 	  //   textureFormat = GL_BGRA;
         }
     }
@@ -71,8 +76,11 @@ SDL_Surface* TextureFactory::loadImg(std::string filename) {
     file = fopen(filename.c_str(), "r");
 
     if (file) {
+      std::cout << "Found file: " << filename << std::endl;
         fclose(file);
         return IMG_Load(filename.c_str());
     }
+
+    std::cerr << "No file: " << filename << std::endl;
     return NULL;
 }
