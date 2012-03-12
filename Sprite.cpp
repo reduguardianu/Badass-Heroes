@@ -24,7 +24,7 @@ const char* Sprite::texture() const {
     return m_texture_name.c_str();
 }
 void Sprite::render() {
-    m_context.m_renderer->renderSprite(*this);
+    m_context.renderer->renderSprite(*this);
 }
 void Sprite::setPosition(int x, int y) {
     m_x = x;

@@ -6,7 +6,10 @@
 
 class Game {
  public:
-  explicit Game(Context const& c);
+  explicit Game(int width, int height, Context const& c);
+  ~Game();
+  void createWindow();
+  void destroy();
   void tick(float dt);
   bool isRunning();
  private:

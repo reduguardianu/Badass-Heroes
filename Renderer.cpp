@@ -3,8 +3,21 @@
 #include "IDrawable.h"
 #include "TextureFactory.h"
 
-Renderer::Renderer(float window_width, float window_height):m_window_width(window_width),
-                                                        m_window_height(window_height) {
+Renderer::Renderer():m_window_width(0), 
+		     m_window_height(0) {
+}
+
+void Renderer::setSize(float w, float h) {
+  m_window_width = w;
+  m_window_height = h;
+}
+
+float Renderer::getWindowWidth() const {
+  return m_window_width;
+}
+
+float Renderer::getWindowHeight() const {
+  return m_window_height;
 }
 
 void Renderer::renderSprite(const IDrawable& drawable) {

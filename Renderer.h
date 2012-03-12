@@ -8,10 +8,13 @@ class IDrawable;
 
 class Renderer: public IRenderer {
 public:
-    explicit Renderer(float window_width, float window_height);
+    explicit Renderer();
     void beginFrame();
     void endFrame();
     void renderSprite(const IDrawable&);
+    void setSize(float, float);
+    float getWindowWidth() const;
+    float getWindowHeight() const;
 private :
     TextureFactory m_texture_factory;
     float m_window_width;
