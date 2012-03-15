@@ -3,6 +3,7 @@
 
 #include "IRenderer.h"
 #include "TextureFactory.h"
+#include "Types.h"
 class IDrawable;
 //class TextureFactory;
 
@@ -12,6 +13,7 @@ public:
     void beginFrame();
     void endFrame();
     void renderSprite(const IDrawable&);
+    void renderSpriteAnimation(const IDrawable&, int frame, ANIM::Direction direction);
     void setSize(float, float);
     float getWindowWidth() const;
     float getWindowHeight() const;

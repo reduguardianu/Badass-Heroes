@@ -5,11 +5,18 @@
 
 Game::Game(int width, int height, Context const& c): m_context(c),
 						     m_level(m_context),
-						     m_running(false) {
+						     m_running(false),
+						     m_elapsed_time(0.0f), 
+						     FRAME_RATE(32.0f),
+						     FRAME_TIME(1000.f / 32.0f),
+						     m_hero(NULL) {
   
   m_context.renderer->setSize(width, height);
   m_level.loadFromFile("map.txt");
 
+  m_hero = new AnimatedSprite(m_context, "hero.png");
+  m_hero->setPosition(width/2 - 16, height/2 - 16);
+  m_hero->animate(ANIM::Right);
   createWindow();
 
   m_running = true;
@@ -41,18 +48,23 @@ void Game::createWindow() {
         return;
     }
     else {
+      glfwSetWindowTitle("Badass Heroes baby");
         m_context.logger->Debug("Window creation successfull");
     }
 
 }
 
 void Game::tick(float dt) {
-  m_level.tick(dt);
+  m_level.tick();
 
-  //TODO: game should create context, so we can remove beginFrame and endFrame from IRenderer, so only game knows about it
-  m_context.renderer->beginFrame();
-  m_level.render();
-  m_context.renderer->endFrame();
+  m_elapsed_time += dt;
+  if (m_elapsed_time >= FRAME_TIME) {
+    m_context.renderer->beginFrame();
+    m_level.render();
+    m_hero->render();
+    m_context.renderer->endFrame();
+    m_elapsed_time -= FRAME_TIME;
+  }
 
   m_running = !glfwGetKey(GLFW_KEY_ESC) && glfwGetWindowParam(GLFW_OPENED);
 }

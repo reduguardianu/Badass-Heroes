@@ -11,7 +11,7 @@ class Level {
   explicit Level(Context const& c);
   void loadFromFile(std::string filename);
   void render();
-  void tick(float dt);
+  void tick();
   ~Level();
  private:
   void initData();

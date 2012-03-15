@@ -46,7 +46,7 @@ void Level::initData() {
   }
 }
 
-void Level::tick(float dt) {
+void Level::tick() {
 }
 
 void Level::render() {

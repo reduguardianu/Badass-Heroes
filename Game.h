@@ -3,6 +3,7 @@
 
 #include "Context.h"
 #include "Level.h"
+#include "AnimatedSprite.h"
 
 class Game {
  public:
@@ -16,6 +17,11 @@ class Game {
   Context const& m_context;
   Level m_level;
   bool m_running;
+  float m_elapsed_time;
+  const float FRAME_RATE;
+  const float FRAME_TIME;
+  AnimatedSprite* m_hero;
+
 };
 
 #endif
