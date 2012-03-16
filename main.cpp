@@ -5,8 +5,8 @@
 
 // need to define argc and argv or the linker complains on Windows
 int main(int argc, char* argv[]) {
-    int width = 800;
-    int height = 600;
+    int width = 1280;
+    int height = 1024;
 
 
     Context context;

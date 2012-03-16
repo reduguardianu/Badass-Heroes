@@ -44,7 +44,7 @@ Texture TextureFactory::loadTexture(std::string name) {
         else {
 	  // not defined on Windows
 	  // TODO: define it :)
-	  //   textureFormat = GL_BGRA;
+	    textureFormat = GL_RGBA;
         }
     }
     else {
@@ -52,7 +52,7 @@ Texture TextureFactory::loadTexture(std::string name) {
             textureFormat = GL_RGB;
         }
         else {
-	  //   textureFormat = GL_BGR;
+	     textureFormat = GL_RGB;
         }
     }
 

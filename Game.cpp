@@ -15,8 +15,10 @@ Game::Game(int width, int height, Context const& c): m_context(c),
   m_level.loadFromFile("map.txt");
 
   m_hero = new AnimatedSprite(m_context, "hero.png");
-  m_hero->setPosition(width/2 - 16, height/2 - 16);
-  m_hero->animate(ANIM::Right);
+  //  m_hero->setPosition(width/2 - 16, height/2 - 16);
+  m_hero->setPosition(32.0f, 32.0f);
+  m_hero->setScale(1.0f, 1.0f);
+  m_hero->animate(ANIM::Down);
   createWindow();
 
   m_running = true;
