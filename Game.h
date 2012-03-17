@@ -10,7 +10,7 @@
 
 class Game: public IEventReceiver {
  public:
-  explicit Game(Context const& c);
+  explicit Game(Context const& c, char* mapfile = NULL);
   ~Game();
   void createWindow();
   void destroy();

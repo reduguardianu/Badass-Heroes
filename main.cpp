@@ -4,6 +4,7 @@
 #include "Game.h"
 #include "Types.h"
 #include "Event.h"
+#include <cstdio>
 
 Game* game;
 
@@ -38,10 +39,23 @@ void GLFWCALL handleKeypress(int glfw_key, int action) {
 
 // need to define argc and argv or the linker complains on Windows
 int main(int argc, char* argv[]) {
+  if (argc < 2) {
+    std::cout << "No map file specified, usage: ./BadassHeroes map.txt" << std::endl;
+    return 1;
+  }
+  
+  FILE* file = NULL;
+  file = fopen(argv[1], "r");
+  if (!file) {
+    fclose(file);
+    std::cout << "Cannot open file " << argv[1] << std::endl;
+    return 1;
+  }
+   
     Context context;
     context.screen_width = 800;
     context.screen_height = 600;
-    game = new Game(context);
+    game = new Game(context, argv[1]);
 
     glfwSetKeyCallback(handleKeypress);
 

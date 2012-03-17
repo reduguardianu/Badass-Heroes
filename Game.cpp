@@ -4,7 +4,7 @@
 #include "ILogger.h"
 #include "Types.h"
 
-Game::Game(Context const& c): m_context(c),
+Game::Game(Context const& c, char* mapfile): m_context(c),
 						     m_level(m_context),
 						     m_running(false),
 						     m_elapsed_time(0.0f), 
@@ -13,7 +13,7 @@ Game::Game(Context const& c): m_context(c),
 						     m_hero(NULL) {
   
   m_context.renderer->setSize(m_context.screen_width, m_context.screen_height);
-  m_level.loadFromFile("map.txt");
+  m_level.loadFromFile(mapfile);
 
   m_hero = new AnimatedSprite(m_context, "hero.png");
   //  m_hero->setPosition(width/2 - 16, height/2 - 16);
