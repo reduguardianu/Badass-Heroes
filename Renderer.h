@@ -17,6 +17,8 @@ public:
     void setSize(float, float);
     float getWindowWidth() const;
     float getWindowHeight() const;
+private:
+    bool clip(float x, float y, float width, float height);
 private :
     TextureFactory m_texture_factory;
     float m_window_width;

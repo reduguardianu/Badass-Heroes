@@ -4,7 +4,7 @@
 #include "ILogger.h"
 #include "Types.h"
 
-Game::Game(int width, int height, Context const& c): m_context(c),
+Game::Game(Context const& c): m_context(c),
 						     m_level(m_context),
 						     m_running(false),
 						     m_elapsed_time(0.0f), 
@@ -12,7 +12,7 @@ Game::Game(int width, int height, Context const& c): m_context(c),
 						     FRAME_TIME(1000.f / 32.0f),
 						     m_hero(NULL) {
   
-  m_context.renderer->setSize(width, height);
+  m_context.renderer->setSize(m_context.screen_width, m_context.screen_height);
   m_level.loadFromFile("map.txt");
 
   m_hero = new AnimatedSprite(m_context, "hero.png");
@@ -20,6 +20,7 @@ Game::Game(int width, int height, Context const& c): m_context(c),
   m_hero->setPosition(32.0f, 32.0f);
   m_hero->setScale(1.0f, 1.0f);
   m_hero->animate(Anim::Down);
+  m_level.addChild(m_hero);
 
   createWindow();
 
@@ -59,16 +60,16 @@ void Game::createWindow() {
 }
 
 void Game::onEvent(const Event& e) {
+  m_level.onEvent(e);
 }
 
 void Game::tick(float dt) {
-  m_level.tick();
+  m_level.tick(dt);
 
   m_elapsed_time += dt;
   if (m_elapsed_time >= FRAME_TIME) {
     m_context.renderer->beginFrame();
     m_level.render();
-    m_hero->render();
     m_context.renderer->endFrame();
     m_elapsed_time -= FRAME_TIME;
   }

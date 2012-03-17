@@ -8,6 +8,8 @@ public:
     virtual float scaleX() const = 0;
     virtual float scaleY() const = 0;
     virtual const char* texture() const = 0;
+    virtual void render() = 0;
+    virtual void setParent(const IDrawable*) = 0;
 };
 
 #endif

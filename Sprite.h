@@ -4,7 +4,7 @@
 #include "IDrawable.h"
 #include "Context.h"
 
-class Sprite:IDrawable {
+class Sprite : public IDrawable {
 public:
   explicit Sprite(Context const& c, std::string textureName);
     int x() const;
@@ -15,6 +15,7 @@ public:
     void render();
     void setPosition(int x, int y);
     void setScale(float scale_x, float scale_y);
+    void setParent(const IDrawable*);
 private:
     Context const& m_context;
     std::string m_texture_name;
@@ -22,6 +23,7 @@ private:
     int m_y;
     float m_scale_x;
     float m_scale_y;
+    const IDrawable* m_parent;
 };
 
 #endif

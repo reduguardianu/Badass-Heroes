@@ -11,11 +11,19 @@ AnimatedSprite::AnimatedSprite(Context const& c, std::string spritesheet):m_cont
 }
 
 int AnimatedSprite::x() const {
-  return m_x;
+  int value = m_x;
+  if (m_parent) {
+    value += m_parent->x();
+  }
+  return value;
 }
 
 int AnimatedSprite::y() const {
-  return m_y;
+  int value = m_y;
+  if (m_parent) {
+    value += m_parent->y();
+  }
+  return value;
 }
 
 float AnimatedSprite::scaleX() const {
@@ -27,6 +35,10 @@ float AnimatedSprite::scaleY() const {
 }
 const char* AnimatedSprite::texture() const {
     return m_spritesheet_name.c_str();
+}
+
+void AnimatedSprite::setParent(const IDrawable* parent) {
+  m_parent = parent;
 }
 
 void AnimatedSprite::animate(Anim::DIRECTION dir) {

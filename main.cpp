@@ -38,12 +38,10 @@ void GLFWCALL handleKeypress(int glfw_key, int action) {
 
 // need to define argc and argv or the linker complains on Windows
 int main(int argc, char* argv[]) {
-    int width = 1280;
-    int height = 1024;
-
-
     Context context;
-    game = new Game(width, height, context);
+    context.screen_width = 800;
+    context.screen_height = 600;
+    game = new Game(context);
 
     glfwSetKeyCallback(handleKeypress);
 

@@ -9,7 +9,9 @@ class Context {
  public:
   Context();
   ~Context();
- 
+
+  int screen_width;
+  int screen_height;
  IRenderer* renderer;
  ILogger* logger;
  Timer* timer;

@@ -6,7 +6,7 @@
 #include "Context.h"
 #include "Types.h"
 
-class AnimatedSprite:IDrawable {
+class AnimatedSprite: public IDrawable {
  public:
   explicit AnimatedSprite(Context const& c, std::string spriteSheet);
   int x() const;
@@ -14,6 +14,7 @@ class AnimatedSprite:IDrawable {
   float scaleX() const;
   float scaleY() const;
   const char* texture() const;
+  void setParent(const IDrawable*);
   void render();
   void setPosition(int x, int y);
   void setScale(float scale_x, float scale_y);
@@ -31,7 +32,7 @@ class AnimatedSprite:IDrawable {
   Anim::DIRECTION m_direction;
   bool m_animate;
   unsigned int m_animation_speed;
-  
+  const IDrawable* m_parent;
 };
 
 #endif
