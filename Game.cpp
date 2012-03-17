@@ -2,6 +2,7 @@
 #include "include/GL/glfw.h"
 #include "IRenderer.h"
 #include "ILogger.h"
+#include "Types.h"
 
 Game::Game(int width, int height, Context const& c): m_context(c),
 						     m_level(m_context),
@@ -18,7 +19,8 @@ Game::Game(int width, int height, Context const& c): m_context(c),
   //  m_hero->setPosition(width/2 - 16, height/2 - 16);
   m_hero->setPosition(32.0f, 32.0f);
   m_hero->setScale(1.0f, 1.0f);
-  m_hero->animate(ANIM::Down);
+  m_hero->animate(Anim::Down);
+
   createWindow();
 
   m_running = true;
@@ -54,6 +56,9 @@ void Game::createWindow() {
         m_context.logger->Debug("Window creation successfull");
     }
 
+}
+
+void Game::onEvent(const Event& e) {
 }
 
 void Game::tick(float dt) {

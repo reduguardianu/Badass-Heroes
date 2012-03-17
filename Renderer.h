@@ -13,7 +13,7 @@ public:
     void beginFrame();
     void endFrame();
     void renderSprite(const IDrawable&);
-    void renderSpriteAnimation(const IDrawable&, int frame, ANIM::Direction direction);
+    void renderSpriteAnimation(const IDrawable&, int frame, Anim::DIRECTION direction);
     void setSize(float, float);
     float getWindowWidth() const;
     float getWindowHeight() const;

@@ -4,8 +4,11 @@
 #include "Context.h"
 #include "Level.h"
 #include "AnimatedSprite.h"
+#include <map>
+#include "Types.h"
+#include "Event.h"
 
-class Game {
+class Game: public IEventReceiver {
  public:
   explicit Game(int width, int height, Context const& c);
   ~Game();
@@ -13,6 +16,7 @@ class Game {
   void destroy();
   void tick(float dt);
   bool isRunning();
+  void onEvent(const Event& e);
  private:
   Context const& m_context;
   Level m_level;
@@ -21,6 +25,7 @@ class Game {
   const float FRAME_RATE;
   const float FRAME_TIME;
   AnimatedSprite* m_hero;
+  std::map<Keyboard::KEY, bool> m_keys;
 
 };
 

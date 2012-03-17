@@ -2,13 +2,14 @@
 #define TYPES_H__
 
 
-struct ANIM {
-  enum Direction {
+namespace Anim {
+  enum DIRECTION {
     Up = 0,
     Down = 1,
     Left = 2,
     Right = 3
   };
 };
+
 
 #endif 

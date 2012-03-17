@@ -29,7 +29,7 @@ const char* AnimatedSprite::texture() const {
     return m_spritesheet_name.c_str();
 }
 
-void AnimatedSprite::animate(ANIM::Direction dir) {
+void AnimatedSprite::animate(Anim::DIRECTION dir) {
   m_animate = true;
   m_frame = 0;
   m_direction = dir;
@@ -38,7 +38,7 @@ void AnimatedSprite::animate(ANIM::Direction dir) {
 void AnimatedSprite::stop() {
   m_animate = false;
   m_frame = 0;
-  m_direction = ANIM::Up;
+  m_direction = Anim::Up;
 }
 
 void AnimatedSprite::render() {

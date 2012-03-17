@@ -53,7 +53,7 @@ void Renderer::renderSprite(const IDrawable& drawable) {
     glEnd();
 }
 
-void Renderer::renderSpriteAnimation(const IDrawable& drawable, int frame, ANIM::Direction direction) {
+void Renderer::renderSpriteAnimation(const IDrawable& drawable, int frame, Anim::DIRECTION direction) {
   Texture t = m_texture_factory.getTexture(drawable.texture());
   unsigned int row = static_cast<unsigned int>(direction);
   glLoadIdentity();

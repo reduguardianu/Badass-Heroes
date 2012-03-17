@@ -18,7 +18,7 @@ class AnimatedSprite:IDrawable {
   void setPosition(int x, int y);
   void setScale(float scale_x, float scale_y);
 
-  void animate(ANIM::Direction dir);
+  void animate(Anim::DIRECTION dir);
   void stop();
  private:
   Context const& m_context;
@@ -28,7 +28,7 @@ class AnimatedSprite:IDrawable {
   float m_scale_x;
   float m_scale_y;
   unsigned int m_frame;
-  ANIM::Direction m_direction;
+  Anim::DIRECTION m_direction;
   bool m_animate;
   unsigned int m_animation_speed;
   
