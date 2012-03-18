@@ -4,6 +4,8 @@
 #include "IRenderer.h"
 #include "TextureFactory.h"
 #include "Types.h"
+#include <map>
+#include "include/GL/glfw.h"
 class IDrawable;
 //class TextureFactory;
 
@@ -19,10 +21,12 @@ public:
     float getWindowHeight() const;
 private:
     bool clip(float x, float y, float width, float height);
+    GLuint getTexture(const Texture* texture);
 private :
     TextureFactory m_texture_factory;
     float m_window_width;
     float m_window_height;
+    std::map<const char*, GLuint> m_textures;
 };
 
 

@@ -5,15 +5,18 @@
 #include "IDrawable.h"
 #include "Context.h"
 #include "Types.h"
+#include "Texture.h"
 
 class AnimatedSprite: public IDrawable {
  public:
   explicit AnimatedSprite(Context const& c, std::string spriteSheet);
   int x() const;
   int y() const;
+  int width() const;
+  int height() const;
   float scaleX() const;
   float scaleY() const;
-  const char* texture() const;
+  const Texture* texture() const;
   void setParent(const IDrawable*);
   void render();
   void setPosition(int x, int y);
@@ -23,7 +26,7 @@ class AnimatedSprite: public IDrawable {
   void stop();
  private:
   Context const& m_context;
-  std::string m_spritesheet_name;
+  Texture* m_spritesheet;
   int m_x;
   int m_y;
   float m_scale_x;

@@ -1,13 +1,15 @@
 #include "Sprite.h"
+#include "TextureFactory.h"
 
 Sprite::Sprite(Context const& c, std::string textureName):m_context(c),
-                                                             m_texture_name(textureName),
+                                                             m_texture(NULL),
                                                              m_x(0),
                                                              m_y(0),
                                                              m_scale_x(1.0f),
 							     m_scale_y(1.0f),
 							     m_parent(NULL){
-                                                             }
+  m_texture = TextureFactory::getTexture(textureName);
+}
 
 int Sprite::x() const {
   int value = m_x;
@@ -23,14 +25,23 @@ int Sprite::y() const {
   }
   return value;
 }
+
+int Sprite::width() const {
+  return m_texture->width();
+}
+
+int Sprite::height() const {
+  return m_texture->height();
+}
+
 float Sprite::scaleX() const {
     return m_scale_x;
 }
 float Sprite::scaleY() const {
     return m_scale_y;
 }
-const char* Sprite::texture() const {
-    return m_texture_name.c_str();
+const Texture* Sprite::texture() const {
+    return m_texture;
 }
 void Sprite::render() {
     m_context.renderer->renderSprite(*this);

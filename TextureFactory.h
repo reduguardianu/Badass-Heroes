@@ -8,13 +8,9 @@
 
 class TextureFactory {
 public:
-    explicit TextureFactory();
-    Texture getTexture(std::string name);
+    static Texture* getTexture(std::string name);
 private:
-    Texture loadTexture(std::string name);
-    SDL_Surface* loadImg(std::string filename);
-
-    std::map<std::string, Texture> m_textures;
+    static std::map<std::string, Texture*> m_textures;
 };
 
 #endif

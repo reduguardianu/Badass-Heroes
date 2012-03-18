@@ -9,6 +9,7 @@
 #include <vector>
 #include "Event.h"
 #include "IDrawable.h"
+#include "Texture.h"
 
 class Level : public IDrawable  {
  public:
@@ -21,9 +22,11 @@ class Level : public IDrawable  {
 
   int x() const;
   int y() const;
+  int width() const;
+  int height() const;
   float scaleX() const;
   float scaleY() const;
-  const char* texture() const;
+  const Texture* texture() const;
   void setParent(const IDrawable*);
   void addChild(IDrawable*);
  private:

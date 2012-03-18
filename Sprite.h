@@ -3,22 +3,25 @@
 #include <string>
 #include "IDrawable.h"
 #include "Context.h"
+#include "Texture.h"
 
 class Sprite : public IDrawable {
 public:
   explicit Sprite(Context const& c, std::string textureName);
     int x() const;
     int y() const;
+    int width() const;
+    int height() const;
     float scaleX() const;
     float scaleY() const;
-    const char* texture() const;
+    const Texture* texture() const;    
     void render();
     void setPosition(int x, int y);
     void setScale(float scale_x, float scale_y);
     void setParent(const IDrawable*);
 private:
     Context const& m_context;
-    std::string m_texture_name;
+    Texture* m_texture;
     int m_x;
     int m_y;
     float m_scale_x;

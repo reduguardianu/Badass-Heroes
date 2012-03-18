@@ -90,6 +90,37 @@ int Level::y() const {
   return static_cast<int>(m_y);
 }
 
+int Level::width() const {
+  int minX = 0;
+  int maxX = 0;
+  for (int i = 0; i < m_children.size(); ++i) {
+    if (m_children.at(i)->x() < minX) {
+      minX = m_children.at(i)->x();
+    }
+    if (m_children.at(i)->x() + m_children.at(i)->width() > maxX) {
+      maxX = m_children.at(i)->x() + m_children.at(i)->width();
+    }
+  }
+
+  return maxX - minX;
+}
+
+int Level::height() const {
+  int minY = 0;
+  int maxY = 0;
+  for (int i = 0; i < m_children.size(); ++i) {
+    if (m_children.at(i)->y() < minY) {
+      minY = m_children.at(i)->y();
+    }
+    if (m_children.at(i)->y() + m_children.at(i)->height() > maxY) {
+      maxY = m_children.at(i)->y() + m_children.at(i)->height();
+    }
+  }
+
+  return maxY - minY;
+}
+
+
 float Level::scaleX() const {
   return m_scale_x;
 }
@@ -98,7 +129,7 @@ float Level::scaleY() const {
   return m_scale_y;
 }
 
-const char* Level::texture() const {
+const Texture* Level::texture() const {
   return NULL;
 }
 

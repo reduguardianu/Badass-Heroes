@@ -1,13 +1,15 @@
 #include "AnimatedSprite.h"
+#include "TextureFactory.h"
 
 AnimatedSprite::AnimatedSprite(Context const& c, std::string spritesheet):m_context(c),
-									  m_spritesheet_name(spritesheet),
+									  m_spritesheet(NULL),
 									  m_x(0),
 									  m_y(0),
 									  m_scale_x(1.0f),
 									  m_scale_y(1.0f),
 									  m_animate(false),
-									  m_animation_speed(2){
+									  m_animation_speed(2) {
+  m_spritesheet = TextureFactory::getTexture(spritesheet);
 }
 
 int AnimatedSprite::x() const {
@@ -26,6 +28,14 @@ int AnimatedSprite::y() const {
   return value;
 }
 
+int AnimatedSprite::width() const {
+  return m_spritesheet->width();
+}
+
+int AnimatedSprite::height() const {
+  return m_spritesheet->height();
+}
+
 float AnimatedSprite::scaleX() const {
   return m_scale_x;
 }
@@ -33,8 +43,8 @@ float AnimatedSprite::scaleX() const {
 float AnimatedSprite::scaleY() const {
     return m_scale_y;
 }
-const char* AnimatedSprite::texture() const {
-    return m_spritesheet_name.c_str();
+const Texture* AnimatedSprite::texture() const {
+    return m_spritesheet;
 }
 
 void AnimatedSprite::setParent(const IDrawable* parent) {

@@ -1,17 +1,25 @@
 #ifndef TEXTURE_H__
 #define TEXTURE_H__
-#include <GL/gl.h>
+#include <string>
+
+class SDL_Surface;
 
 class Texture {
 public:
-    explicit Texture(GLuint texture, int width, int height);
-    GLuint get() const;
+  explicit Texture(std::string name);
+  
     int width() const;
     int height() const;
+    const char* name() const;
+    int numberOfColors() const;
+    int redMask() const;
+    void* pixels() const;
 private:
-    GLuint m_texture;
-    int m_width;
-    int m_height;
+    SDL_Surface* load(std::string name);
+private:
+    std::string m_name;
+    SDL_Surface* m_texture;
+    
 };
 
 #endif
