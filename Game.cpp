@@ -15,7 +15,7 @@ Game::Game(Context const& c, char* mapfile): m_context(c),
   m_context.renderer->setSize(m_context.screen_width, m_context.screen_height);
   m_level.loadFromFile(mapfile);
 
-  m_hero = new AnimatedSprite(m_context, "hero.png");
+  m_hero = new Hero(m_context);
   //  m_hero->setPosition(width/2 - 16, height/2 - 16);
   m_hero->setPosition(32.0f, 32.0f);
   m_hero->setScale(1.0f, 1.0f);

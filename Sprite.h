@@ -8,25 +8,27 @@
 class Sprite : public IDrawable {
 public:
   explicit Sprite(Context const& c, std::string textureName);
-    int x() const;
-    int y() const;
-    int width() const;
-    int height() const;
-    float scaleX() const;
-    float scaleY() const;
-    const Texture* texture() const;    
-    void render();
-    void setPosition(int x, int y);
-    void setScale(float scale_x, float scale_y);
-    void setParent(const IDrawable*);
-private:
+    virtual int x() const;
+    virtual int y() const;
+    virtual int width() const;
+    virtual int height() const;
+    virtual float scaleX() const;
+    virtual float scaleY() const;
+    virtual const Texture* texture() const;    
+    virtual void render();
+    virtual void setPosition(int x, int y);
+    virtual void setScale(float scale_x, float scale_y);
+    virtual void setParent(const IDrawable*);
+ protected:
     Context const& m_context;
-    Texture* m_texture;
     int m_x;
     int m_y;
     float m_scale_x;
     float m_scale_y;
     const IDrawable* m_parent;
+ private:
+    Texture* m_texture;
+
 };
 
 #endif

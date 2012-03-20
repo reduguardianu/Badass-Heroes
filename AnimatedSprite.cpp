@@ -8,7 +8,7 @@ AnimatedSprite::AnimatedSprite(Context const& c, std::string spritesheet):m_cont
 									  m_scale_x(1.0f),
 									  m_scale_y(1.0f),
 									  m_animate(false),
-									  m_animation_speed(2) {
+									  m_animation_speed(4) {
   m_spritesheet = TextureFactory::getTexture(spritesheet);
 }
 
@@ -64,7 +64,7 @@ void AnimatedSprite::stop() {
 }
 
 void AnimatedSprite::render() {
-  m_context.renderer->renderSpriteAnimation(*this, (m_frame/m_animation_speed) % 5, m_direction);
+  m_context.renderer->renderSpriteAnimation(*this, (m_frame/m_animation_speed) % 4, m_direction);
   if (m_animate) {
     m_frame++;
   }

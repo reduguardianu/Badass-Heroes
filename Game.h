@@ -7,6 +7,7 @@
 #include <map>
 #include "Types.h"
 #include "Event.h"
+#include "Hero.h"
 
 class Game: public IEventReceiver {
  public:
@@ -24,7 +25,7 @@ class Game: public IEventReceiver {
   float m_elapsed_time;
   const float FRAME_RATE;
   const float FRAME_TIME;
-  AnimatedSprite* m_hero;
+  Hero* m_hero;
   std::map<Keyboard::KEY, bool> m_keys;
 
 };

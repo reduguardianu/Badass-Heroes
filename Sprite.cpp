@@ -8,7 +8,9 @@ Sprite::Sprite(Context const& c, std::string textureName):m_context(c),
                                                              m_scale_x(1.0f),
 							     m_scale_y(1.0f),
 							     m_parent(NULL){
-  m_texture = TextureFactory::getTexture(textureName);
+  if (textureName.size()) {
+    m_texture = TextureFactory::getTexture(textureName);
+  }
 }
 
 int Sprite::x() const {
