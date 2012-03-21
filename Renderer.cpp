@@ -1,6 +1,7 @@
 #include "Renderer.h"
-#include "IDrawable.h"
+#include "DisplayObject.h"
 #include "TextureFactory.h"
+#include <iostream>
 
 const float FRAME_SIZE = 32.0f;
 
@@ -71,14 +72,13 @@ GLuint Renderer::getTexture(const Texture* texture) {
   }
 }
 
-void Renderer::renderSprite(const IDrawable& drawable) {
-  const Texture* tex = drawable.texture();
-  GLuint texture_id = getTexture(tex);
-    
-    if (!clip(drawable.x(), drawable.y(), drawable.width() * drawable.scaleX(), drawable.height() * drawable.scaleY())) {
+void Renderer::renderSprite(const DisplayObject& d, const Texture* texture) {
+  GLuint texture_id = getTexture(texture);
+
+    if (!clip(d.x(), d.y(), d.width() * d.scaleX(), d.height() * d.scaleY())) {
 	glLoadIdentity();
-	glTranslatef( 2 * drawable.x()  / m_window_width - 1, -2 * drawable.y() / m_window_height + 1, 0.0f);
-	glScalef(2 *drawable.width() * drawable.scaleX() / m_window_width, -2 *drawable.height() * drawable.scaleY() / m_window_height, 1.0f);
+	glTranslatef( 2 * d.x()  / m_window_width - 1, -2 * d.y() / m_window_height + 1, 0.0f);
+	glScalef(2 * d.width() * d.scaleX() / m_window_width, -2 * d.height() * d.scaleY() / m_window_height, 1.0f);
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texture_id);
 	glBegin(GL_TRIANGLES);
@@ -104,33 +104,34 @@ void Renderer::renderSprite(const IDrawable& drawable) {
     }
 }
 
-void Renderer::renderSpriteAnimation(const IDrawable& drawable, int frame, Anim::DIRECTION direction) {
-  const Texture* tex = drawable.texture();
-  GLuint texture_id = getTexture(tex);
+void Renderer::renderSpriteAnimation(const DisplayObject& d, const Texture* t, int frame, Anim::DIRECTION direction) {
+  GLuint texture_id = getTexture(t);
   unsigned int row = static_cast<unsigned int>(direction);
-  if (!clip(drawable.x(), drawable.y(), drawable.width() * drawable.scaleX(), drawable.height() * drawable.scaleY())) {
+  if (!clip(d.x(), d.y(), d.width() * d.scaleX(), d.height() * d.scaleY())) {
     glLoadIdentity();
-    glTranslatef( 2 * drawable.x()  / m_window_width - 1, -2 *  drawable.y() / m_window_height + 1, 0.0f);
-    glScalef(2 * 32 * drawable.scaleX() / m_window_width, -2 * 32 * drawable.scaleY() / m_window_height, 1.0f);
+    glTranslatef( 2 * d.x()  / m_window_width - 1, -2 *  d.y() / m_window_height + 1, 0.0f);
+    glScalef(2 * d.width() * d.scaleX() / m_window_width, -2 * d.width() * d.scaleY() / m_window_height, 1.0f);
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, texture_id);
     glBegin(GL_TRIANGLES);
-    glTexCoord2f(frame * FRAME_SIZE / drawable.width() , row * FRAME_SIZE / drawable.height());
+    float w = static_cast<float>(t->width());
+    float h = static_cast<float>(t->height());
+    glTexCoord2f(frame * d.width() / w , row * d.height() / h);
     glVertex3f(0.0f, 0.0f, 0.1f);
 
-    glTexCoord2f(frame * FRAME_SIZE / drawable.width(), (row + 1) * FRAME_SIZE / drawable.height());
+    glTexCoord2f(frame * d.width() / w, (row + 1) * d.height() / h);
     glVertex3f(0.0f, 1.0f, 0.1f);
 
-    glTexCoord2f((frame + 1) * FRAME_SIZE / drawable.width(), row * FRAME_SIZE / drawable.height());
+    glTexCoord2f((frame + 1) * d.width() / w, row * d.height() / h);
     glVertex3f(1.0f, 0.0f, 0.1f);
 
-    glTexCoord2f(frame * FRAME_SIZE / drawable.width(), (row + 1) * FRAME_SIZE / drawable.height());
+    glTexCoord2f(frame * d.width() / w, (row + 1) * d.height() / h);
     glVertex3f(0.0f, 1.0f, 0.1f);
 
-    glTexCoord2f((frame + 1) * FRAME_SIZE / drawable.width(), (row + 1) * FRAME_SIZE / drawable.height());
+    glTexCoord2f((frame + 1) * d.width() / w, (row + 1) * d.height() / h);
     glVertex3f(1.0f, 1.0f, 0.1f);
 
-    glTexCoord2f((frame + 1) * FRAME_SIZE / drawable.width(), row * FRAME_SIZE / drawable.height());
+    glTexCoord2f((frame + 1) * d.width() / w, row * d.height() / h);
     glVertex3f(1.0f, 0.0f, 0.1f);
 
 

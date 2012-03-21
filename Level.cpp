@@ -1,12 +1,17 @@
 #include "Level.h"
 #include <cstdio>
 #include <iostream>
+#include "ContainerRenderBehaviour.h"
+#include "ContainerSizeBehaviour.h"
 
-Level::Level(Context const& c):m_width(0), m_height(0), m_context(c) {
+Level::Level(Context const& c): DisplayObject(c) {
   m_keys[Keyboard::Up] = false;
   m_keys[Keyboard::Right] = false;
   m_keys[Keyboard::Down] = false;
   m_keys[Keyboard::Left] = false;
+
+  m_render_behaviour = new ContainerRenderBehaviour(m_children);
+  m_size_behaviour = new ContainerSizeBehaviour(m_children);
 }
 
 void Level::loadFromFile(std::string filename) {
@@ -14,12 +19,12 @@ void Level::loadFromFile(std::string filename) {
   
   file = fopen(filename.c_str(), "r");
   
-  fscanf(file, "%d", &m_width);
-  m_height = m_width;
+  fscanf(file, "%d", &m_level_width);
+  m_level_height = m_level_width;
 
-  for (int i = 0; i < m_height; ++i) {
+  for (int i = 0; i < m_level_height; ++i) {
     m_data.push_back(std::vector<int>());
-    for (int j = 0; j < m_width; ++j) {
+    for (int j = 0; j < m_level_width; ++j) {
       int block = 0;
       fscanf(file, "%d", &block);
       m_data.at(i).push_back(block);
@@ -51,7 +56,7 @@ void Level::initData() {
   }
 }
 
-void Level::addChild(IDrawable* child) {
+void Level::addChild(DisplayObject* child) {
   child->setParent(this);
   m_children.push_back(child);
 }
@@ -73,75 +78,15 @@ void Level::tick(float dt) {
     dy += diff;
   }
 
-  if (m_x + dx <= 0 && m_x + dx >= m_context.screen_width - m_width * 32.0f) {
+  if (m_x + dx <= 0 && m_x + dx >= m_context.screen_width - m_level_width * 32.0f) {
     m_x += dx;
   }
-  if (m_y + dy <= 0 && m_y + dy >= m_context.screen_height - m_height * 32.0f) {
+  if (m_y + dy <= 0 && m_y + dy >= m_context.screen_height - m_level_height * 32.0f) {
     m_y += dy;
   }
 
 }
 
-int Level::x() const {
-  return static_cast<int>(m_x);
-}
-
-int Level::y() const {
-  return static_cast<int>(m_y);
-}
-
-int Level::width() const {
-  int minX = 0;
-  int maxX = 0;
-  for (int i = 0; i < m_children.size(); ++i) {
-    if (m_children.at(i)->x() < minX) {
-      minX = m_children.at(i)->x();
-    }
-    if (m_children.at(i)->x() + m_children.at(i)->width() > maxX) {
-      maxX = m_children.at(i)->x() + m_children.at(i)->width();
-    }
-  }
-
-  return maxX - minX;
-}
-
-int Level::height() const {
-  int minY = 0;
-  int maxY = 0;
-  for (int i = 0; i < m_children.size(); ++i) {
-    if (m_children.at(i)->y() < minY) {
-      minY = m_children.at(i)->y();
-    }
-    if (m_children.at(i)->y() + m_children.at(i)->height() > maxY) {
-      maxY = m_children.at(i)->y() + m_children.at(i)->height();
-    }
-  }
-
-  return maxY - minY;
-}
-
-
-float Level::scaleX() const {
-  return m_scale_x;
-}
-
-float Level::scaleY() const {
-  return m_scale_y;
-}
-
-const Texture* Level::texture() const {
-  return NULL;
-}
-
-void Level::setParent(const IDrawable* parent) {
-  m_parent = parent;
-}
-
-void Level::render() {
-  for (unsigned int i = 0; i < m_children.size(); ++i) {
-    m_children.at(i)->render();
-  }
-}
 
 void Level::onEvent(const Event& e) {
   if (e.event_type == EventType::KeyDown || e.event_type == EventType::KeyUp)  {

@@ -1,54 +1,19 @@
 #include "AnimatedSprite.h"
 #include "TextureFactory.h"
+#include "AnimatedRenderBehaviour.h"
+#include "AnimatedSizeBehaviour.h"
+#include <iostream>
 
-AnimatedSprite::AnimatedSprite(Context const& c, std::string spritesheet):m_context(c),
-									  m_spritesheet(NULL),
-									  m_x(0),
-									  m_y(0),
-									  m_scale_x(1.0f),
-									  m_scale_y(1.0f),
-									  m_animate(false),
-									  m_animation_speed(4) {
+AnimatedSprite::AnimatedSprite(Context const& c, std::string spritesheet): DisplayObject(c),
+									   m_frame(0),
+									   m_direction(Anim::Up),
+									   m_animate(false),
+									   m_animation_speed(4),
+									   m_spritesheet(NULL) {
   m_spritesheet = TextureFactory::getTexture(spritesheet);
-}
 
-int AnimatedSprite::x() const {
-  int value = m_x;
-  if (m_parent) {
-    value += m_parent->x();
-  }
-  return value;
-}
-
-int AnimatedSprite::y() const {
-  int value = m_y;
-  if (m_parent) {
-    value += m_parent->y();
-  }
-  return value;
-}
-
-int AnimatedSprite::width() const {
-  return m_spritesheet->width();
-}
-
-int AnimatedSprite::height() const {
-  return m_spritesheet->height();
-}
-
-float AnimatedSprite::scaleX() const {
-  return m_scale_x;
-}
-
-float AnimatedSprite::scaleY() const {
-    return m_scale_y;
-}
-const Texture* AnimatedSprite::texture() const {
-    return m_spritesheet;
-}
-
-void AnimatedSprite::setParent(const IDrawable* parent) {
-  m_parent = parent;
+  m_render_behaviour = new AnimatedRenderBehaviour(m_spritesheet, m_frame, m_direction, m_animation_speed);
+  m_size_behaviour = new AnimatedSizeBehaviour(m_spritesheet);
 }
 
 void AnimatedSprite::animate(Anim::DIRECTION dir) {
@@ -64,17 +29,9 @@ void AnimatedSprite::stop() {
 }
 
 void AnimatedSprite::render() {
-  m_context.renderer->renderSpriteAnimation(*this, (m_frame/m_animation_speed) % 4, m_direction);
+  DisplayObject::render();
   if (m_animate) {
     m_frame++;
   }
-}
-void AnimatedSprite::setPosition(int x, int y) {
-    m_x = x;
-    m_y = y;
-}
-void AnimatedSprite::setScale(float scale_x, float scale_y) {
-    m_scale_x = scale_x;
-    m_scale_y = scale_y;
 }
 

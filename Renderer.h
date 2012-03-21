@@ -6,16 +6,15 @@
 #include "Types.h"
 #include <map>
 #include "include/GL/glfw.h"
-class IDrawable;
-//class TextureFactory;
+class DisplayObject;
 
 class Renderer: public IRenderer {
 public:
     explicit Renderer();
     void beginFrame();
     void endFrame();
-    void renderSprite(const IDrawable&);
-    void renderSpriteAnimation(const IDrawable&, int frame, Anim::DIRECTION direction);
+    void renderSprite(const DisplayObject&, const Texture*);
+    void renderSpriteAnimation(const DisplayObject&, const Texture*, int frame, Anim::DIRECTION direction);
     void setSize(float, float);
     float getWindowWidth() const;
     float getWindowHeight() const;
