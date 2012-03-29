@@ -30,14 +30,16 @@ AnimatedSprite::AnimatedSprite(Context const& c, std::string spritesheet): Sprit
 
 void AnimatedSprite::animate(Anim::DIRECTION dir) {
   m_animate = true;
-  m_frame_nr = 0;
-  m_direction = dir;
+  if (dir != m_direction) {
+    m_frame_nr = 0;
+    m_direction = dir;
+  }
 }
 
 void AnimatedSprite::stop() {
   m_animate = false;
   m_frame_nr = 0;
-  m_direction = Anim::Up;
+  m_direction = Anim::Down;
 }
 
 void AnimatedSprite::render() {

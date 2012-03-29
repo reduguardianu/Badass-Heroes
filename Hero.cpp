@@ -53,20 +53,28 @@ void Hero::tick(float dt) {
       m_y = dest.second * 32;
     }
     else {
-      float dv = 300 * dt / 1000.f;
+      
+      float dv = 200 * dt / 1000.f;
       if (dx > 0) {
 	m_x += dv;
+	animate(Anim::Right);
       }
       else if (dx < 0) {
 	m_x -= dv;
+	animate(Anim::Left);
       }
       if (dy > 0) {
 	m_y += dv;
+	animate(Anim::Down);
       }
       else if (dy < 0) {
 	m_y -= dv;
+	animate(Anim::Up);
       }
     }
+  }
+  else {
+    stop();
   }
 }
 
