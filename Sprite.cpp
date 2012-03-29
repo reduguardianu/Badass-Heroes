@@ -1,14 +1,19 @@
 #include "Sprite.h"
-#include "TextureFactory.h"
 #include "SpriteRenderBehaviour.h"
 #include "SpriteSizeBehaviour.h"
 
 Sprite::Sprite(Context const& c, std::string textureName): DisplayObject(c) {
-  if (textureName.size()) {
-    m_texture = TextureFactory::getTexture(textureName);
-  }
-  m_render_behaviour = new SpriteRenderBehaviour(m_texture);
-  m_size_behaviour = new SpriteSizeBehaviour(m_texture);
+  m_frame = new Frame(textureName);
+  m_render_behaviour = new SpriteRenderBehaviour(m_frame);
+  m_size_behaviour = new SpriteSizeBehaviour(m_frame);
+}
+
+void Sprite::setUV(float u, float v) {
+  m_frame->setUV(u, v);
+}
+
+void Sprite::setSize(float w, float h) {
+  m_frame->setSize(w, h);
 }
 
 

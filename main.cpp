@@ -8,6 +8,9 @@
 
 Game* game;
 
+int mouse_x;
+int mouse_y;
+
 void GLFWCALL handleKeypress(int glfw_key, int action) {
   
   Event e;
@@ -37,6 +40,44 @@ void GLFWCALL handleKeypress(int glfw_key, int action) {
   game->onEvent(e);
 }
 
+void GLFWCALL handleMousePosition(int x, int y) {
+  mouse_x = x;
+  mouse_y = y;
+  
+  Event e;
+  e.event_type = EventType::MouseMoved;
+
+  e.mouse_data.x = mouse_x;
+  e.mouse_data.y = mouse_y;
+
+  game->onEvent(e);
+  
+}
+
+void GLFWCALL handleMousePress(int button, int action) {
+  Event e;
+  e.mouse_data.x = mouse_x;
+  e.mouse_data.y = mouse_y;
+
+  if (action == GLFW_PRESS) {
+    e.event_type = EventType::MouseDown;
+  }
+  else if (action == GLFW_RELEASE) {
+    e.event_type = EventType::MouseUp;
+  }
+  if (button == GLFW_MOUSE_BUTTON_LEFT) {
+    e.mouse_data.button = MouseButton::Left;
+  }
+  else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
+    e.mouse_data.button = MouseButton::Right;
+  }
+  else if (button == GLFW_MOUSE_BUTTON_MIDDLE) {
+    e.mouse_data.button = MouseButton::Middle;
+  }
+
+  game->onEvent(e);
+}
+
 // need to define argc and argv or the linker complains on Windows
 int main(int argc, char* argv[]) {
   if (argc < 2) {
@@ -58,6 +99,8 @@ int main(int argc, char* argv[]) {
     game = new Game(context, argv[1]);
 
     glfwSetKeyCallback(handleKeypress);
+    glfwSetMousePosCallback(handleMousePosition);
+    glfwSetMouseButtonCallback(handleMousePress);
 
 
     double ms = context.timer->getMs();

@@ -15,10 +15,10 @@ Game::Game(Context const& c, char* mapfile): m_context(c),
   m_context.renderer->setSize(m_context.screen_width, m_context.screen_height);
   m_level.loadFromFile(mapfile);
 
-  m_hero = new Hero(m_context);
+  m_hero = new Hero(m_context, m_level.getData());
   //  m_hero->setPosition(width/2 - 16, height/2 - 16);
   m_hero->setPosition(32.0f, 32.0f);
-  m_hero->setScale(1.0f, 1.0f);
+  //  m_hero->setScale(2.0f, 2.0f);
   m_hero->animate(Anim::Down);
   m_level.addChild(m_hero);
 
@@ -61,11 +61,12 @@ void Game::createWindow() {
 
 void Game::onEvent(const Event& e) {
   m_level.onEvent(e);
+  m_hero->onEvent(e);
 }
 
 void Game::tick(float dt) {
   m_level.tick(dt);
-
+  m_hero->tick(dt);
   m_elapsed_time += dt;
   if (m_elapsed_time >= FRAME_TIME) {
     m_context.renderer->beginFrame();

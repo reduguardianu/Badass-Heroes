@@ -3,13 +3,15 @@
 #include <string>
 #include "DisplayObject.h"
 #include "Context.h"
-#include "Texture.h"
+#include "Frame.h"
 
 class Sprite : public DisplayObject {
 public:
   explicit Sprite(Context const& c, std::string textureName);
- private:
-    Texture* m_texture;
+  void setUV(float u, float v);
+  void setSize(float w, float h);
+ protected:
+  Frame* m_frame;
 };
 
 #endif

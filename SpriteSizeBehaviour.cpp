@@ -1,12 +1,12 @@
 #include "SpriteSizeBehaviour.h"
 
-SpriteSizeBehaviour::SpriteSizeBehaviour(Texture* t): m_texture(t) {
+SpriteSizeBehaviour::SpriteSizeBehaviour(Frame* f): m_frame(f) {
 }
 
 int SpriteSizeBehaviour::width() const {
-  return m_texture->width();
+  return m_frame->width();
 }
 
 int SpriteSizeBehaviour::height() const {
-  return m_texture->height();
+  return m_frame->height();
 }

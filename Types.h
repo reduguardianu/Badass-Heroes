@@ -1,6 +1,7 @@
 #ifndef TYPES_H__
 #define TYPES_H__
 
+#include <utility>
 
 namespace Anim {
   enum DIRECTION {
@@ -11,5 +12,6 @@ namespace Anim {
   };
 };
 
+typedef std::pair<int, int> point;
 
 #endif 

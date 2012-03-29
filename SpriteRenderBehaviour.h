@@ -2,15 +2,16 @@
 #define SPRITERENDERBEHAVIOUR_H__
 
 #include "IRenderBehaviour.h"
-#include "Texture.h"
+#include "Frame.h"
 
 
 class SpriteRenderBehaviour : public IRenderBehaviour {
  public:
-  SpriteRenderBehaviour(Texture* texture);
+  SpriteRenderBehaviour(Frame* frame);
   virtual void onRender(IRenderer* renderer, DisplayObject const& display_object);
+  void setFrame(Frame* f);
  private:
-  Texture* m_texture;
+  Frame* m_frame;
 };
 
 #endif

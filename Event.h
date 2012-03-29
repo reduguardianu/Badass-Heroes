@@ -50,11 +50,7 @@ struct Event {
     struct {
       int x;
       int y;
-      int dx;
-      int dy;
-      int wheel;
-      int button_state;
-      int modifiers;
+      MouseButton::TYPE button;
     } mouse_data;
 
     struct {

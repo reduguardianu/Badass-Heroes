@@ -35,25 +35,31 @@ void Level::loadFromFile(std::string filename) {
   fclose(file);
   
   initData();
+
 }
 
-void Level::initData() {
+void Level::initData() {  
+  
+  Sprite* floor = new Sprite(m_context, "floor.png");
+  floor->setSize(m_level_width * 32, m_level_height * 32);
+  //  floor->setScale(2, 2);
+  addChild(floor);
+
   for (unsigned int i = 0; i < m_data.size(); ++i) {
     for (unsigned int j = 0; j < m_data.at(i).size(); ++j) {
-      std::string texture;
-      if (m_data.at(i).at(j) == 0) {
-	texture = "Ground.png";
+      if (m_data.at(i).at(j) == 1) {
+	Tile* tile = new Tile(m_context, "tileset.png", i, j, m_data);
+	tile->setPosition(j * tile->width() * tile->scaleX(), i * tile->height() * tile->scaleY());
+	addChild(tile);
+	m_tiles.push_back(tile);
+	
       }
-      else {
-	texture = "Wall.png";
-      }
-      Sprite* sprite = new Sprite(m_context, texture);
-      //TODO: sprite must know its width and height, so sprite class has to load image, not renderer
-      sprite->setScale(32.0f/20.0f, 32.0f/20.0f);
-      sprite->setPosition(i * 32, j * 32);
-      addChild(sprite);
     }
   }
+}
+
+std::vector<std::vector<int> > const& Level::getData() {
+  return m_data;
 }
 
 void Level::addChild(DisplayObject* child) {
@@ -83,6 +89,10 @@ void Level::tick(float dt) {
   }
   if (m_y + dy <= 0 && m_y + dy >= m_context.screen_height - m_level_height * 32.0f) {
     m_y += dy;
+  }
+
+  for (int i = 0; i < m_tiles.size(); ++i) {
+    m_tiles.at(i)->tick(dt);
   }
 
 }

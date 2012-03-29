@@ -4,6 +4,7 @@
 #include "IRenderer.h"
 #include "TextureFactory.h"
 #include "Types.h"
+#include "Frame.h"
 #include <map>
 #include "include/GL/glfw.h"
 class DisplayObject;
@@ -13,14 +14,13 @@ public:
     explicit Renderer();
     void beginFrame();
     void endFrame();
-    void renderSprite(const DisplayObject&, const Texture*);
-    void renderSpriteAnimation(const DisplayObject&, const Texture*, int frame, Anim::DIRECTION direction);
+    void renderSprite(const DisplayObject&, const Frame*);
     void setSize(float, float);
     float getWindowWidth() const;
     float getWindowHeight() const;
 private:
     bool clip(float x, float y, float width, float height);
-    GLuint getTexture(const Texture* texture);
+    GLuint getTexture(const Frame* frame);
 private :
     TextureFactory m_texture_factory;
     float m_window_width;

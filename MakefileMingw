@@ -23,7 +23,7 @@ $(OBJ_DIR)/%.o:%.cpp
 	$(CC) -DGLFW_DLL -ggdb -c -o $@ $<
 
 $(program_NAME): $(program_CXX_OBJS)
-	$(CC) $(program_CXX_OBJS) -Llib -lmingw32 -lSDLmain -lSDL -lSDL_image -lglfwdll -lopengl32 -o bin/$(program_NAME)
+	$(CC) $(program_CXX_OBJS) -ggdb -Llib -lmingw32 -lSDLmain -lSDL -lSDL_image -lglfwdll -lopengl32 -o bin/$(program_NAME)
 
 clean:
 	@- $(RM) bin/$(program_NAME)
