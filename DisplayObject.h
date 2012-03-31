@@ -19,6 +19,7 @@ public:
     virtual void render();
     virtual void setPosition(int x, int y);
     virtual void setScale(float scale_x, float scale_y);
+    virtual void setScale(float scale);
     virtual void setParent(const DisplayObject*);
  protected:
     IRenderBehaviour* m_render_behaviour;

@@ -12,6 +12,8 @@ class Context {
 
   int screen_width;
   int screen_height;
+  const float DEFAULT_SCALE;
+  const float TILE_SIZE;
  IRenderer* renderer;
  ILogger* logger;
  Timer* timer;

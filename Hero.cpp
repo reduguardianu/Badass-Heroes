@@ -44,13 +44,13 @@ void Hero::stop() {
 void Hero::tick(float dt) {
   if (m_path && m_path->size()) {
     point dest = m_path->front();
-    float dx = dest.first * 32 - m_x;
-    float dy = dest.second * 32 - m_y;
+    float dx = dest.first * m_context.TILE_SIZE - m_x;
+    float dy = dest.second * m_context.TILE_SIZE - m_y;
 
     if (abs(dx) < 2 && abs(dy) < 2) {
       m_path->pop_front();
-      m_x = dest.first * 32;
-      m_y = dest.second * 32;
+      m_x = dest.first * m_context.TILE_SIZE;
+      m_y = dest.second * m_context.TILE_SIZE;
     }
     else {
       
@@ -80,8 +80,8 @@ void Hero::tick(float dt) {
 
 void Hero::onEvent(const Event& e) {
   if (e.event_type == EventType::MouseDown) {
-    int x = (e.mouse_data.x - m_parent->x()) / 32;
-    int y = (e.mouse_data.y - m_parent->y()) / 32;
+    int x = floor((e.mouse_data.x - m_parent->x()) / m_context.TILE_SIZE);
+    int y = floor((e.mouse_data.y - m_parent->y()) / m_context.TILE_SIZE);
     if (m_path) {
       delete m_path;
     }
@@ -95,7 +95,7 @@ std::deque<point>* Hero::findPath(int x, int y) {
   std::map<point, point> parent;
   point to(x, y);
 
-  point start(m_x / 32, m_y / 32);
+  point start(floor(m_x / m_context.TILE_SIZE), floor(m_y / m_context.TILE_SIZE));
   open_list.push(start);
 
   while (!open_list.empty()) {
@@ -128,6 +128,14 @@ std::deque<point>* Hero::findPath(int x, int y) {
   return new std::deque<point>();
     
 
+}
+
+bool Hero::isMoving() const {
+  if (m_path) {
+    return !(m_path->empty());
+  }
+
+  return false;
 }
 
 Hero::~Hero() {

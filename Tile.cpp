@@ -25,8 +25,8 @@ Tile::Tile(Context const& c, std::string textureName, int row, int column, std::
   m_uvs[0][1][0][0] = std::make_pair(0, 0.75);
   m_uvs[0][0][1][0] = std::make_pair(0.25, 0.75);
 
-  m_uvs[0][0][0][0] = std::make_pair(0.5, 0.75);
-  m_uvs[1][1][1][1] = std::make_pair(0.75, 0.75);
+  m_uvs[1][1][1][1] = std::make_pair(0.5, 0.75);
+  //  m_uvs[1][1][1][1] = std::make_pair(0.75, 0.75);
 														       }
 
 int Tile::left() {

@@ -19,7 +19,7 @@ AnimatedSprite::AnimatedSprite(Context const& c, std::string spritesheet): Sprit
       Frame* f = new Frame(spritesheet);
       f->setUV(0.25 * j, 0.25 * i);
       f->setSize(32, 32);
-      //      setScale(2, 2);
+      setScale(m_context.DEFAULT_SCALE);
       v.push_back(f);
     }
     m_frames.insert(std::make_pair(dirs[i], v));

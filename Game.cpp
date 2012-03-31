@@ -16,12 +16,12 @@ Game::Game(Context const& c, char* mapfile): m_context(c),
   m_level.loadFromFile(mapfile);
 
   m_hero = new Hero(m_context, m_level.getData());
-  //  m_hero->setPosition(width/2 - 16, height/2 - 16);
-  m_hero->setPosition(32.0f, 32.0f);
-  //  m_hero->setScale(2.0f, 2.0f);
+  m_hero->setPosition(32.0f * m_context.DEFAULT_SCALE, 32.0f * m_context.DEFAULT_SCALE);
+  m_hero->setScale(m_context.DEFAULT_SCALE);
   m_hero->animate(Anim::Down);
   m_level.addChild(m_hero);
 
+  m_level.setCurrentPlayer(m_hero);
   createWindow();
 
   m_running = true;

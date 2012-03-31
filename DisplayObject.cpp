@@ -54,6 +54,10 @@ void DisplayObject::setPosition(int x, int y) {
   m_y = y;
 }
 
+void DisplayObject::setScale(float scale) {
+  setScale(scale, scale);
+}
+
 void DisplayObject::setScale(float scale_x, float scale_y) {
   m_scale_x = scale_x;
   m_scale_y = scale_y;

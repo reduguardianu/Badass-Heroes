@@ -10,7 +10,7 @@
 #include "Event.h"
 #include "Texture.h"
 #include "Tile.h"
-
+#include "Hero.h"
 
 class Level : public DisplayObject  {
  public:
@@ -21,9 +21,11 @@ class Level : public DisplayObject  {
   ~Level();
   std::vector<std::vector<int> > const& getData();
 
+  void setCurrentPlayer(Hero* hero);
   void addChild(DisplayObject*);
  private:
   void initData();
+  void moveCamera(float dt);
  private:
   std::vector<std::vector<int> > m_data;
   std::map<Keyboard::KEY, bool> m_keys;
@@ -31,6 +33,8 @@ class Level : public DisplayObject  {
   std::vector<DisplayObject*> m_children;
   int m_level_width;
   int m_level_height;
+  Hero* m_hero;
+  bool m_camera_moved;
 
 };
 

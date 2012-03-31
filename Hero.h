@@ -18,6 +18,7 @@ class Hero : public DisplayObject {
   void onEvent(const Event& e);
   void tick(float dt);
   std::deque<point>* findPath(int x, int y);
+  bool isMoving() const;
  private:
   std::vector<DisplayObject*> m_sprites;
   std::vector<std::vector<int> > const& m_map;
