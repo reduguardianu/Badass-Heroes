@@ -49,14 +49,11 @@ void Level::initData() {
 
   for (unsigned int i = 0; i < m_data.size(); ++i) {
     for (unsigned int j = 0; j < m_data.at(i).size(); ++j) {
-      if (m_data.at(i).at(j) == 1) {
-	Tile* tile = new Tile(m_context, "tileset.png", i, j, m_data);
-	tile->setScale(m_context.DEFAULT_SCALE);
-	tile->setPosition(j * tile->width() * tile->scaleX(), i * tile->height() * tile->scaleY());
-	addChild(tile);
-	m_tiles.push_back(tile);
-	
-      }
+      Tile* tile = new Tile(m_context, "tileset.png", i, j, m_data);
+      tile->setScale(m_context.DEFAULT_SCALE);
+      tile->setPosition(j * tile->width() * tile->scaleX(), i * tile->height() * tile->scaleY());
+      addChild(tile);
+      m_tiles.push_back(tile);
     }
   }
 }
@@ -95,6 +92,10 @@ void Level::tick(float dt) {
   }
 
   for (int i = 0; i < m_tiles.size(); ++i) {
+    int row = m_tiles.at(i)->row();
+    int col = m_tiles.at(i)->column();
+    bool visible = m_hero->isTileVisible(row, col);
+    m_tiles.at(i)->setVisible(visible);
     m_tiles.at(i)->tick(dt);
   }
 

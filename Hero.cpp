@@ -14,6 +14,8 @@ point directions[] = {point(-1, 0), point(0, 1), point(1, 0), point(0, -1)};
 Hero::Hero(Context const& c, std::vector<std::vector<int> > const& map): DisplayObject(c),
 									 m_map(map),
 									 m_path(NULL) {
+  initVisibleTiles(m_map);
+
   m_sprites.push_back(new AnimatedSprite(c, "base_walking.png"));
   m_sprites.push_back(new AnimatedSprite(c, "tights_01.png"));
   m_sprites.push_back(new AnimatedSprite(c, "breastplate_01.png"));
@@ -25,8 +27,21 @@ Hero::Hero(Context const& c, std::vector<std::vector<int> > const& map): Display
 
   m_render_behaviour = new ContainerRenderBehaviour(m_sprites);
   m_size_behaviour = new ContainerSizeBehaviour(m_sprites);
+
 }
 
+void Hero::initVisibleTiles(std::vector<std::vector<int> > const& map) {
+  for (int i = 0; i < m_map.size(); ++i) {
+    m_seen.push_back(std::vector<bool>());
+    for (int j = 0; j < m_map.at(i).size(); ++j) {
+      m_seen.at(i).push_back(false);
+    }
+  }
+}
+
+bool Hero::isTileVisible(int row, int col) const {
+  return m_seen.at(row).at(col);
+}
 
 void Hero::animate(Anim::DIRECTION dir) {
   for (int i = 0; i < m_sprites.size(); ++i) {
@@ -41,7 +56,42 @@ void Hero::stop() {
   
 }
 
+int Hero::posToTile(float p) const {
+  return floor(p / m_context.TILE_SIZE);
+}
+
+int Hero::tileDistance(point const& a, point const& b) const {
+  return abs(a.first - b.first) + abs(a.second - b.second);
+}
+
+void Hero::findVisibleTiles() {
+
+  std::set<point> marked;
+  std::queue<point> open_list;
+
+  point start(posToTile(m_x), posToTile(m_y));
+  open_list.push(start);
+
+  while (!open_list.empty()) {
+    point loc = open_list.front();
+    open_list.pop();
+    for (int i = 0; i < 4; ++i) {
+      point new_loc(loc.first + directions[i].first, loc.second + directions[i].second);
+      if (new_loc.first >= 0 && new_loc.first < m_seen.size() && new_loc.second >= 0 && new_loc.second < m_seen.at(0).size()) {
+	if (tileDistance(start, new_loc) < 5 && marked.find(new_loc) == marked.end()) {
+	  m_seen.at(new_loc.second).at(new_loc.first) = true;
+	  open_list.push(new_loc);
+	  marked.insert(new_loc);
+	}
+      }
+    }
+
+  }
+
+}
+
 void Hero::tick(float dt) {
+  
   if (m_path && m_path->size()) {
     point dest = m_path->front();
     float dx = dest.first * m_context.TILE_SIZE - m_x;
@@ -76,6 +126,9 @@ void Hero::tick(float dt) {
   else {
     stop();
   }
+
+  findVisibleTiles();
+
 }
 
 void Hero::onEvent(const Event& e) {
@@ -116,7 +169,7 @@ std::deque<point>* Hero::findPath(int x, int y) {
 
     for (int i = 0; i < 4; ++i) {
       point new_loc(loc.first + directions[i].first, loc.second + directions[i].second);
-      if (m_map.at(new_loc.second).at(new_loc.first) == 0 && marked.find(new_loc) == marked.end()) {
+      if (m_seen.at(new_loc.second).at(new_loc.first) && m_map.at(new_loc.second).at(new_loc.first) == 0 && marked.find(new_loc) == marked.end()) {
 	parent.insert(std::make_pair(new_loc, loc));
 	open_list.push(new_loc);
 	marked.insert(new_loc);
