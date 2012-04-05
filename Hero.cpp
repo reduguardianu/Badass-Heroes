@@ -16,7 +16,7 @@ Hero::Hero(Context const& c, std::vector<std::vector<int> > const& map): Display
 									 m_path(NULL) {
   initVisibleTiles(m_map);
 
-  m_sprites.push_back(new AnimatedSprite(c, "base_walking.png"));
+  m_sprites.push_back(new AnimatedSprite(c, "base.png"));
   m_sprites.push_back(new AnimatedSprite(c, "tights_01.png"));
   m_sprites.push_back(new AnimatedSprite(c, "breastplate_01.png"));
   m_sprites.push_back(new AnimatedSprite(c, "headgear_01.png"));
