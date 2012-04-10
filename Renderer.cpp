@@ -14,6 +14,7 @@ Renderer::Renderer():m_window_width(0),
 void Renderer::setSize(float w, float h) {
   m_window_width = w;
   m_window_height = h;
+  glViewport(0, 0, m_window_width, m_window_height);
 }
 
 float Renderer::getWindowWidth() const {

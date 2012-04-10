@@ -11,7 +11,7 @@
 
 class Game: public IEventReceiver {
  public:
-  explicit Game(Context const& c, char* mapfile = NULL);
+  explicit Game(Context& c, char* mapfile = NULL);
   ~Game();
   void createWindow();
   void destroy();
@@ -19,7 +19,7 @@ class Game: public IEventReceiver {
   bool isRunning();
   void onEvent(const Event& e);
  private:
-  Context const& m_context;
+  Context& m_context;
   Level m_level;
   bool m_running;
   float m_elapsed_time;

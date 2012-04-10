@@ -78,6 +78,18 @@ void GLFWCALL handleMousePress(int button, int action) {
   game->onEvent(e);
 }
 
+void GLFWCALL handleWindowResize(int width, int height) {
+  Event e;
+  e.event_type = EventType::Resize;
+
+  e.resize_data.width = width;
+  e.resize_data.height = height;
+
+  game->onEvent(e);
+}
+
+
+
 // need to define argc and argv or the linker complains on Windows
 int main(int argc, char* argv[]) {
   if (argc < 2) {
@@ -101,6 +113,7 @@ int main(int argc, char* argv[]) {
     glfwSetKeyCallback(handleKeypress);
     glfwSetMousePosCallback(handleMousePosition);
     glfwSetMouseButtonCallback(handleMousePress);
+    glfwSetWindowSizeCallback(handleWindowResize);
 
 
     double ms = context.timer->getMs();

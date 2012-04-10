@@ -4,7 +4,7 @@
 #include "ILogger.h"
 #include "Types.h"
 
-Game::Game(Context const& c, char* mapfile): m_context(c),
+Game::Game(Context& c, char* mapfile): m_context(c),
 						     m_level(m_context),
 						     m_running(false),
 						     m_elapsed_time(0.0f), 
@@ -60,6 +60,12 @@ void Game::createWindow() {
 }
 
 void Game::onEvent(const Event& e) {
+  if (e.event_type == EventType::Resize) {
+    m_context.screen_width = e.resize_data.width;
+    m_context.screen_height = e.resize_data.height;
+    m_context.renderer->setSize(m_context.screen_width, m_context.screen_height);
+  }
+  
   m_level.onEvent(e);
   m_hero->onEvent(e);
 }
