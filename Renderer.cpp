@@ -26,7 +26,8 @@ float Renderer::getWindowHeight() const {
 }
 
 bool Renderer::clip(float x, float y, float width, float height) {
-  return (x + width < 0 || x > m_window_width || y + height < 0 || y > m_window_height);
+  return false;
+  // return (x + width < -64 || x > m_window_width || y + height < -64  || y > m_window_height);
 }
 
 GLuint Renderer::getTexture(const Frame* frame) {
@@ -79,7 +80,7 @@ void Renderer::renderSprite(const DisplayObject& d, const Frame* frame) {
 
     if (!clip(d.x(), d.y(), d.width() * d.scaleX(), d.height() * d.scaleY())) {
 	glLoadIdentity();
-	glTranslatef( 2 * d.x()  / m_window_width - 1, -2 * d.y() / m_window_height + 1, 0.0f);
+	glTranslatef( 2 * d.x()  / m_window_width - 1, -2 * d.y() / m_window_height + 1, -d.z());
 	glScalef(2 * d.width() * d.scaleX() / m_window_width, -2 * d.height() * d.scaleY() / m_window_height, 1.0f);
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texture_id);
@@ -116,8 +117,9 @@ void Renderer::renderSprite(const DisplayObject& d, const Frame* frame) {
 void Renderer::beginFrame() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glEnable(GL_BLEND);
-glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
+  glEnable(GL_DEPTH_TEST);
+  glDepthFunc(GL_LEQUAL); 
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void Renderer::endFrame() {

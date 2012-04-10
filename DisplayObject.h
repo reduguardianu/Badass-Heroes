@@ -11,6 +11,7 @@ public:
   virtual ~DisplayObject();
     virtual int x() const;
     virtual int y() const;
+    virtual float z() const;
     virtual float scaleX() const;
     virtual float scaleY() const;
     virtual int width() const;
@@ -21,6 +22,7 @@ public:
     virtual void setScale(float scale_x, float scale_y);
     virtual void setScale(float scale);
     virtual void setParent(const DisplayObject*);
+    virtual void setZ(float value);
  protected:
     IRenderBehaviour* m_render_behaviour;
     ISizeBehaviour* m_size_behaviour;
@@ -29,6 +31,7 @@ public:
     float m_y;
     float m_scale_x;
     float m_scale_y;
+    float m_z;
     const DisplayObject* m_parent;
 
 };

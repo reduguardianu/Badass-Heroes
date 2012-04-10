@@ -40,7 +40,7 @@ void Hero::initVisibleTiles(std::vector<std::vector<int> > const& map) {
 }
 
 bool Hero::isTileVisible(int row, int col) const {
-  return m_seen.at(row).at(col);
+  return (m_visible.find(point(col, row)) != m_visible.end());
 }
 
 void Hero::animate(Anim::DIRECTION dir) {
@@ -61,11 +61,14 @@ int Hero::posToTile(float p) const {
 }
 
 int Hero::tileDistance(point const& a, point const& b) const {
-  return abs(a.first - b.first) + abs(a.second - b.second);
+  return sqrt((a.first - b.first) * (a.first - b.first) + (a.second - b.second) * (a.second - b.second));
+  // taxi metric
+  // return abs(a.first - b.first) + abs(a.second - b.second);
 }
 
 void Hero::findVisibleTiles() {
 
+  m_visible.clear();
   std::set<point> marked;
   std::queue<point> open_list;
 
@@ -75,11 +78,16 @@ void Hero::findVisibleTiles() {
   while (!open_list.empty()) {
     point loc = open_list.front();
     open_list.pop();
+
+    if (tileDistance(start, loc) < 5) {
+      m_seen.at(loc.second).at(loc.first) = true;
+      m_visible.insert(loc);
+    }
+
     for (int i = 0; i < 4; ++i) {
       point new_loc(loc.first + directions[i].first, loc.second + directions[i].second);
       if (new_loc.first >= 0 && new_loc.first < m_seen.size() && new_loc.second >= 0 && new_loc.second < m_seen.at(0).size()) {
 	if (tileDistance(start, new_loc) < 5 && marked.find(new_loc) == marked.end()) {
-	  m_seen.at(new_loc.second).at(new_loc.first) = true;
 	  open_list.push(new_loc);
 	  marked.insert(new_loc);
 	}
@@ -135,10 +143,13 @@ void Hero::onEvent(const Event& e) {
   if (e.event_type == EventType::MouseDown) {
     int x = floor((e.mouse_data.x - m_parent->x()) / m_context.TILE_SIZE);
     int y = floor((e.mouse_data.y - m_parent->y()) / m_context.TILE_SIZE);
-    if (m_path) {
-      delete m_path;
+    std::deque<point>* path = findPath(x, y);
+    if (path->size() > 0) {
+      if (m_path) {
+	delete m_path;
+      }
+      m_path = path;
     }
-    m_path = findPath(x, y);
   }
 }
 
@@ -158,12 +169,14 @@ std::deque<point>* Hero::findPath(int x, int y) {
       std::deque<point>* result = new std::deque<point>();
       point p = to;
       while (p != start) {
-
 	result->push_front(p);
 	p = parent[p];
-
       }
-      result->push_front(start);
+
+      if (addStartToPath(start, result)) {
+	result->push_front(start);
+      }
+
       return result;
     }
 
@@ -183,12 +196,40 @@ std::deque<point>* Hero::findPath(int x, int y) {
 
 }
 
+bool Hero::addStartToPath(point start, std::deque<point>* path) {
+  bool add_start = false;
+  if (path->size() > 0) {
+    if (m_x < start.first * m_context.TILE_SIZE && start.first * m_context.TILE_SIZE  <= path->front().first * m_context.TILE_SIZE) {
+      add_start = true;
+    }
+    if (m_x > start.first * m_context.TILE_SIZE && start.first * m_context.TILE_SIZE  >= path->front().first * m_context.TILE_SIZE) {
+      add_start = true;
+    }
+    if (m_y < start.second * m_context.TILE_SIZE && start.second * m_context.TILE_SIZE  <= path->front().second * m_context.TILE_SIZE) {
+      add_start = true;
+    }
+    if (m_y > start.second * m_context.TILE_SIZE && start.second * m_context.TILE_SIZE  >= path->front().second * m_context.TILE_SIZE) {
+      add_start = true;
+    }
+  }
+  else {
+    add_start = true;
+  }
+
+  return add_start;
+  
+}
+
 bool Hero::isMoving() const {
   if (m_path) {
     return !(m_path->empty());
   }
 
   return false;
+}
+
+point Hero::getTileOffset() const {
+  return point(m_x - m_context.TILE_SIZE * floor(m_x / m_context.TILE_SIZE), m_y - m_context.TILE_SIZE * floor(m_y / m_context.TILE_SIZE));
 }
 
 Hero::~Hero() {

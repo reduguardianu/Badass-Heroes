@@ -12,6 +12,7 @@ class Tile : public Sprite {
   int column() const;
   void setVisible(bool);
   void render();
+  void setDarknessOffset(point p);
  private:
   int up();
   int right();

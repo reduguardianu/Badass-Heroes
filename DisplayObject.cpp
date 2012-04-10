@@ -3,6 +3,7 @@
 DisplayObject::DisplayObject(Context const& c): m_context(c),
 						m_x(0),
 						m_y(0),
+						m_z(0.0f),
 						m_scale_x(1.0f),
 						m_scale_y(1.0f),
 						m_parent(NULL),
@@ -23,6 +24,14 @@ int DisplayObject::y() const {
     value += m_parent->y();
   }
   return value;
+}
+
+void DisplayObject::setZ(float value) {
+  m_z = value;
+}
+
+float DisplayObject::z() const {
+  return m_z;
 }
 
 float DisplayObject::scaleX() const {

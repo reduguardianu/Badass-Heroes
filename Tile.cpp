@@ -33,6 +33,7 @@ Tile::Tile(Context const& c, std::string textureName, int row, int column, std::
   m_darkness = new Sprite(m_context, "darkness.png");
   m_darkness->setParent(this);
   m_darkness->setScale(m_context.DEFAULT_SCALE);
+  m_darkness->setZ(1.0f);
 }
 
 void Tile::setVisible(bool value) {
@@ -81,6 +82,10 @@ int Tile::down() {
   }
 
   return m_map.at(r).at(m_column) == 1;
+}
+
+void Tile::setDarknessOffset(point p) {
+  m_darkness->setPosition(p.first, p.second);
 }
 
 void Tile::render() {

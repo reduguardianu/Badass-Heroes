@@ -94,8 +94,9 @@ void Level::tick(float dt) {
   for (int i = 0; i < m_tiles.size(); ++i) {
     int row = m_tiles.at(i)->row();
     int col = m_tiles.at(i)->column();
-    bool visible = m_hero->isTileVisible(row, col);
+    bool visible = m_hero->isTileVisible(row, col);    
     m_tiles.at(i)->setVisible(visible);
+    //    m_tiles.at(i)->setDarknessOffset(m_hero->getTileOffset());
     m_tiles.at(i)->tick(dt);
   }
 
