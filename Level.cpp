@@ -49,13 +49,14 @@ void Level::initData() {
 
   for (unsigned int i = 0; i < m_data.size(); ++i) {
     for (unsigned int j = 0; j < m_data.at(i).size(); ++j) {
-      Tile* tile = new Tile(m_context, "tileset.png", i, j, m_data);
+      Tile* tile = new Tile(m_context, "tileset.png", "tileset2-shadows.png", i, j, m_data);      
       tile->setScale(m_context.DEFAULT_SCALE);
       tile->setPosition(j * tile->width() * tile->scaleX(), i * tile->height() * tile->scaleY());
       addChild(tile);
       m_tiles.push_back(tile);
     }
   }
+
 }
 
 std::vector<std::vector<int> > const& Level::getData() {

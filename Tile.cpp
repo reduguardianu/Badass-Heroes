@@ -2,14 +2,21 @@
 
 
 
-Tile::Tile(Context const& c, std::string textureName, int row, int column, std::vector<std::vector<int> > const& map): Sprite(c, textureName),
+Tile::Tile(Context const& c, std::string textureName, std::string shadowTexture, int row, int column, std::vector<std::vector<int> > const& map): Sprite(c, textureName),
 														       m_row(row),
 														       m_column(column),
 														       m_map(map),
 														       m_visible(false),
+														       m_shadow(NULL),
 														       m_darkness(NULL) {
+
+  if (shadowTexture.size()) {
+    m_shadow = new Sprite(m_context, shadowTexture);
+    m_shadow->setSize(32, 64);
+    m_shadow->setParent(this);
+    m_shadow->setScale(m_context.DEFAULT_SCALE);
+  }
   m_frame->setSize(32, 32);
-  //  setScale(2, 2);
   m_uvs[0][1][1][0] = std::make_pair(0, 0);
   m_uvs[0][0][1][1] = std::make_pair(0.25, 0);
   m_uvs[1][0][0][1] = std::make_pair(0.5, 0);
@@ -90,6 +97,9 @@ void Tile::setDarknessOffset(point p) {
 
 void Tile::render() {
   if (m_map.at(m_row).at(m_column) == 1) {
+    if (m_shadow) {
+      m_shadow->render();
+    }
     Sprite::render();
   }
 
@@ -102,6 +112,9 @@ void Tile::tick(float dt) {
   if (m_map.at(m_row).at(m_column) == 1) {
     std::pair<float, float> coord = m_uvs[up()][right()][down()][left()];
 
+    if (m_shadow) {
+      m_shadow->setUV(coord.first, coord.second);
+    }
     m_frame->setUV(coord.first, coord.second);
   }
 }
