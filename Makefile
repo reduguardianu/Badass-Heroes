@@ -4,7 +4,7 @@ program_CXX_SRCS := $(wildcard *.cpp)
 OBJ_DIR := .obj
 program_CXX_OBJS  := $(patsubst %,$(OBJ_DIR)/%,${program_CXX_SRCS:.cpp=.o})
 
-program_INCLUDE_DIRS :=
+program_INCLUDE_DIRS := include/SDL
 
 program_LIBRARIES := GL glfw SDL SDL_image
 
