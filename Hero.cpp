@@ -113,7 +113,10 @@ void Hero::tick(float dt) {
     else {
       
       float dv = 200 * dt / 1000.f;
-      if (dx > 0) {
+      if (abs(dv) > abs(dx)) {
+	m_x += dx;
+      }
+      else if (dx > 0) {
 	m_x += dv;
 	animate(Anim::Right);
       }
@@ -121,7 +124,11 @@ void Hero::tick(float dt) {
 	m_x -= dv;
 	animate(Anim::Left);
       }
-      if (dy > 0) {
+
+      if (abs(dv) > abs(dy)) {
+	m_y += dy;
+      }
+      else if (dy > 0) {
 	m_y += dv;
 	animate(Anim::Down);
       }
