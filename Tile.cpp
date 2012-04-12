@@ -95,6 +95,14 @@ void Tile::setDarknessOffset(point p) {
   m_darkness->setPosition(p.first, p.second);
 }
 
+void Tile::setNeighbours(std::vector<Tile*> neighbours) {
+  m_neighbours = neighbours;
+}
+
+bool Tile::visible() const {
+  return m_visible;
+}
+
 void Tile::render() {
   if (m_map.at(m_row).at(m_column) == 1) {
     if (m_shadow) {
@@ -104,6 +112,17 @@ void Tile::render() {
   }
 
   if (!m_visible) {
+    bool onBorder = false;
+    for (int i = 0; i < m_neighbours.size(); ++i) {
+      onBorder = (onBorder || m_neighbours.at(i)->visible());
+    }
+
+    if (onBorder) {
+      m_darkness->setAlpha(0.7f);
+    }
+    else {
+      m_darkness->setAlpha(1.0f);
+    }
     m_darkness->render();
   }
 }

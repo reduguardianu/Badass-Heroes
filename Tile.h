@@ -10,9 +10,11 @@ class Tile : public Sprite {
   void tick(float dt);
   int row() const;
   int column() const;
+  bool visible() const;
   void setVisible(bool);
   void render();
   void setDarknessOffset(point p);
+  void setNeighbours(std::vector<Tile*> neigbours);
  private:
   int up();
   int right();
@@ -26,6 +28,7 @@ class Tile : public Sprite {
   bool m_visible;  
   Sprite* m_shadow;
   Sprite* m_darkness;
+  std::vector<Tile*> m_neighbours;
 };
 
 #endif

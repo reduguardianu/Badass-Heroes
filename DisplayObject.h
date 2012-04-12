@@ -17,12 +17,15 @@ public:
     virtual int width() const;
     virtual int height() const;
     virtual const DisplayObject* parent() const;
+    virtual float alpha() const;
+
     virtual void render();
     virtual void setPosition(int x, int y);
     virtual void setScale(float scale_x, float scale_y);
     virtual void setScale(float scale);
     virtual void setParent(const DisplayObject*);
     virtual void setZ(float value);
+    virtual void setAlpha(float value);
  protected:
     IRenderBehaviour* m_render_behaviour;
     ISizeBehaviour* m_size_behaviour;
@@ -33,6 +36,7 @@ public:
     float m_scale_y;
     float m_z;
     const DisplayObject* m_parent;
+    float m_alpha;
 
 };
 

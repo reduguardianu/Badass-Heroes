@@ -57,6 +57,26 @@ void Level::initData() {
     }
   }
 
+  for (unsigned int i = 0; i < m_data.size(); ++i) {
+    for (unsigned int j = 0; j < m_data.at(i).size(); ++j) {
+      std::vector<Tile*> neighbours;
+      if (j > 0) {
+	neighbours.push_back(m_tiles.at(j - 1 + i * m_data.at(i).size()));
+      }
+      if (j < m_data.at(i).size() - 1) {
+	neighbours.push_back(m_tiles.at(j + 1 + i * m_data.at(i).size()));
+      }
+      if (i > 0) {
+	neighbours.push_back(m_tiles.at(j + (i - 1) * m_data.at(i).size()));
+      }
+      if (i < m_data.size() - 1) {
+	neighbours.push_back(m_tiles.at(j + (i + 1) * m_data.at(i).size()));
+      }
+
+      m_tiles.at(j + i * m_data.at(i).size())->setNeighbours(neighbours);
+    }
+  }
+
 }
 
 std::vector<std::vector<int> > const& Level::getData() {
@@ -98,6 +118,9 @@ void Level::tick(float dt) {
     bool visible = m_hero->isTileVisible(row, col);    
     m_tiles.at(i)->setVisible(visible);
     //    m_tiles.at(i)->setDarknessOffset(m_hero->getTileOffset());
+  }
+  
+  for (int i = 0; i < m_tiles.size(); ++i) {
     m_tiles.at(i)->tick(dt);
   }
 

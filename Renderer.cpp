@@ -82,6 +82,7 @@ void Renderer::renderSprite(const DisplayObject& d, const Frame* frame) {
 	glLoadIdentity();
 	glTranslatef( 2 * d.x()  / m_window_width - 1, -2 * d.y() / m_window_height + 1, -d.z());
 	glScalef(2 * d.width() * d.scaleX() / m_window_width, -2 * d.height() * d.scaleY() / m_window_height, 1.0f);
+	glColor4f(1.0f,1.0f,1.0f,d.alpha());
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texture_id);
 	glBegin(GL_TRIANGLES);
