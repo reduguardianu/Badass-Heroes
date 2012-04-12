@@ -2,7 +2,7 @@
 #include "include/SDL/SDL.h"
 #include "include/SDL/SDL_image.h"
 #include <iostream>
-
+#include <cstdio>
 
 Texture::Texture(std::string name): m_name(name),
 				    m_texture(NULL) {
