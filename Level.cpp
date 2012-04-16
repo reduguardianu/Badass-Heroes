@@ -4,6 +4,8 @@
 #include "ContainerRenderBehaviour.h"
 #include "ContainerSizeBehaviour.h"
 #include <cmath>
+#include <cstdlib>
+#include <time.h>
 
 Level::Level(Context const& c): DisplayObject(c),
 				m_camera_moved(false) {
@@ -14,6 +16,7 @@ Level::Level(Context const& c): DisplayObject(c),
 
   m_render_behaviour = new ContainerRenderBehaviour(m_children);
   m_size_behaviour = new ContainerSizeBehaviour(m_children);
+
 }
 
 void Level::loadFromFile(std::string filename) {
@@ -77,6 +80,27 @@ void Level::initData() {
     }
   }
 
+}
+
+void Level::spawnNpcs(int count) {
+  srand ( time(NULL) );
+  std::set<std::pair<int, int> > marked;
+  for (int i = 0; i < count; ++i) {
+    Npc* npc = new Npc(m_context);
+    
+    int row = 0;
+    int col = 0;
+    do {
+      row = rand() % m_data.size();
+      col = rand() % m_data.at(0).size();
+    } while (m_data.at(row).at(col) == 1 || marked.find(std::make_pair(row, col)) != marked.end());
+
+    marked.insert(std::make_pair(row, col));
+    npc->setPosition(m_context.TILE_SIZE * col, m_context.TILE_SIZE * row);
+    npc->animate(Animations::idle);
+    addChild(npc);
+  }
+  
 }
 
 std::vector<std::vector<int> > const& Level::getData() {

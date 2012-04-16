@@ -2,33 +2,38 @@
 #include "TextureFactory.h"
 #include "SpriteRenderBehaviour.h"
 #include <iostream>
+#include "AnimationParser.h"
 
-AnimatedSprite::AnimatedSprite(Context const& c, std::string spritesheet): Sprite(c, spritesheet),
+AnimatedSprite::AnimatedSprite(Context const& c, std::string spritesheet): Sprite(c, spritesheet + ".png"),
 									   m_frame_nr(0),
-									   m_direction(Anim::Up),
+									   m_direction(Animations::up),
 									   m_animate(false),
 									   m_animation_speed(4) {
 
-  m_frame->setSize(32, 32);
-  Anim::DIRECTION dirs[] = {Anim::Up, Anim::Down, Anim::Left, Anim::Right};
 
-  for (int i = 0; i < 4; ++i) {
+  AnimationParser parser;
+  parser.parse(spritesheet + ".txt");
 
-    std::vector<Frame*> v;
-    for (int j = 0; j < 4; ++j) {
-      Frame* f = new Frame(spritesheet);
-      f->setUV(0.25 * j, 0.25 * i);
-      f->setSize(32, 32);
-      setScale(m_context.DEFAULT_SCALE);
-      v.push_back(f);
+  m_frame->setSize(parser.frame_size, parser.frame_size);
+
+
+  for (AnimationDescription::iterator it = parser.m_animations.begin(); it != parser.m_animations.end(); ++it) {
+    std::vector<Frame*> frames;
+    for (std::vector<std::pair<float, float> >::iterator jt = it->second.begin(); jt != it->second.end(); ++jt) {
+      Frame* f = new Frame(spritesheet + ".png");
+      f->setUV(jt->first, jt->second);
+      f->setSize(parser.frame_size, parser.frame_size);
+      setScale(m_context.TILE_SIZE / parser.frame_size);
+      frames.push_back(f);
     }
-    m_frames.insert(std::make_pair(dirs[i], v));
+
+    m_frames.insert(std::make_pair(it->first, frames));
   }
 
   
 }
 
-void AnimatedSprite::animate(Anim::DIRECTION dir) {
+void AnimatedSprite::animate(std::string dir) {
   m_animate = true;
   if (dir != m_direction) {
     m_frame_nr = 0;
@@ -39,7 +44,7 @@ void AnimatedSprite::animate(Anim::DIRECTION dir) {
 void AnimatedSprite::stop() {
   m_animate = false;
   m_frame_nr = 0;
-  m_direction = Anim::Down;
+  m_direction = Animations::down;
 }
 
 void AnimatedSprite::render() {

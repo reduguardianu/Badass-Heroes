@@ -9,19 +9,20 @@
 #include <map>
 #include <vector>
 
+
 class AnimatedSprite: public Sprite {
  public:
   explicit AnimatedSprite(Context const& c, std::string spriteSheet);
-  virtual void animate(Anim::DIRECTION dir);
+  virtual void animate(std::string dir);
   virtual void stop();
   void render();
  protected:
   unsigned int m_frame_nr;
-  Anim::DIRECTION m_direction;
+  std::string m_direction;
   bool m_animate;
   unsigned int m_animation_speed;
  private:
-  std::map<Anim::DIRECTION, std::vector<Frame*> > m_frames;
+  std::map<std::string, std::vector<Frame*> > m_frames;
 };
 
 #endif

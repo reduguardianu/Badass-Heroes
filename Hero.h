@@ -14,7 +14,7 @@ class Hero : public DisplayObject {
  public:
   Hero(Context const& c, std::vector<std::vector<int> > const& map);
   ~Hero();
-  virtual void animate(Anim::DIRECTION dir);
+  virtual void animate(std::string dir);
   virtual void stop();
   void onEvent(const Event& e);
   void tick(float dt);

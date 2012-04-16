@@ -2,14 +2,16 @@
 #define TYPES_H__
 
 #include <utility>
+#include <string>
 
-namespace Anim {
-  enum DIRECTION {
-    Up = 0,
-    Down = 1,
-    Left = 2,
-    Right = 3
-  };
+class Animations {
+ public: 
+  static const std::string up;
+  static const std::string down;
+  static const std::string left;
+  static const std::string right;
+  static const std::string idle;
+  static const std::string dead;
 };
 
 typedef std::pair<int, int> point;

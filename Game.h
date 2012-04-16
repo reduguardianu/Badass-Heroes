@@ -8,6 +8,8 @@
 #include "Types.h"
 #include "Event.h"
 #include "Hero.h"
+#include "Npc.h"
+
 
 class Game: public IEventReceiver {
  public:
@@ -27,7 +29,7 @@ class Game: public IEventReceiver {
   const float FRAME_TIME;
   Hero* m_hero;
   std::map<Keyboard::KEY, bool> m_keys;
-
+  Npc* m_zombie;
 };
 
 #endif

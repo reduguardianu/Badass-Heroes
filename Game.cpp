@@ -5,22 +5,30 @@
 #include "Types.h"
 
 Game::Game(Context& c, char* mapfile): m_context(c),
-						     m_level(m_context),
-						     m_running(false),
-						     m_elapsed_time(0.0f), 
-						     FRAME_RATE(32.0f),
-						     FRAME_TIME(1000.f / 32.0f),
-						     m_hero(NULL) {
+				       m_level(m_context),
+				       m_running(false),
+				       m_elapsed_time(0.0f), 
+				       FRAME_RATE(32.0f),
+				       FRAME_TIME(1000.f / 32.0f),
+				       m_hero(NULL),
+				       m_zombie(NULL) {
   
   m_level.loadFromFile(mapfile);
+  m_level.spawnNpcs(50);
+
+
+
 
   m_hero = new Hero(m_context, m_level.getData());
   m_hero->setPosition(32.0f * m_context.DEFAULT_SCALE, 32.0f * m_context.DEFAULT_SCALE);
   m_hero->setScale(m_context.DEFAULT_SCALE);
-  m_hero->animate(Anim::Down);
+  m_hero->animate(Animations::down);
   m_level.addChild(m_hero);
 
   m_level.setCurrentPlayer(m_hero);
+
+
+
   createWindow();
   m_context.renderer->setSize(m_context.screen_width, m_context.screen_height);
 

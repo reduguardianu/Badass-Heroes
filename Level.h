@@ -11,6 +11,7 @@
 #include "Texture.h"
 #include "Tile.h"
 #include "Hero.h"
+#include "Npc.h"
 
 class Level : public DisplayObject  {
  public:
@@ -23,6 +24,8 @@ class Level : public DisplayObject  {
 
   void setCurrentPlayer(Hero* hero);
   void addChild(DisplayObject*);
+  void spawnNpcs(int count);
+
  private:
   void initData();
   void moveCamera(float dt);
@@ -35,6 +38,7 @@ class Level : public DisplayObject  {
   int m_level_height;
   Hero* m_hero;
   bool m_camera_moved;
+  std::vector<Npc*> m_npcs;
 
 };
 

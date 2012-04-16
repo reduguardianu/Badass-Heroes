@@ -26,8 +26,7 @@ float Renderer::getWindowHeight() const {
 }
 
 bool Renderer::clip(float x, float y, float width, float height) {
-  return false;
-  // return (x + width < -64 || x > m_window_width || y + height < -64  || y > m_window_height);
+  return (x + width < 0 || x > m_window_width || y + height < 0  || y > m_window_height);
 }
 
 GLuint Renderer::getTexture(const Frame* frame) {

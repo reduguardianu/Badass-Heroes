@@ -16,10 +16,10 @@ Hero::Hero(Context const& c, std::vector<std::vector<int> > const& map): Display
 									 m_path(NULL) {
   initVisibleTiles(m_map);
 
-  m_sprites.push_back(new AnimatedSprite(c, "base.png"));
-  m_sprites.push_back(new AnimatedSprite(c, "tights_01.png"));
-  m_sprites.push_back(new AnimatedSprite(c, "breastplate_01.png"));
-  m_sprites.push_back(new AnimatedSprite(c, "headgear_01.png"));
+  m_sprites.push_back(new AnimatedSprite(c, "base"));
+  m_sprites.push_back(new AnimatedSprite(c, "tights_01"));
+  m_sprites.push_back(new AnimatedSprite(c, "breastplate_01"));
+  m_sprites.push_back(new AnimatedSprite(c, "headgear_01"));
 
   for (int i = 0; i < m_sprites.size(); ++i) {
     m_sprites.at(i)->setParent(this);
@@ -43,7 +43,7 @@ bool Hero::isTileVisible(int row, int col) const {
   return (m_visible.find(point(col, row)) != m_visible.end());
 }
 
-void Hero::animate(Anim::DIRECTION dir) {
+void Hero::animate(std::string dir) {
   for (int i = 0; i < m_sprites.size(); ++i) {
     dynamic_cast<AnimatedSprite*>(m_sprites.at(i))->animate(dir);
   }
@@ -118,11 +118,11 @@ void Hero::tick(float dt) {
       }
       else if (dx > 0) {
 	m_x += dv;
-	animate(Anim::Right);
+	animate(Animations::right);
       }
       else if (dx < 0) {
 	m_x -= dv;
-	animate(Anim::Left);
+	animate(Animations::left);
       }
 
       if (abs(dv) > abs(dy)) {
@@ -130,11 +130,11 @@ void Hero::tick(float dt) {
       }
       else if (dy > 0) {
 	m_y += dv;
-	animate(Anim::Down);
+	animate(Animations::down);
       }
       else if (dy < 0) {
 	m_y -= dv;
-	animate(Anim::Up);
+	animate(Animations::up);
       }
     }
   }
