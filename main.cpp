@@ -35,6 +35,8 @@ void GLFWCALL handleKeypress(int glfw_key, int action) {
   case GLFW_KEY_LEFT:
     e.key_data.key = Keyboard::Left;
     break;
+  default:
+    e.key_data.key = glfw_key;
   }
   
   game->onEvent(e);

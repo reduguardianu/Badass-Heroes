@@ -82,7 +82,6 @@ void Game::onEvent(const Event& e) {
 void Game::tick(float dt) {
 
   m_level.tick(dt);
-  m_hero->tick(dt);
   m_elapsed_time += dt;
   if (m_elapsed_time >= FRAME_TIME) {
 

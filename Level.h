@@ -23,7 +23,6 @@ class Level : public DisplayObject  {
   std::vector<std::vector<int> > const& getData();
 
   void setCurrentPlayer(Hero* hero);
-  void addChild(DisplayObject*);
   void spawnNpcs(int count);
 
  private:
@@ -33,7 +32,6 @@ class Level : public DisplayObject  {
   std::vector<std::vector<int> > m_data;
   std::map<Keyboard::KEY, bool> m_keys;
   std::vector<Tile*> m_tiles;
-  std::vector<DisplayObject*> m_children;
   int m_level_width;
   int m_level_height;
   Hero* m_hero;

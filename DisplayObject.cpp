@@ -11,6 +11,7 @@ DisplayObject::DisplayObject(Context const& c): m_context(c),
 						m_render_behaviour(NULL) {
 }
 
+
 int DisplayObject::x() const {
   int value = static_cast<int>(m_x);
   if (m_parent) {
@@ -59,6 +60,9 @@ float DisplayObject::alpha() const {
   return m_alpha;
 }
 
+void DisplayObject::tick(float dt) {
+}
+
 void DisplayObject::render() {
   m_render_behaviour->onRender(m_context.renderer, *this);
 }
@@ -77,7 +81,7 @@ void DisplayObject::setScale(float scale_x, float scale_y) {
   m_scale_y = scale_y;
 }
 
-void DisplayObject::setParent(const DisplayObject* parent) {
+void DisplayObject::setParent(DisplayObject* parent) {
   m_parent = parent;
 }
 
@@ -93,3 +97,9 @@ DisplayObject::~DisplayObject() {
     delete m_size_behaviour;
   }
 }
+
+void DisplayObject::addChild(DisplayObject* child) {
+  child->setParent(this);
+  m_children.push_back(child);
+}
+

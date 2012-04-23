@@ -4,6 +4,7 @@
 #include "Context.h"
 #include "IRenderBehaviour.h"
 #include "ISizeBehaviour.h"
+#include <vector>
 
 class DisplayObject {
 public:
@@ -19,13 +20,16 @@ public:
     virtual const DisplayObject* parent() const;
     virtual float alpha() const;
 
+    virtual void tick(float dt);
     virtual void render();
     virtual void setPosition(int x, int y);
     virtual void setScale(float scale_x, float scale_y);
     virtual void setScale(float scale);
-    virtual void setParent(const DisplayObject*);
+    virtual void setParent(DisplayObject*);
     virtual void setZ(float value);
     virtual void setAlpha(float value);
+
+    virtual void addChild(DisplayObject*);
  protected:
     IRenderBehaviour* m_render_behaviour;
     ISizeBehaviour* m_size_behaviour;
@@ -35,9 +39,9 @@ public:
     float m_scale_x;
     float m_scale_y;
     float m_z;
-    const DisplayObject* m_parent;
+    DisplayObject* m_parent;
     float m_alpha;
-
+    std::vector<DisplayObject*> m_children;
 };
 
 #endif

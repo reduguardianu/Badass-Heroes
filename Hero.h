@@ -34,6 +34,7 @@ class Hero : public DisplayObject {
   std::vector<std::vector<bool> > m_seen;
   std::deque<point>* m_path;
   std::set<point> m_visible;
+  State::STATE m_state;
 };
 
 #endif

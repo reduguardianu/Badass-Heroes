@@ -20,7 +20,8 @@ namespace Keyboard {
     Up = 0,
     Right = 1,
     Down = 2,
-    Left = 3
+    Left = 3,
+    S = 4
   };
 };
 

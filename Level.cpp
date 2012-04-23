@@ -107,10 +107,6 @@ std::vector<std::vector<int> > const& Level::getData() {
   return m_data;
 }
 
-void Level::addChild(DisplayObject* child) {
-  child->setParent(this);
-  m_children.push_back(child);
-}
 
 void Level::tick(float dt) {  
   float dx = 0;
@@ -144,8 +140,8 @@ void Level::tick(float dt) {
     //    m_tiles.at(i)->setDarknessOffset(m_hero->getTileOffset());
   }
   
-  for (int i = 0; i < m_tiles.size(); ++i) {
-    m_tiles.at(i)->tick(dt);
+  for (int i = 0; i < m_children.size(); ++i) {
+    m_children.at(i)->tick(dt);
   }
 
 

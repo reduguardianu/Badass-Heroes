@@ -14,6 +14,13 @@ class Animations {
   static const std::string dead;
 };
 
-typedef std::pair<int, int> point;
+namespace State {
+  enum STATE {
+    Walk = 0,
+    Spell = 1
+  };
+};
+
+typedef std::pair<float, float> point;
 
 #endif 

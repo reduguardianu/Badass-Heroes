@@ -48,7 +48,7 @@ void AnimatedSprite::stop() {
 }
 
 void AnimatedSprite::render() {
-  dynamic_cast<SpriteRenderBehaviour*>(m_render_behaviour)->setFrame(m_frames.at(m_direction).at((m_frame_nr / m_animation_speed) % 4));
+  dynamic_cast<SpriteRenderBehaviour*>(m_render_behaviour)->setFrame(m_frames.at(m_direction).at((m_frame_nr / m_animation_speed) % m_frames.at(m_direction).size()));
   Sprite::render();
   if (m_animate) {
     m_frame_nr++;

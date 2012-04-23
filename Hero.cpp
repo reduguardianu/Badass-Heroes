@@ -8,12 +8,15 @@
 #include <algorithm>
 #include <iostream>
 #include <cmath>
+#include "Utils.h"
+#include "Spell.h"
 
 point directions[] = {point(-1, 0), point(0, 1), point(1, 0), point(0, -1)};
 
 Hero::Hero(Context const& c, std::vector<std::vector<int> > const& map): DisplayObject(c),
 									 m_map(map),
-									 m_path(NULL) {
+									 m_path(NULL),
+									 m_state(State::Walk) {
   initVisibleTiles(m_map);
 
   m_sprites.push_back(new AnimatedSprite(c, "base"));
@@ -102,41 +105,35 @@ void Hero::tick(float dt) {
   
   if (m_path && m_path->size()) {
     point dest = m_path->front();
+
+    point diff = Utils::getPositionDiff(point(m_x, m_y), point(dest.first * m_context.TILE_SIZE, dest.second * m_context.TILE_SIZE), dt);
+
+    m_x += diff.first;
+    m_y += diff.second;
+
     float dx = dest.first * m_context.TILE_SIZE - m_x;
     float dy = dest.second * m_context.TILE_SIZE - m_y;
-
-    if (abs(dx) < 2 && abs(dy) < 2) {
-      m_path->pop_front();
+    if (abs(dx) < 1 && abs(dy) < 1) {
       m_x = dest.first * m_context.TILE_SIZE;
       m_y = dest.second * m_context.TILE_SIZE;
+      m_path->pop_front();
     }
     else {
-      
-      float dv = 200 * dt / 1000.f;
-      if (abs(dv) > abs(dx)) {
-	m_x += dx;
-      }
-      else if (dx > 0) {
-	m_x += dv;
-	animate(Animations::right);
-      }
-      else if (dx < 0) {
-	m_x -= dv;
+      if (diff.first < 0) {
 	animate(Animations::left);
       }
-
-      if (abs(dv) > abs(dy)) {
-	m_y += dy;
+      else if (diff.first > 0) {
+	animate(Animations::right);
       }
-      else if (dy > 0) {
-	m_y += dv;
+      else if (diff.second > 0) {
 	animate(Animations::down);
       }
-      else if (dy < 0) {
-	m_y -= dv;
+      else if (diff.second < 0) {
 	animate(Animations::up);
       }
+	
     }
+
   }
   else {
     stop();
@@ -150,12 +147,26 @@ void Hero::onEvent(const Event& e) {
   if (e.event_type == EventType::MouseDown) {
     int x = floor((e.mouse_data.x - m_parent->x()) / m_context.TILE_SIZE);
     int y = floor((e.mouse_data.y - m_parent->y()) / m_context.TILE_SIZE);
-    std::deque<point>* path = findPath(x, y);
-    if (path->size() > 0) {
-      if (m_path) {
-	delete m_path;
+
+    if (m_state == State::Walk) {
+      std::deque<point>* path = findPath(x, y);
+      if (path->size() > 0) {
+	if (m_path) {
+	  delete m_path;
+	}
+	m_path = path;
       }
-      m_path = path;
+    }
+    else if (m_state == State::Spell) {
+      Spell* spell = new Spell(m_context, "magic-bullet");
+      m_parent->addChild(spell);
+      spell->cast(point(m_x / m_context.TILE_SIZE, m_y / m_context.TILE_SIZE), point(x, y));
+      m_state = State::Walk;
+    }
+  }
+  else if (e.event_type == EventType::KeyDown) {
+    if (e.key_data.key == 'S') {
+      m_state = State::Spell;
     }
   }
 }
