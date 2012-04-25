@@ -80,16 +80,31 @@ void Renderer::renderSprite(const DisplayObject& d, const Frame* frame) {
     if (!clip(d.x(), d.y(), d.width() * d.scaleX(), d.height() * d.scaleY())) {
 	glLoadIdentity();
 	glTranslatef( 2 * d.x()  / m_window_width - 1, -2 * d.y() / m_window_height + 1, -d.z());
-	glScalef(2 * d.width() * d.scaleX() / m_window_width, -2 * d.height() * d.scaleY() / m_window_height, 1.0f);
+	glMatrixMode(GL_MODELVIEW);
+	
 	glColor4f(1.0f,1.0f,1.0f,d.alpha());
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texture_id);
-	glBegin(GL_TRIANGLES);
+
+
 
 	float u1 = frame->u();
 	float u2 = frame->u() + frame->width() / static_cast<float>(frame->textureWidth());
 	float v1 = frame->v();
 	float v2 = frame->v() + frame->height() / static_cast<float>(frame->textureHeight());
+
+	glScalef(2 * d.width() * d.scaleX() / m_window_width, -2 * d.height() * d.scaleY() / m_window_height, 1.0f);	
+	if (d.rotation() != 0) {
+	  // i have completely no idea why this works
+	  glTranslatef(1.f / d.scaleX(), 1.f / d.scaleY(), 0);
+	  glRotatef(d.rotation(),0.0f,0.0f,1.0f);
+	  glTranslatef(-1.f / d.scaleX(), -1.f / d.scaleY(), 0);
+	}
+
+	
+
+
+	glBegin(GL_TRIANGLES);
 
 	glTexCoord2f(u1, v1);
 	glVertex3f(0.0f, 0.0f, 0.0f);

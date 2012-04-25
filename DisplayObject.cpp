@@ -8,7 +8,8 @@ DisplayObject::DisplayObject(Context const& c): m_context(c),
 						m_scale_y(1.0f),
 						m_parent(NULL),
 						m_alpha(1.0f),
-						m_render_behaviour(NULL) {
+						m_render_behaviour(NULL),
+						m_rotation(0.f) {
 }
 
 
@@ -60,6 +61,10 @@ float DisplayObject::alpha() const {
   return m_alpha;
 }
 
+float DisplayObject::rotation() const {
+  return m_rotation;
+}
+
 void DisplayObject::tick(float dt) {
 }
 
@@ -103,3 +108,17 @@ void DisplayObject::addChild(DisplayObject* child) {
   m_children.push_back(child);
 }
 
+void DisplayObject::removeChild(DisplayObject* child) {
+  child->setParent(NULL);			
+  for (std::vector<DisplayObject*>::iterator it = m_children.begin(); it != m_children.end(); ++it) {
+    if (*it == child) {
+      m_children.erase(it, it + 1);
+      return;
+    }
+  }
+}
+
+
+void DisplayObject::setRotation(float value) {
+  m_rotation = value;
+}

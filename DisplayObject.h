@@ -19,6 +19,7 @@ public:
     virtual int height() const;
     virtual const DisplayObject* parent() const;
     virtual float alpha() const;
+    virtual float rotation() const;
 
     virtual void tick(float dt);
     virtual void render();
@@ -28,8 +29,10 @@ public:
     virtual void setParent(DisplayObject*);
     virtual void setZ(float value);
     virtual void setAlpha(float value);
+    virtual void setRotation(float value);
 
     virtual void addChild(DisplayObject*);
+    virtual void removeChild(DisplayObject*);
  protected:
     IRenderBehaviour* m_render_behaviour;
     ISizeBehaviour* m_size_behaviour;
@@ -42,6 +45,7 @@ public:
     DisplayObject* m_parent;
     float m_alpha;
     std::vector<DisplayObject*> m_children;
+    float m_rotation;
 };
 
 #endif
