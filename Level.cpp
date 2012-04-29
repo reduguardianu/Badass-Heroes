@@ -6,6 +6,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <time.h>
+#include "Spell.h"
 
 Level::Level(Context const& c): DisplayObject(c),
 				m_camera_moved(false) {
@@ -98,6 +99,7 @@ void Level::spawnNpcs(int count) {
     marked.insert(std::make_pair(row, col));
     npc->setPosition(m_context.TILE_SIZE * col, m_context.TILE_SIZE * row);
     npc->animate(Animations::idle);
+    m_npcs.push_back(npc);
     addChild(npc);
   }
   
@@ -155,7 +157,18 @@ void Level::tick(float dt) {
 }
 
 void Level::setCurrentPlayer(Hero* hero) {
-  m_hero = hero;
+  m_hero = hero;  
+  m_hero->addEventListener(ET::action, this, static_cast<Listener>(&Level::onSpellCasted));
+}
+
+void Level::onSpellCasted(std::string e, EventDispatcher* dispatcher) {
+  Spell* spell = dynamic_cast<Spell*>(dispatcher);
+
+  for (int i = 0; i < m_npcs.size(); ++i) {
+    if (m_npcs.at(i)->row() == spell->row() && m_npcs.at(i)->col() == spell->col()) {
+      m_npcs.at(i)->die();
+    }
+  }
 }
 
 void Level::moveCamera(float dt) {

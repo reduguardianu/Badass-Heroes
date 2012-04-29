@@ -1,4 +1,5 @@
 #include "DisplayObject.h"
+#include <iostream>
 
 DisplayObject::DisplayObject(Context const& c): m_context(c),
 						m_x(0),
@@ -45,7 +46,7 @@ float DisplayObject::scaleY() const {
   return m_scale_y;
 }
 
-const DisplayObject* DisplayObject::parent() const {
+DisplayObject* DisplayObject::parent() const {
   return m_parent;
 }
 
@@ -63,6 +64,14 @@ float DisplayObject::alpha() const {
 
 float DisplayObject::rotation() const {
   return m_rotation;
+}
+
+int DisplayObject::row() const {
+  return static_cast<int>(m_y / m_context.TILE_SIZE);
+}
+
+int DisplayObject::col() const {
+  return static_cast<int>(m_x / m_context.TILE_SIZE);
 }
 
 void DisplayObject::tick(float dt) {

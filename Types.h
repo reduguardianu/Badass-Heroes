@@ -14,6 +14,11 @@ class Animations {
   static const std::string dead;
 };
 
+class ET {
+ public:
+  static const std::string action;
+};
+
 namespace State {
   enum STATE {
     Walk = 0,

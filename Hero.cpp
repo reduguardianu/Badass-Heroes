@@ -54,7 +54,9 @@ void Hero::animate(std::string dir) {
 
 void Hero::stop() {
   for (int i = 0; i < m_sprites.size(); ++i) {
-    dynamic_cast<AnimatedSprite*>(m_sprites.at(i))->stop();
+    AnimatedSprite* as = dynamic_cast<AnimatedSprite*>(m_sprites.at(i));
+    as->stop();
+    as->setDirection(Animations::down);
   }
   
 }
@@ -159,6 +161,7 @@ void Hero::onEvent(const Event& e) {
     }
     else if (m_state == State::Spell) {
       Spell* spell = new Spell(m_context, "magic-bullet");
+      spell->addEventListener(ET::action, this, static_cast<Listener>(&Hero::onSpellCasted));
       m_parent->addChild(spell);
       spell->cast(point(m_x / m_context.TILE_SIZE, m_y / m_context.TILE_SIZE), point(x, y));
       m_state = State::Walk;
@@ -169,6 +172,20 @@ void Hero::onEvent(const Event& e) {
       m_state = State::Spell;
     }
   }
+}
+
+void Hero::onSpellCasted(std::string e, EventDispatcher* dispatcher) {
+  Spell* spell = dynamic_cast<Spell*>(dispatcher);
+  if (spell) {
+    dispatchEvent(e, dispatcher);
+
+    if (spell->parent()) {
+      spell->parent()->removeChild(spell);
+    }
+
+    delete spell;
+  }
+
 }
 
 std::deque<point>* Hero::findPath(int x, int y) {

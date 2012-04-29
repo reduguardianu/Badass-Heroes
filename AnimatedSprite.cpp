@@ -33,22 +33,39 @@ AnimatedSprite::AnimatedSprite(Context const& c, std::string spritesheet): Sprit
   
 }
 
-void AnimatedSprite::animate(std::string dir) {
+void AnimatedSprite::animate(std::string dir, int count) {
   m_animate = true;
+  m_counter = count;
   if (dir != m_direction) {
     m_frame_nr = 0;
     m_direction = dir;
   }
 }
 
+void AnimatedSprite::setDirection(std::string dir) {
+  m_direction = dir;
+}
+
 void AnimatedSprite::stop() {
   m_animate = false;
   m_frame_nr = 0;
-  m_direction = Animations::down;
+}
+
+void AnimatedSprite::tick(float dt) {
+  int current_frame = (m_frame_nr / m_animation_speed) % m_frames.at(m_direction).size();
+  int next_frame = ((m_frame_nr + 1) / m_animation_speed) % m_frames.at(m_direction).size();
+  if (m_animate && next_frame == 0 && next_frame < current_frame && m_counter > 0) {
+    m_counter--;
+    if (m_counter == 0) {
+      stop();
+      dispatchEvent("animationfinish", this);
+    }
+  }
 }
 
 void AnimatedSprite::render() {
-  dynamic_cast<SpriteRenderBehaviour*>(m_render_behaviour)->setFrame(m_frames.at(m_direction).at((m_frame_nr / m_animation_speed) % m_frames.at(m_direction).size()));
+  int current_frame = (m_frame_nr / m_animation_speed) % m_frames.at(m_direction).size();
+  dynamic_cast<SpriteRenderBehaviour*>(m_render_behaviour)->setFrame(m_frames.at(m_direction).at(current_frame));
   Sprite::render();
   if (m_animate) {
     m_frame_nr++;

@@ -5,8 +5,9 @@
 #include "IRenderBehaviour.h"
 #include "ISizeBehaviour.h"
 #include <vector>
+#include "EventDispatcher.h"
 
-class DisplayObject {
+class DisplayObject: public EventDispatcher {
 public:
   DisplayObject(Context const& c);
   virtual ~DisplayObject();
@@ -17,9 +18,11 @@ public:
     virtual float scaleY() const;
     virtual int width() const;
     virtual int height() const;
-    virtual const DisplayObject* parent() const;
+    virtual DisplayObject* parent() const;
     virtual float alpha() const;
     virtual float rotation() const;
+    virtual int row() const;
+    virtual int col() const;
 
     virtual void tick(float dt);
     virtual void render();

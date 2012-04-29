@@ -28,6 +28,7 @@ class Hero : public DisplayObject {
   int posToTile(float p) const;
   int tileDistance(point const& a, point const& b) const;
   bool addStartToPath(point start, std::deque<point>* path);
+  void onSpellCasted(std::string e, EventDispatcher* dispatcher);
  private:
   std::vector<DisplayObject*> m_sprites;
   std::vector<std::vector<int> > const& m_map;

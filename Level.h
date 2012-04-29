@@ -28,6 +28,7 @@ class Level : public DisplayObject  {
  private:
   void initData();
   void moveCamera(float dt);
+  void onSpellCasted(std::string e, EventDispatcher* dispatcher);
  private:
   std::vector<std::vector<int> > m_data;
   std::map<Keyboard::KEY, bool> m_keys;

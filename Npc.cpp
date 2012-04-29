@@ -2,6 +2,7 @@
 #include "ContainerRenderBehaviour.h"
 #include "ContainerSizeBehaviour.h"
 #include "AnimatedSprite.h"
+#include <iostream>
 
 
 Npc::Npc(Context const& c): DisplayObject(c) {
@@ -15,19 +16,33 @@ Npc::Npc(Context const& c): DisplayObject(c) {
 
 }
 
-void Npc::animate(const std::string& dir) {
+void Npc::animate(const std::string& dir, int count) {
   for (int i = 0; i < m_sprites.size(); ++i) {
-    dynamic_cast<AnimatedSprite*>(m_sprites.at(i))->animate(dir);
+    dynamic_cast<AnimatedSprite*>(m_sprites.at(i))->animate(dir, count);
   }
 
 }
 
 void Npc::stop() {
   for (int i = 0; i < m_sprites.size(); ++i) {
-    dynamic_cast<AnimatedSprite*>(m_sprites.at(i))->animate(Animations::idle);
+    dynamic_cast<AnimatedSprite*>(m_sprites.at(i))->stop();
+  }
+}
+
+void Npc::die() {
+  animate(Animations::dead, 1);
+  m_sprites.at(0)->addEventListener("animationfinish", this, static_cast<Listener>(&Npc::onDeath));
+}
+
+void Npc::onDeath(std::string e, EventDispatcher* dispatcher) {
+  if (parent()) {
+    parent()->removeChild(this);
   }
 }
 
 void Npc::tick(float dt) {
-  
+  for (int i = 0; i < m_sprites.size(); ++i) {
+    m_sprites.at(i)->tick(dt);
+  }
+
 }

@@ -78,9 +78,28 @@ void Renderer::renderSprite(const DisplayObject& d, const Frame* frame) {
   GLuint texture_id = getTexture(frame);
 
     if (!clip(d.x(), d.y(), d.width() * d.scaleX(), d.height() * d.scaleY())) {
-	glLoadIdentity();
-	glTranslatef( 2 * d.x()  / m_window_width - 1, -2 * d.y() / m_window_height + 1, -d.z());
+	float u1 = frame->u();
+	float u2 = frame->u() + frame->width() / static_cast<float>(frame->textureWidth());
+	float v1 = frame->v();
+	float v2 = frame->v() + frame->height() / static_cast<float>(frame->textureHeight());
+
+
+
 	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	glTranslatef( 2 * d.x()  / m_window_width - 1, -2 * d.y() / m_window_height + 1, -d.z());
+
+
+	if (d.rotation() != 0) {
+
+	  glTranslatef(d.width() * d.scaleX() / m_window_width, -d.height() * d.scaleY() / m_window_height, 0);
+	  glRotatef(360 - d.rotation(),0.0f,0.0f,1.0f);
+	  glTranslatef(-d.width() * d.scaleX() / m_window_width, d.height() * d.scaleY() / m_window_height, 0);
+	}
+
+
+
 	
 	glColor4f(1.0f,1.0f,1.0f,d.alpha());
 	glEnable(GL_TEXTURE_2D);
@@ -88,18 +107,8 @@ void Renderer::renderSprite(const DisplayObject& d, const Frame* frame) {
 
 
 
-	float u1 = frame->u();
-	float u2 = frame->u() + frame->width() / static_cast<float>(frame->textureWidth());
-	float v1 = frame->v();
-	float v2 = frame->v() + frame->height() / static_cast<float>(frame->textureHeight());
 
 	glScalef(2 * d.width() * d.scaleX() / m_window_width, -2 * d.height() * d.scaleY() / m_window_height, 1.0f);	
-	if (d.rotation() != 0) {
-	  // i have completely no idea why this works
-	  glTranslatef(1.f / d.scaleX(), 1.f / d.scaleY(), 0);
-	  glRotatef(d.rotation(),0.0f,0.0f,1.0f);
-	  glTranslatef(-1.f / d.scaleX(), -1.f / d.scaleY(), 0);
-	}
 
 	
 

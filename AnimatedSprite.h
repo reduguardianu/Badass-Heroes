@@ -13,8 +13,10 @@
 class AnimatedSprite: public Sprite {
  public:
   explicit AnimatedSprite(Context const& c, std::string spriteSheet);
-  virtual void animate(std::string dir);
+  virtual void animate(std::string dir, int count = -1);
+  virtual void setDirection(std::string dir);
   virtual void stop();
+  void tick(float dt);
   void render();
  protected:
   unsigned int m_frame_nr;
@@ -23,6 +25,7 @@ class AnimatedSprite: public Sprite {
   unsigned int m_animation_speed;
  private:
   std::map<std::string, std::vector<Frame*> > m_frames;
+  int m_counter;
 };
 
 #endif
