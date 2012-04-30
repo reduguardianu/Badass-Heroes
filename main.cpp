@@ -107,24 +107,23 @@ int main(int argc, char* argv[]) {
     return 1;
   }
    
-    Context context;
-    context.screen_width = 800;
-    context.screen_height = 600;
-    game = new Game(context, argv[1]);
+  Context context;
+  context.screen_width = 800;
+  context.screen_height = 600;
+  game = new Game(context, argv[1]);
+  
+  glfwSetKeyCallback(handleKeypress);
+  glfwSetMousePosCallback(handleMousePosition);
+  glfwSetMouseButtonCallback(handleMousePress);
+  glfwSetWindowSizeCallback(handleWindowResize);
+  
 
-    glfwSetKeyCallback(handleKeypress);
-    glfwSetMousePosCallback(handleMousePosition);
-    glfwSetMouseButtonCallback(handleMousePress);
-    glfwSetWindowSizeCallback(handleWindowResize);
+  double ms = context.timer->getMs();
+  while (game->isRunning()) {
+    double t = context.timer->getMs();      
+    game->tick(t - ms);
+    ms = t;
+  }
 
-
-    double ms = context.timer->getMs();
-    while (game->isRunning()) {
-      double t = context.timer->getMs();      
-      game->tick(t - ms);
-      ms = t;
-    }
-
-
-    return 0;
+  return 0;
 }

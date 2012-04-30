@@ -18,6 +18,7 @@ class AnimatedSprite: public Sprite {
   virtual void stop();
   void tick(float dt);
   void render();
+  void gotoFrame(int frame, int time = -1);
  protected:
   unsigned int m_frame_nr;
   std::string m_direction;
@@ -26,6 +27,7 @@ class AnimatedSprite: public Sprite {
  private:
   std::map<std::string, std::vector<Frame*> > m_frames;
   int m_counter;
+  int m_goto_counter;
 };
 
 #endif

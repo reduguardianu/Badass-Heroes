@@ -65,6 +65,13 @@ int Hero::posToTile(float p) const {
   return floor(p / m_context.TILE_SIZE);
 }
 
+void Hero::gotoFrame(int frame, int time) {
+  for (int i = 0; i < m_sprites.size(); ++i) {
+    AnimatedSprite* as = dynamic_cast<AnimatedSprite*>(m_sprites.at(i));
+    as->gotoFrame(frame, time);
+  }
+}
+
 int Hero::tileDistance(point const& a, point const& b) const {
   return sqrt((a.first - b.first) * (a.first - b.first) + (a.second - b.second) * (a.second - b.second));
   // taxi metric
@@ -143,6 +150,10 @@ void Hero::tick(float dt) {
 
   findVisibleTiles();
 
+  for (int i = 0; i < m_sprites.size(); ++i) {
+    m_sprites.at(i)->tick(dt);
+  }
+
 }
 
 void Hero::onEvent(const Event& e) {
@@ -165,6 +176,7 @@ void Hero::onEvent(const Event& e) {
       m_parent->addChild(spell);
       spell->cast(point(m_x / m_context.TILE_SIZE, m_y / m_context.TILE_SIZE), point(x, y));
       m_state = State::Walk;
+      gotoFrame(1, 1);
     }
   }
   else if (e.event_type == EventType::KeyDown) {
@@ -177,6 +189,7 @@ void Hero::onEvent(const Event& e) {
 void Hero::onSpellCasted(std::string e, EventDispatcher* dispatcher) {
   Spell* spell = dynamic_cast<Spell*>(dispatcher);
   if (spell) {
+    gotoFrame(0);
     dispatchEvent(e, dispatcher);
 
     if (spell->parent()) {

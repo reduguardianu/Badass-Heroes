@@ -22,6 +22,7 @@ class Hero : public DisplayObject {
   bool isMoving() const;
   bool isTileVisible(int row, int col) const;
   point getTileOffset() const;
+  void gotoFrame(int frame, int time = -1);
  private:
   void initVisibleTiles(std::vector<std::vector<int> > const& map);
   void findVisibleTiles();

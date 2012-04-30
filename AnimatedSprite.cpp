@@ -8,7 +8,9 @@ AnimatedSprite::AnimatedSprite(Context const& c, std::string spritesheet): Sprit
 									   m_frame_nr(0),
 									   m_direction(Animations::up),
 									   m_animate(false),
-									   m_animation_speed(4) {
+									   m_animation_speed(4),
+									   m_counter(-1),
+									   m_goto_counter(-1) {
 
 
   AnimationParser parser;
@@ -42,13 +44,20 @@ void AnimatedSprite::animate(std::string dir, int count) {
   }
 }
 
+void AnimatedSprite::gotoFrame(int frame, int time) {
+  m_frame_nr = frame * m_animation_speed;
+  m_goto_counter = time * m_animation_speed;
+}
+
 void AnimatedSprite::setDirection(std::string dir) {
   m_direction = dir;
 }
 
 void AnimatedSprite::stop() {
-  m_animate = false;
-  m_frame_nr = 0;
+  if (m_animate) {
+    m_animate = false;
+    m_frame_nr = 0;
+  }
 }
 
 void AnimatedSprite::tick(float dt) {
@@ -69,6 +78,12 @@ void AnimatedSprite::render() {
   Sprite::render();
   if (m_animate) {
     m_frame_nr++;
+  }
+  else if (m_goto_counter >=0) {
+    m_goto_counter--;
+    if (m_goto_counter == 0) {
+      m_frame_nr = 0;
+    }
   }
 }
 

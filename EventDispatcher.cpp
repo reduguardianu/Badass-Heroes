@@ -17,5 +17,5 @@ void EventDispatcher::addEventListener(const std::string& event, EventDispatcher
   if (it == m_observers.end()) {
     it = m_observers.insert(std::make_pair(event, Observers() )).first;
   }
-  it->second.push_back(std::make_pair(observer, listener));
+  it->second.insert(std::make_pair(observer, listener));
 }

@@ -9,7 +9,15 @@
 class EventDispatcher;
 
 typedef void (EventDispatcher::*Listener)(std::string e, EventDispatcher* dispatcher);
-typedef std::vector<std::pair<EventDispatcher*, Listener> > Observers;
+
+class ListenerComparator {
+ public:
+  bool operator() (const std::pair<EventDispatcher*, Listener>& lhs, const std::pair<EventDispatcher*, Listener>& rhs) {
+      return (lhs.first < rhs.first);
+  }
+};
+
+typedef std::set<std::pair<EventDispatcher*, Listener>, ListenerComparator > Observers;
 typedef std::map<std::string, Observers > ObserversMap;
 
 class EventDispatcher {

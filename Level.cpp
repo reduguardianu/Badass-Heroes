@@ -169,6 +169,14 @@ void Level::onSpellCasted(std::string e, EventDispatcher* dispatcher) {
       m_npcs.at(i)->die();
     }
   }
+
+  for (int i = 0; i < m_tiles.size(); ++i) {
+    if (m_tiles.at(i)->row() == spell->row() && m_tiles.at(i)->col() == spell->col()) {
+      if (m_tiles.at(i)->parent()) {
+	m_data.at(spell->row()).at(spell->col()) = 0;
+      }
+    }
+  }
 }
 
 void Level::moveCamera(float dt) {
