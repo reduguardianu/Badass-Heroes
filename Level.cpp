@@ -18,6 +18,7 @@ Level::Level(Context const& c): DisplayObject(c),
   m_render_behaviour = new ContainerRenderBehaviour(m_children);
   m_size_behaviour = new ContainerSizeBehaviour(m_children);
 
+  setBounds(new Rectangle(0, 0, m_context.screen_width - 250, m_context.screen_height));
 }
 
 void Level::loadFromFile(std::string filename) {
@@ -50,6 +51,7 @@ void Level::initData() {
   floor->setSize(m_level_width * m_context.TILE_SIZE, m_level_height * m_context.TILE_SIZE);
   floor->setScale(m_context.DEFAULT_SCALE);
   floor->setZ(-1);
+  std::cout << "floor: " << floor << std::endl;
   addChild(floor);
 
   for (unsigned int i = 0; i < m_data.size(); ++i) {
@@ -182,36 +184,37 @@ void Level::onSpellCasted(std::string e, EventDispatcher* dispatcher) {
 
 void Level::moveCamera(float dt) {
   
+  Rectangle* b = bounds();
 
-  float dx = -(m_hero->x() - m_context.screen_width / 2) / 2 ;
+  float dx = -(m_hero->x() - b->width / 2) / 2 ;
   if (fabs(dx) > 3) {
     dx *= (dt / 200.0f);
   }
 
   float x = m_x + dx;
-  if (x <= 0 && x >= m_context.screen_width - m_level_width * m_context.TILE_SIZE) {
+  if (x <= 0 && x >= b->width - m_level_width * m_context.TILE_SIZE) {
     m_x = x;
   }
   else if ( x > 0) {
     m_x = 0;
   }
   else {
-    m_x = m_context.screen_width - m_level_width * m_context.TILE_SIZE;
+    m_x = b->width - m_level_width * m_context.TILE_SIZE;
   }
 
-  float dy = -(m_hero->y() - m_context.screen_height / 2) / 2;
+  float dy = -(m_hero->y() - b->height / 2) / 2;
   if (fabs(dy) > 3) {
     dy *= dt / 200.0f;
   }
   float y = m_y + dy ;
-  if (y <= 0 && y >= m_context.screen_height - m_level_height * m_context.TILE_SIZE) {
+  if (y <= 0 && y >= b->height - m_level_height * m_context.TILE_SIZE) {
     m_y = y;
   }
   else if (y > 0) {
     m_y = 0;
   }
   else {
-    m_y = m_context.screen_height - m_level_height * m_context.TILE_SIZE;
+    m_y = b->height - m_level_height * m_context.TILE_SIZE;
   }
 }
 
@@ -224,6 +227,9 @@ void Level::onEvent(const Event& e) {
       m_keys[static_cast<Keyboard::KEY>(e.key_data.key)] = e.key_data.pressed_down;
       m_camera_moved = true;
     }
+  }
+  else if (e.event_type == EventType::Resize) {
+    setBounds(new Rectangle(0, 0, m_context.screen_width - 250, m_context.screen_height));
   }
 
   m_hero->onEvent(e);

@@ -77,7 +77,8 @@ GLuint Renderer::getTexture(const Frame* frame) {
 void Renderer::renderSprite(const DisplayObject& d, const Frame* frame) {
   GLuint texture_id = getTexture(frame);
 
-    if (!clip(d.x(), d.y(), d.width() * d.scaleX(), d.height() * d.scaleY())) {
+  //if (!clip(d.x(), d.y(), d.width() * d.scaleX(), d.height() * d.scaleY())) {
+  if (d.visible()) {
 	float u1 = frame->u();
 	float u2 = frame->u() + frame->width() / static_cast<float>(frame->textureWidth());
 	float v1 = frame->v();
@@ -108,7 +109,13 @@ void Renderer::renderSprite(const DisplayObject& d, const Frame* frame) {
 
 
 
-
+	float x2 = 1.0f;
+	if (d.x() + d.width() * d.scaleX() > d.bounds()->x + d.bounds()->width) {
+	  float diff = d.bounds()->x + d.bounds()->width - d.x();
+	  float ratio = diff/ (d.width() * d.scaleX());
+	  x2 = ratio ;
+	  u2 = frame->u() +ratio * frame->width() / static_cast<float>(frame->textureWidth());
+	}
 
 	
 
@@ -122,16 +129,16 @@ void Renderer::renderSprite(const DisplayObject& d, const Frame* frame) {
 	glVertex3f(0.0f, 1.0f, 0.0f);
 	
 	glTexCoord2f(u2, v1);
-	glVertex3f(1.0f, 0.0f, 0.0f);
+	glVertex3f(x2, 0.0f, 0.0f);
 	
 	glTexCoord2f(u1, v2);
 	glVertex3f(0.0f, 1.0f, 0.0f);
 	
 	glTexCoord2f(u2, v2);
-	glVertex3f(1.0f, 1.0f, 0.0f);
+	glVertex3f(x2, 1.0f, 0.0f);
 	
 	glTexCoord2f(u2, v1);
-	glVertex3f(1.0f, 0.0f, 0.0f);
+	glVertex3f(x2, 0.0f, 0.0f);
 	
 	glEnd();
     }

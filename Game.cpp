@@ -3,15 +3,19 @@
 #include "IRenderer.h"
 #include "ILogger.h"
 #include "Types.h"
+#include <iostream>
 
 Game::Game(Context& c, char* mapfile): m_context(c),
 				       m_level(m_context),
+				       m_hud(m_context),
 				       m_running(false),
 				       m_elapsed_time(0.0f), 
 				       FRAME_RATE(32.0f),
 				       FRAME_TIME(1000.f / 32.0f),
 				       m_zombie(NULL) {
   
+  m_hud.setPosition(m_context.screen_width - 250, 0);
+
   m_level.loadFromFile(mapfile);
   m_level.spawnNpcs(50);
 
@@ -37,9 +41,8 @@ Game::Game(Context& c, char* mapfile): m_context(c),
   m_level.setCurrentPlayer(hero1);
 
 
-
-  createWindow();
   m_context.renderer->setSize(m_context.screen_width, m_context.screen_height);
+  createWindow();
 
 
   m_running = true;
@@ -72,7 +75,7 @@ void Game::createWindow() {
     }
     else {
       glfwSetWindowTitle("Badass Heroes baby");
-        m_context.logger->Debug("Window creation successfull");
+      m_context.logger->Debug("Window creation successfull");
     }
 
 }
@@ -93,6 +96,7 @@ void Game::onEvent(const Event& e) {
   }
   
   m_level.onEvent(e);
+  m_hud.onEvent(e);
 }
 
 void Game::tick(float dt) {
@@ -103,6 +107,7 @@ void Game::tick(float dt) {
 
     m_context.renderer->beginFrame();
     m_level.render();
+    m_hud.render();
     m_context.renderer->endFrame();
     m_elapsed_time -= FRAME_TIME;
   }

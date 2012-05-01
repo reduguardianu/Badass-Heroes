@@ -9,6 +9,7 @@
 #include "Event.h"
 #include "Hero.h"
 #include "Npc.h"
+#include "Hud.h"
 
 
 class Game: public IEventReceiver {
@@ -23,6 +24,7 @@ class Game: public IEventReceiver {
  private:
   Context& m_context;
   Level m_level;
+  Hud m_hud;
   bool m_running;
   float m_elapsed_time;
   const float FRAME_RATE;

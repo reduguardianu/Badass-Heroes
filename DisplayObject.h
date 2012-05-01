@@ -36,6 +36,11 @@ public:
 
     virtual void addChild(DisplayObject*);
     virtual void removeChild(DisplayObject*);
+
+    virtual Rectangle* bounds() const;
+    virtual void setBounds(Rectangle* value);
+
+    bool visible() const;
  protected:
     IRenderBehaviour* m_render_behaviour;
     ISizeBehaviour* m_size_behaviour;
@@ -49,6 +54,7 @@ public:
     float m_alpha;
     std::vector<DisplayObject*> m_children;
     float m_rotation;
+    Rectangle* m_bounds;
 };
 
 #endif

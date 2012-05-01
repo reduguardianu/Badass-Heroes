@@ -28,4 +28,13 @@ namespace State {
 
 typedef std::pair<float, float> point;
 
+class Rectangle {
+ public:
+  float x;
+  float y;
+  float width;
+  float height;
+ Rectangle(float _x, float _y, float _width, float _height):x(_x),y(_y),width(_width),height(_height) {}
+};
+
 #endif 

@@ -10,7 +10,8 @@ DisplayObject::DisplayObject(Context const& c): m_context(c),
 						m_parent(NULL),
 						m_alpha(1.0f),
 						m_render_behaviour(NULL),
-						m_rotation(0.f) {
+						m_rotation(0.f),
+						m_bounds(NULL) {
 }
 
 
@@ -130,4 +131,22 @@ void DisplayObject::removeChild(DisplayObject* child) {
 
 void DisplayObject::setRotation(float value) {
   m_rotation = value;
+}
+
+Rectangle* DisplayObject::bounds() const {
+  if (parent() && m_bounds == NULL) {
+    return parent()->bounds();
+  }
+
+  return m_bounds;
+}
+
+void DisplayObject::setBounds(Rectangle* value) {
+  m_bounds = value;
+}
+
+bool DisplayObject::visible() const {
+  Rectangle* bounds = this->bounds();
+
+  return !(x() + width() < bounds->x || x() > bounds->x + bounds->width || y() + height() < bounds->y || y() > bounds->y + bounds->height);
 }
