@@ -13,16 +13,17 @@
 
 point directions[] = {point(-1, 0), point(0, 1), point(1, 0), point(0, -1)};
 
-Hero::Hero(Context const& c, std::vector<std::vector<int> > const& map): DisplayObject(c),
-									 m_map(map),
-									 m_path(NULL),
-									 m_state(State::Walk) {
+Hero::Hero(Context const& c, std::vector<std::vector<int> > const& map, std::string headgear, std::string breastplate, std::string pants): DisplayObject(c),
+																	   m_map(map),
+																	   m_path(NULL),
+																	   m_state(State::Walk),
+																	   m_last_point(-1, -1) {
   initVisibleTiles(m_map);
 
   m_sprites.push_back(new AnimatedSprite(c, "base"));
-  m_sprites.push_back(new AnimatedSprite(c, "tights_01"));
-  m_sprites.push_back(new AnimatedSprite(c, "breastplate_01"));
-  m_sprites.push_back(new AnimatedSprite(c, "headgear_01"));
+  m_sprites.push_back(new AnimatedSprite(c, pants));
+  m_sprites.push_back(new AnimatedSprite(c, breastplate));
+  m_sprites.push_back(new AnimatedSprite(c, headgear));
 
   for (int i = 0; i < m_sprites.size(); ++i) {
     m_sprites.at(i)->setParent(this);
@@ -167,6 +168,7 @@ void Hero::onEvent(const Event& e) {
 	if (m_path) {
 	  delete m_path;
 	}
+	clearGuidePath();
 	m_path = path;
       }
     }
@@ -182,6 +184,75 @@ void Hero::onEvent(const Event& e) {
   else if (e.event_type == EventType::KeyDown) {
     if (e.key_data.key == 'S') {
       m_state = State::Spell;
+    }
+  }
+  else if (e.event_type == EventType::MouseMoved) {
+    int x = floor((e.mouse_data.x - m_parent->x()) / m_context.TILE_SIZE);
+    int y = floor((e.mouse_data.y - m_parent->y()) / m_context.TILE_SIZE);
+
+    if (m_state == State::Walk) {
+      drawPath(x, y);
+    }    
+  }
+}
+
+
+void Hero::clearGuidePath() {
+  for (int i = 0; i < m_guide_path.size(); ++i) {
+    Sprite* s = m_guide_path.at(i);
+    if (s->parent()) {
+      s->parent()->removeChild(s);
+    }
+  }
+  
+}
+
+void Hero::drawPath(int col, int row) {
+
+
+  if (m_last_point.first != col || m_last_point.second != row) {
+    m_last_point = point(col, row);
+    std::deque<point>* path = findPath(col, row);
+
+    clearGuidePath();
+    
+    int index = 0;
+    int rotation = 0;
+    Sprite* s = NULL;
+    for (std::deque<point>::iterator it = path->begin(); it != path->end(); ++it) {
+      point p = *it;
+      if (index < m_guide_path.size()) {
+	s = m_guide_path.at(index);
+      }
+      else {
+	s = new Sprite(m_context, "footsteps.png");
+	s->setZ(-0.5);
+	m_guide_path.push_back(s);
+      }
+      s->setPosition(p.first * m_context.TILE_SIZE, p.second * m_context.TILE_SIZE);
+      parent()->addChild(s);
+
+      if (index > 0) {
+	Sprite* prev = m_guide_path.at(index - 1);
+	if (prev->x() < s->x()) {
+	  rotation = 0;
+	}
+	else if (prev->x() > s->x()) {
+	  rotation = 180;
+	}
+	else if (prev->y() < s->y()) {
+	  rotation = 90;
+	}
+	else {
+	  rotation = -90;
+	}
+	prev->setRotation(rotation);
+	  
+      }
+      index++;
+    }
+    if (s) {
+      s->setRotation(rotation);
     }
   }
 }

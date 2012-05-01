@@ -49,6 +49,7 @@ void Level::initData() {
   Sprite* floor = new Sprite(m_context, "floor.png");
   floor->setSize(m_level_width * m_context.TILE_SIZE, m_level_height * m_context.TILE_SIZE);
   floor->setScale(m_context.DEFAULT_SCALE);
+  floor->setZ(-1);
   addChild(floor);
 
   for (unsigned int i = 0; i < m_data.size(); ++i) {
@@ -224,6 +225,8 @@ void Level::onEvent(const Event& e) {
       m_camera_moved = true;
     }
   }
+
+  m_hero->onEvent(e);
 }
 
 Level::~Level() {

@@ -89,13 +89,14 @@ void Renderer::renderSprite(const DisplayObject& d, const Frame* frame) {
 	glLoadIdentity();
 
 	glTranslatef( 2 * d.x()  / m_window_width - 1, -2 * d.y() / m_window_height + 1, -d.z());
+	glScalef(2 * d.width() * d.scaleX() / m_window_width, -2 * d.height() * d.scaleY() / m_window_height, 1.0f);	
 
 
 	if (d.rotation() != 0) {
 
-	  glTranslatef(d.width() * d.scaleX() / m_window_width, -d.height() * d.scaleY() / m_window_height, 0);
-	  glRotatef(360 - d.rotation(),0.0f,0.0f,1.0f);
-	  glTranslatef(-d.width() * d.scaleX() / m_window_width, d.height() * d.scaleY() / m_window_height, 0);
+	  glTranslatef(0.5, 0.5, 0);
+	  glRotatef(d.rotation(),0.0f,0.0f,1.0f);
+	  glTranslatef(-0.5, -0.5, 0);
 	}
 
 
@@ -108,7 +109,6 @@ void Renderer::renderSprite(const DisplayObject& d, const Frame* frame) {
 
 
 
-	glScalef(2 * d.width() * d.scaleX() / m_window_width, -2 * d.height() * d.scaleY() / m_window_height, 1.0f);	
 
 	
 

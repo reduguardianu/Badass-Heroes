@@ -123,6 +123,7 @@ int main(int argc, char* argv[]) {
     double t = context.timer->getMs();      
     game->tick(t - ms);
     ms = t;
+    glfwSleep(0.001);
   }
 
   return 0;

@@ -10,7 +10,6 @@ Game::Game(Context& c, char* mapfile): m_context(c),
 				       m_elapsed_time(0.0f), 
 				       FRAME_RATE(32.0f),
 				       FRAME_TIME(1000.f / 32.0f),
-				       m_hero(NULL),
 				       m_zombie(NULL) {
   
   m_level.loadFromFile(mapfile);
@@ -19,13 +18,23 @@ Game::Game(Context& c, char* mapfile): m_context(c),
 
 
 
-  m_hero = new Hero(m_context, m_level.getData());
-  m_hero->setPosition(32.0f * m_context.DEFAULT_SCALE, 32.0f * m_context.DEFAULT_SCALE);
-  m_hero->setScale(m_context.DEFAULT_SCALE);
-  m_hero->animate(Animations::down);
-  m_level.addChild(m_hero);
+  Hero* hero1 = new Hero(m_context, m_level.getData(), "headgear_01", "breastplate_01", "tights_01");
+  hero1->setPosition(32.0f * m_context.DEFAULT_SCALE, 32.0f * m_context.DEFAULT_SCALE);
+  hero1->setScale(m_context.DEFAULT_SCALE);
+  hero1->animate(Animations::down);
+  m_level.addChild(hero1);
+  m_heroes.push_back(hero1);
 
-  m_level.setCurrentPlayer(m_hero);
+  Hero* hero2 = new Hero(m_context, m_level.getData(), "headgear_02", "breastplate_02", "tights_02");
+  hero2->setPosition(2 * m_context.TILE_SIZE, m_context.TILE_SIZE);
+  hero2->setScale(m_context.DEFAULT_SCALE);
+  hero2->animate(Animations::down);
+  m_level.addChild(hero2);
+  m_heroes.push_back(hero2);
+
+
+
+  m_level.setCurrentPlayer(hero1);
 
 
 
@@ -74,9 +83,16 @@ void Game::onEvent(const Event& e) {
     m_context.screen_height = e.resize_data.height;
     m_context.renderer->setSize(m_context.screen_width, m_context.screen_height);
   }
+  else if (e.event_type == EventType::KeyDown) {
+    if (e.key_data.key == '1') {
+      m_level.setCurrentPlayer(m_heroes.at(0));
+    }
+    else if (e.key_data.key == '2') {
+      m_level.setCurrentPlayer(m_heroes.at(1));
+    }
+  }
   
   m_level.onEvent(e);
-  m_hero->onEvent(e);
 }
 
 void Game::tick(float dt) {

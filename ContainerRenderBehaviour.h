@@ -7,10 +7,10 @@
 
 class ContainerRenderBehaviour : public IRenderBehaviour {
  public:
-  ContainerRenderBehaviour(std::vector<DisplayObject*> const&);
+  ContainerRenderBehaviour(std::vector<DisplayObject*>&);
   void onRender(IRenderer*, DisplayObject const&);
  private:
-  std::vector<DisplayObject*> const& m_children;
+  std::vector<DisplayObject*>& m_children;
 };
 
 #endif

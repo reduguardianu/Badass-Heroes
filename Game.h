@@ -27,7 +27,7 @@ class Game: public IEventReceiver {
   float m_elapsed_time;
   const float FRAME_RATE;
   const float FRAME_TIME;
-  Hero* m_hero;
+  std::vector<Hero*> m_heroes;
   std::map<Keyboard::KEY, bool> m_keys;
   Npc* m_zombie;
 };
