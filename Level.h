@@ -29,6 +29,7 @@ class Level : public DisplayObject  {
   void initData();
   void moveCamera(float dt);
   void onSpellCasted(std::string e, EventDispatcher* dispatcher);
+  void resetCamera();
  private:
   std::vector<std::vector<int> > m_data;
   std::map<Keyboard::KEY, bool> m_keys;
@@ -37,6 +38,7 @@ class Level : public DisplayObject  {
   int m_level_height;
   Hero* m_hero;
   bool m_camera_moved;
+  bool m_reset_camera;
   std::vector<Npc*> m_npcs;
 
 };

@@ -9,7 +9,8 @@
 #include "Spell.h"
 
 Level::Level(Context const& c): DisplayObject(c),
-				m_camera_moved(false) {
+				m_camera_moved(false),
+				m_reset_camera(false)  {
   m_keys[Keyboard::Up] = false;
   m_keys[Keyboard::Right] = false;
   m_keys[Keyboard::Down] = false;
@@ -150,7 +151,7 @@ void Level::tick(float dt) {
   }
 
 
-  if (m_hero->isMoving() && !m_camera_moved) {
+  if ((m_hero->isMoving() || m_reset_camera) && !m_camera_moved) {
     moveCamera(dt);
   }
   else if (!m_hero->isMoving()) {
@@ -162,6 +163,11 @@ void Level::tick(float dt) {
 void Level::setCurrentPlayer(Hero* hero) {
   m_hero = hero;  
   m_hero->addEventListener(ET::action, this, static_cast<Listener>(&Level::onSpellCasted));
+  resetCamera();
+}
+
+void Level::resetCamera() {
+  m_reset_camera = true;
 }
 
 void Level::onSpellCasted(std::string e, EventDispatcher* dispatcher) {
@@ -215,6 +221,13 @@ void Level::moveCamera(float dt) {
   }
   else {
     m_y = b->height - m_level_height * m_context.TILE_SIZE;
+  }
+
+
+  float adx = fabs(m_hero->x() - b->width / 2) / 2;
+  float ady = fabs(m_hero->y() - b->height / 2) / 2;
+  if (adx < 1 && ady < 1) {
+    m_reset_camera = false;
   }
 }
 
