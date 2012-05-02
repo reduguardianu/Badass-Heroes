@@ -2,13 +2,14 @@
 
 
 
-Tile::Tile(Context const& c, std::string textureName, std::string shadowTexture, int row, int column, std::vector<std::vector<int> > const& map): Sprite(c, textureName),
+Tile::Tile(Context const& c, std::string textureName, std::string shadowTexture, int row, int column, std::vector<std::vector<int> > const& map, std::vector<std::vector<int> > const& destroyed): Sprite(c, textureName),
 														       m_row(row),
 														       m_column(column),
 														       m_map(map),
 														       m_visible(false),
 														       m_shadow(NULL),
-														       m_darkness(NULL) {
+																		  m_darkness(NULL),
+																		  m_destroyed(destroyed) {
 
   if (shadowTexture.size()) {
     m_shadow = new Sprite(m_context, shadowTexture);
@@ -17,25 +18,76 @@ Tile::Tile(Context const& c, std::string textureName, std::string shadowTexture,
     m_shadow->setScale(m_context.DEFAULT_SCALE);
   }
   m_frame->setSize(32, 32);
+  float tw = m_frame->textureWidth();
+  float th = m_frame->textureHeight();
   m_uvs[0][1][1][0] = std::make_pair(0, 0);
-  m_uvs[0][0][1][1] = std::make_pair(0.25, 0);
-  m_uvs[1][0][0][1] = std::make_pair(0.5, 0);
-  m_uvs[1][1][0][0] = std::make_pair(0.75, 0);
-  m_uvs[0][1][0][1] = std::make_pair(0, 0.25);
-  m_uvs[1][0][1][0] = std::make_pair(0.25, 0.25);
+  m_uvs[0][0][1][1] = std::make_pair(32 / tw, 0);
+  m_uvs[1][0][0][1] = std::make_pair(64 / tw, 0);
+  m_uvs[1][1][0][0] = std::make_pair(96 / tw, 0);
+  m_uvs[0][1][0][1] = std::make_pair(0, 32 / th);
+  m_uvs[1][0][1][0] = std::make_pair(32 / tw, 32 / th);
 
-  m_uvs[1][1][1][0] = std::make_pair(0.5, 0.25);
-  m_uvs[0][1][1][1] = std::make_pair(0.75, 0.25);
-  m_uvs[1][0][1][1] = std::make_pair(0, 0.5);
-  m_uvs[1][1][0][1] = std::make_pair(0.25, 0.5);
+  m_uvs[1][1][1][0] = std::make_pair(64 / tw, 32 / th);
+  m_uvs[0][1][1][1] = std::make_pair(96 / tw, 32 / th);
+  m_uvs[1][0][1][1] = std::make_pair(0, 64 / th);
+  m_uvs[1][1][0][1] = std::make_pair(32 / tw, 64 / th);
 
-  m_uvs[0][0][0][1] = std::make_pair(0.5, 0.5);
-  m_uvs[1][0][0][0] = std::make_pair(0.75, 0.5);
-  m_uvs[0][1][0][0] = std::make_pair(0, 0.75);
-  m_uvs[0][0][1][0] = std::make_pair(0.25, 0.75);
+  m_uvs[0][0][0][1] = std::make_pair(64 / tw, 64 / th);
+  m_uvs[1][0][0][0] = std::make_pair(96 / tw, 64 / th);
+  m_uvs[0][1][0][0] = std::make_pair(0, 96 / th);
+  m_uvs[0][0][1][0] = std::make_pair(32 / tw, 96 / th);
 
-  m_uvs[1][1][1][1] = std::make_pair(0.5, 0.75);
-  //  m_uvs[1][1][1][1] = std::make_pair(0.75, 0.75);
+  m_uvs[1][1][1][1] = std::make_pair(64 / tw, 96 / th);
+  m_uvs[0][0][0][0] = std::make_pair(0, 160 / th);
+
+
+  m_destroyed_up = new Sprite(m_context, textureName);
+  m_destroyed_up->setUV(32 / tw, 128 / th);
+  m_destroyed_up->setSize(32, 32);
+  m_destroyed_up->setParent(this);
+  m_destroyed_up->setScale(m_context.DEFAULT_SCALE);
+
+  m_destroyed_right = new Sprite(m_context, textureName);
+  m_destroyed_right->setUV(96 / tw, 96 / th);
+  m_destroyed_right->setSize(32, 32);
+  m_destroyed_right->setParent(this);
+  m_destroyed_right->setScale(m_context.DEFAULT_SCALE);
+
+  m_destroyed_down = new Sprite(m_context, textureName);
+  m_destroyed_down->setUV(64 / tw, 128 / th);
+  m_destroyed_down->setSize(32, 32);
+  m_destroyed_down->setParent(this);
+  m_destroyed_down->setScale(m_context.DEFAULT_SCALE);
+
+  m_destroyed_left = new Sprite(m_context, textureName);
+  m_destroyed_left->setUV(0 / tw, 128 / th);
+  m_destroyed_left->setSize(32, 32);
+  m_destroyed_left->setParent(this);
+  m_destroyed_left->setScale(m_context.DEFAULT_SCALE);
+
+
+  tw = m_shadow->textureWidth();
+  th = m_shadow->textureHeight();
+  m_shadow_uvs[0][1][1][0] = std::make_pair(0, 0);
+  m_shadow_uvs[0][0][1][1] = std::make_pair(32 / tw, 0);
+  m_shadow_uvs[1][0][0][1] = std::make_pair(64 / tw, 0);
+  m_shadow_uvs[1][1][0][0] = std::make_pair(96 / tw, 0);
+  m_shadow_uvs[0][1][0][1] = std::make_pair(0, 64 / th);
+  m_shadow_uvs[1][0][1][0] = std::make_pair(32 / tw, 64 / th);
+
+  m_shadow_uvs[1][1][1][0] = std::make_pair(64 / tw, 64 / th);
+  m_shadow_uvs[0][1][1][1] = std::make_pair(96 / tw, 64 / th);
+  m_shadow_uvs[1][0][1][1] = std::make_pair(0, 128 / th);
+  m_shadow_uvs[1][1][0][1] = std::make_pair(32 / tw, 128 / th);
+
+  m_shadow_uvs[0][0][0][1] = std::make_pair(64 / tw, 128 / th);
+  m_shadow_uvs[1][0][0][0] = std::make_pair(96 / tw, 128 / th);
+  m_shadow_uvs[0][1][0][0] = std::make_pair(0, 192 / th);
+  m_shadow_uvs[0][0][1][0] = std::make_pair(32 / tw, 192 / th);
+
+  m_shadow_uvs[1][1][1][1] = std::make_pair(64 / tw, 192 / th);
+  // m_shadow_uvs[0][0][0][0] = std::make_pair(0, 320 / th);
+
   
   m_darkness = new Sprite(m_context, "darkness.png");
   m_darkness->setParent(this);
@@ -55,7 +107,43 @@ int Tile::column() const {
   return m_column;
 }
 
-int Tile::left() {
+bool Tile::left() {
+  int c = m_column - 1;
+  if (c < 0) {
+    return 0;
+  }
+  
+  return m_map.at(m_row).at(c) + m_destroyed.at(m_row).at(c);
+}
+
+bool Tile::right() {
+  int c = m_column + 1;
+  if (c >= m_map.at(m_row).size()) {
+    return 0;
+  }
+  
+  return m_map.at(m_row).at(c) + m_destroyed.at(m_row).at(c);
+}
+
+bool Tile::up() {
+  int r = m_row - 1;
+  if (r < 0) {
+    return 0;
+  }
+
+  return m_map.at(r).at(m_column) + m_destroyed.at(r).at(m_column);
+}
+
+bool Tile::down() {
+  int r = m_row + 1;
+  if (r >= m_map.size()) {
+    return 0;
+  }
+
+  return m_map.at(r).at(m_column) + m_destroyed.at(r).at(m_column);
+}
+
+bool Tile::map_left() {
   int c = m_column - 1;
   if (c < 0) {
     return 0;
@@ -64,7 +152,7 @@ int Tile::left() {
   return m_map.at(m_row).at(c);
 }
 
-int Tile::right() {
+bool Tile::map_right() {
   int c = m_column + 1;
   if (c >= m_map.at(m_row).size()) {
     return 0;
@@ -73,7 +161,7 @@ int Tile::right() {
   return m_map.at(m_row).at(c);
 }
 
-int Tile::up() {
+bool Tile::map_up() {
   int r = m_row - 1;
   if (r < 0) {
     return 0;
@@ -82,14 +170,15 @@ int Tile::up() {
   return m_map.at(r).at(m_column);
 }
 
-int Tile::down() {
+bool Tile::map_down() {
   int r = m_row + 1;
   if (r >= m_map.size()) {
     return 0;
   }
 
-  return m_map.at(r).at(m_column) == 1;
+  return m_map.at(r).at(m_column);
 }
+
 
 void Tile::setDarknessOffset(point p) {
   m_darkness->setPosition(p.first, p.second);
@@ -97,6 +186,10 @@ void Tile::setDarknessOffset(point p) {
 
 void Tile::setNeighbours(std::vector<Tile*> neighbours) {
   m_neighbours = neighbours;
+}
+
+bool Tile::destroyed() const {
+  return m_destroyed.at(row()).at(column());
 }
 
 bool Tile::visible() const {
@@ -109,6 +202,20 @@ void Tile::render() {
       m_shadow->render();
     }
     Sprite::render();
+  }
+  else if (destroyed()) {
+    if (map_up()) {
+      m_destroyed_up->render();
+    }
+    if (map_right()) {
+      m_destroyed_right->render();
+    }
+    if (map_down()) {
+      m_destroyed_down->render();
+    }
+    if (map_left()) {
+      m_destroyed_left->render();
+    }
   }
 
   if (!m_visible) {
@@ -130,10 +237,13 @@ void Tile::render() {
 void Tile::tick(float dt) {
   if (m_map.at(m_row).at(m_column) == 1) {
     std::pair<float, float> coord = m_uvs[up()][right()][down()][left()];
+    std::pair<float, float> shadow_coord = m_shadow_uvs[up()][right()][down()][left()];
+    
 
     if (m_shadow) {
-      m_shadow->setUV(coord.first, coord.second);
+      m_shadow->setUV(shadow_coord.first, shadow_coord.second);
     }
     m_frame->setUV(coord.first, coord.second);
   }
+
 }

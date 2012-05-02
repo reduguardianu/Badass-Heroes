@@ -32,10 +32,12 @@ void Level::loadFromFile(std::string filename) {
 
   for (int i = 0; i < m_level_height; ++i) {
     m_data.push_back(std::vector<int>());
+    m_destroyed.push_back(std::vector<int>());
     for (int j = 0; j < m_level_width; ++j) {
       int block = 0;
       fscanf(file, "%d", &block);
       m_data.at(i).push_back(block);
+      m_destroyed.at(i).push_back(0);
     }
     fscanf(file, "\n");
   }
@@ -57,7 +59,7 @@ void Level::initData() {
 
   for (unsigned int i = 0; i < m_data.size(); ++i) {
     for (unsigned int j = 0; j < m_data.at(i).size(); ++j) {
-      Tile* tile = new Tile(m_context, "tileset.png", "tileset2-shadows.png", i, j, m_data);      
+      Tile* tile = new Tile(m_context, "tileset2.png", "tileset2-shadows.png", i, j, m_data, m_destroyed);      
       tile->setScale(m_context.DEFAULT_SCALE);
       tile->setPosition(j * tile->width() * tile->scaleX(), i * tile->height() * tile->scaleY());
       addChild(tile);
@@ -182,6 +184,9 @@ void Level::onSpellCasted(std::string e, EventDispatcher* dispatcher) {
   for (int i = 0; i < m_tiles.size(); ++i) {
     if (m_tiles.at(i)->row() == spell->row() && m_tiles.at(i)->col() == spell->col()) {
       if (m_tiles.at(i)->parent()) {
+	if (m_data.at(spell->row()).at(spell->col()) == 1) {
+	  m_destroyed.at(spell->row()).at(spell->col()) = 1;
+	}
 	m_data.at(spell->row()).at(spell->col()) = 0;
       }
     }

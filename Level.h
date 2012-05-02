@@ -32,6 +32,7 @@ class Level : public DisplayObject  {
   void resetCamera();
  private:
   std::vector<std::vector<int> > m_data;
+  std::vector<std::vector<int> > m_destroyed;
   std::map<Keyboard::KEY, bool> m_keys;
   std::vector<Tile*> m_tiles;
   int m_level_width;

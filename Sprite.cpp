@@ -20,6 +20,14 @@ std::string Sprite::name() {
   return m_frame->name();
 }
 
+float Sprite::textureWidth() const {
+  return m_frame->textureWidth();
+}
+
+float Sprite::textureHeight() const {
+  return m_frame->textureHeight();
+}
+
 
 
 
