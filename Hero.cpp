@@ -20,18 +20,18 @@ Hero::Hero(Context const& c, std::vector<std::vector<int> > const& map, std::str
 																	   m_last_point(-1, -1) {
   initVisibleTiles(m_map);
 
-  m_sprites.push_back(new AnimatedSprite(c, "base"));
-  m_sprites.push_back(new AnimatedSprite(c, pants));
-  m_sprites.push_back(new AnimatedSprite(c, breastplate));
-  m_sprites.push_back(new AnimatedSprite(c, headgear));
+  m_figure = new Figure(c, headgear, breastplate, pants);
+  m_avatar = new Figure(*m_figure);
+  m_avatar->setDirection(Animations::down);
+  m_avatar->setScale(8.0f);
+  addChild(m_figure);
+  m_render_behaviour = new ContainerRenderBehaviour(m_children);
+  m_size_behaviour = new ContainerSizeBehaviour(m_children);
 
-  for (int i = 0; i < m_sprites.size(); ++i) {
-    m_sprites.at(i)->setParent(this);
-  }
+}
 
-  m_render_behaviour = new ContainerRenderBehaviour(m_sprites);
-  m_size_behaviour = new ContainerSizeBehaviour(m_sprites);
-
+Figure* Hero::getAvatar() {
+  return m_avatar;
 }
 
 void Hero::initVisibleTiles(std::vector<std::vector<int> > const& map) {
@@ -48,18 +48,12 @@ bool Hero::isTileVisible(int row, int col) const {
 }
 
 void Hero::animate(std::string dir) {
-  for (int i = 0; i < m_sprites.size(); ++i) {
-    dynamic_cast<AnimatedSprite*>(m_sprites.at(i))->animate(dir);
-  }
+  m_figure->animate(dir);
 }
 
 void Hero::stop() {
-  for (int i = 0; i < m_sprites.size(); ++i) {
-    AnimatedSprite* as = dynamic_cast<AnimatedSprite*>(m_sprites.at(i));
-    as->stop();
-    as->setDirection(Animations::down);
-  }
-  
+  m_figure->stop();
+  m_figure->setDirection(Animations::down);
 }
 
 int Hero::posToTile(float p) const {
@@ -67,10 +61,7 @@ int Hero::posToTile(float p) const {
 }
 
 void Hero::gotoFrame(int frame, int time) {
-  for (int i = 0; i < m_sprites.size(); ++i) {
-    AnimatedSprite* as = dynamic_cast<AnimatedSprite*>(m_sprites.at(i));
-    as->gotoFrame(frame, time);
-  }
+  m_figure->gotoFrame(frame, time);
 }
 
 int Hero::tileDistance(point const& a, point const& b) const {
@@ -151,10 +142,7 @@ void Hero::tick(float dt) {
 
   findVisibleTiles();
 
-  for (int i = 0; i < m_sprites.size(); ++i) {
-    m_sprites.at(i)->tick(dt);
-  }
-
+  m_figure->tick(dt);
 }
 
 void Hero::onEvent(const Event& e) {
@@ -352,9 +340,6 @@ point Hero::getTileOffset() const {
 }
 
 Hero::~Hero() {
-  for (int i = 0; i < m_sprites.size(); ++i) {
-    delete m_sprites.at(i);
-  }
-
+  delete m_figure;
 }
 

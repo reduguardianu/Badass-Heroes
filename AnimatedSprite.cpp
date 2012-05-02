@@ -10,7 +10,8 @@ AnimatedSprite::AnimatedSprite(Context const& c, std::string spritesheet): Sprit
 									   m_animate(false),
 									   m_animation_speed(4),
 									   m_counter(-1),
-									   m_goto_counter(-1) {
+									   m_goto_counter(-1),
+									   m_spritesheet(spritesheet) {
 
 
   AnimationParser parser;
@@ -33,6 +34,10 @@ AnimatedSprite::AnimatedSprite(Context const& c, std::string spritesheet): Sprit
   }
 
   
+}
+
+std::string AnimatedSprite::spritesheet() const {
+  return m_spritesheet;
 }
 
 void AnimatedSprite::animate(std::string dir, int count) {

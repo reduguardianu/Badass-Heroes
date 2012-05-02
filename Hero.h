@@ -10,6 +10,7 @@
 #include <deque>
 #include <set>
 #include "Sprite.h"
+#include "Figure.h"
 
 class Hero : public DisplayObject {
  public:
@@ -24,6 +25,7 @@ class Hero : public DisplayObject {
   bool isTileVisible(int row, int col) const;
   point getTileOffset() const;
   void gotoFrame(int frame, int time = -1);
+  Figure* getAvatar();
  private:
   void initVisibleTiles(std::vector<std::vector<int> > const& map);
   void findVisibleTiles();
@@ -34,7 +36,8 @@ class Hero : public DisplayObject {
   void clearGuidePath();
   void drawPath(int col, int row);
  private:
-  std::vector<DisplayObject*> m_sprites;
+  Figure* m_figure;
+  Figure* m_avatar;
   std::vector<std::vector<int> > const& m_map;
   std::vector<std::vector<bool> > m_seen;
   std::deque<point>* m_path;

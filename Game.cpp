@@ -39,6 +39,7 @@ Game::Game(Context& c, char* mapfile): m_context(c),
 
 
   m_level.setCurrentPlayer(hero1);
+  m_hud.setAvatar(hero1->getAvatar());
 
 
   m_context.renderer->setSize(m_context.screen_width, m_context.screen_height);
@@ -89,9 +90,11 @@ void Game::onEvent(const Event& e) {
   else if (e.event_type == EventType::KeyDown) {
     if (e.key_data.key == '1') {
       m_level.setCurrentPlayer(m_heroes.at(0));
+      m_hud.setAvatar(m_heroes.at(0)->getAvatar());
     }
     else if (e.key_data.key == '2') {
       m_level.setCurrentPlayer(m_heroes.at(1));
+      m_hud.setAvatar(m_heroes.at(1)->getAvatar());
     }
   }
   

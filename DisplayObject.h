@@ -9,7 +9,7 @@
 
 class DisplayObject: public EventDispatcher {
 public:
-  DisplayObject(Context const& c);
+  explicit DisplayObject(Context const& c);
   virtual ~DisplayObject();
     virtual int x() const;
     virtual int y() const;

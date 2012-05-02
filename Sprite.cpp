@@ -16,6 +16,9 @@ void Sprite::setSize(float w, float h) {
   m_frame->setSize(w, h);
 }
 
+std::string Sprite::name() {
+  return m_frame->name();
+}
 
 
 

@@ -10,6 +10,7 @@ public:
   explicit Sprite(Context const& c, std::string textureName);
   void setUV(float u, float v);
   void setSize(float w, float h);
+  std::string name();
  protected:
   Frame* m_frame;
 };
