@@ -111,6 +111,8 @@ void Game::tick(float dt) {
     m_context.renderer->beginFrame();
     m_level.render();
     m_hud.render();
+    m_context.renderer->renderText("badass heroes", "arial", 560, 250);
+    m_context.renderer->renderText("finger unicorns", "arial", 560, 282);
     m_context.renderer->endFrame();
     m_elapsed_time -= FRAME_TIME;
   }

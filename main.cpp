@@ -6,10 +6,12 @@
 #include "Event.h"
 #include <cstdio>
 
+
 Game* game;
 
 int mouse_x;
 int mouse_y;
+
 
 void GLFWCALL handleKeypress(int glfw_key, int action) {
   
@@ -98,7 +100,7 @@ int main(int argc, char* argv[]) {
     std::cout << "No map file specified, usage: ./BadassHeroes map.txt" << std::endl;
     return 1;
   }
-  
+
   FILE* file = NULL;
   file = fopen(argv[1], "r");
   if (!file) {
@@ -106,6 +108,7 @@ int main(int argc, char* argv[]) {
     std::cout << "Cannot open file " << argv[1] << std::endl;
     return 1;
   }
+
    
   Context context;
   context.screen_width = 800;

@@ -15,6 +15,7 @@ public:
     void beginFrame();
     void endFrame();
     void renderSprite(const DisplayObject&, const Frame*);
+    void renderText(const std::string& text, const std::string& font, int x, int y);
     void setSize(float, float);
     float getWindowWidth() const;
     float getWindowHeight() const;

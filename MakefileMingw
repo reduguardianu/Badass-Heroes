@@ -6,7 +6,7 @@ program_CXX_SRCS := $(wildcard *.cpp)
 OBJ_DIR := .obj
 program_CXX_OBJS  := $(patsubst %,$(OBJ_DIR)/%,${program_CXX_SRCS:.cpp=.o})
 
-program_INCLUDE_DIRS := include/SDL
+program_INCLUDE_DIRS := include/SDL,include/MyGUI,include/MyGUIEngine,include/OpenGLPlatform
 
 program_LIBRARIES := mingw32 SDLmain SDL SDL_image glfwdll opengl32
 

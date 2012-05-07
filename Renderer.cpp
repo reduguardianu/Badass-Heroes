@@ -3,6 +3,9 @@
 #include "TextureFactory.h"
 #include <iostream>
 
+#include "Font.h"
+#include "FontFactory.h"
+
 const float FRAME_SIZE = 32.0f;
 
 Renderer::Renderer():m_window_width(0), 
@@ -142,6 +145,76 @@ void Renderer::renderSprite(const DisplayObject& d, const Frame* frame) {
 	
 	glEnd();
     }
+}
+
+void Renderer::renderText(const std::string& text, const std::string& font, int x, int y) {
+  Frame frame("fonts/" + font + ".png");
+  GLuint texture_id = getTexture(&frame);
+  
+  Font* f = FontFactory::getFont(font);
+  
+  int n = text.length();
+
+  glMatrixMode(GL_MODELVIEW);
+
+
+	
+
+  glColor4f(1.0f,1.0f,1.0f, .5f);
+
+  for (int i = 0; i < n; ++i) {
+    int charid = text[i];
+    SCharDescr* ch = f->getChar(charid);
+
+    if (ch != NULL) {
+
+      float u1 = (ch->srcX + 0.0f) / f->scalew;
+      float v1 = (ch->srcY + 0.0f) / f->scaleh;
+      float u2 = u1 + float(ch->srcW + 0.0f) / f->scalew;
+      float v2 = v1 + float(ch->srcH + 0.0f) / f->scaleh;
+
+      float a = ch->xAdv;
+      float w = ch->srcW;
+      if (charid == ' ') {
+	w += 10;
+      }
+      float h = ch->srcH;
+      float ox = ch->xOff;
+      float oy = ch->yOff;
+
+      glLoadIdentity();
+      glTranslatef( 2 * (x + ox)  / m_window_width - 1, -2 * (y + oy) / m_window_height + 1, -1.0f);
+      glScalef(2 * ch->srcW / m_window_width, -2 * ch->srcH / m_window_height, 1.0f);	
+      glEnable(GL_TEXTURE_2D);
+      glBindTexture(GL_TEXTURE_2D, texture_id);
+
+
+      glBegin(GL_TRIANGLES);
+      glTexCoord2f(u1, v1);
+      glVertex3f(0.0f, 0.0f, 0.0f);
+      
+      glTexCoord2f(u1, v2);
+      glVertex3f(0.0f, 1.0f, 0.0f);
+	
+      glTexCoord2f(u2, v1);
+      glVertex3f(1.0f, 0.0f, 0.0f);
+      
+      glTexCoord2f(u1, v2);
+      glVertex3f(0.0f, 1.0f, 0.0f);
+	
+      glTexCoord2f(u2, v2);
+      glVertex3f(1.0f, 1.0f, 0.0f);
+	
+      glTexCoord2f(u2, v1);
+      glVertex3f(1.0f, 0.0f, 0.0f);
+      glEnd();
+  
+
+      x += ox + w;
+    }
+
+  }
+
 }
 
 
