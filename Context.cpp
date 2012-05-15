@@ -2,6 +2,7 @@
 #include "Renderer.h"
 #include "StandardLogger.h"
 
+
 Context::Context():DEFAULT_SCALE(2.0f),
 		   TILE_SIZE(32.0f * DEFAULT_SCALE) {
   renderer = new Renderer();

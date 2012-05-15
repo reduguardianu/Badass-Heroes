@@ -3,9 +3,10 @@
 
 #include "Types.h"
 #include <cmath>
+#include "DisplayObject.h"
 
 namespace Utils {
   point getPositionDiff(point pos, point dest, float dt);
-
+  bool regionHit(int x, int y, DisplayObject* d);
 }
 #endif

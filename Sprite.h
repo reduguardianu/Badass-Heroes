@@ -13,6 +13,7 @@ public:
   float textureWidth() const;
   float textureHeight() const;
   std::string name();
+  Frame* frame() const;
  protected:
   Frame* m_frame;
 };

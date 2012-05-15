@@ -5,6 +5,18 @@
 #include "ILogger.h"
 #include "Timer.h"
 
+struct UIState
+{
+  int mousex;
+  int mousey;
+  int mousedown;
+
+  int hot;
+  int active;
+
+UIState():mousex(0), mousey(0), mousedown(0), hot(0), active(0) {};
+};
+
 class Context {
  public:
   Context();
@@ -17,6 +29,7 @@ class Context {
  IRenderer* renderer;
  ILogger* logger;
  Timer* timer;
+ UIState uistate;
 };
 
 #endif

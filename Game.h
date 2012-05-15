@@ -10,7 +10,7 @@
 #include "Hero.h"
 #include "Npc.h"
 #include "Hud.h"
-
+#include "Button.h"
 
 class Game: public IEventReceiver {
  public:
@@ -22,6 +22,10 @@ class Game: public IEventReceiver {
   bool isRunning();
   void onEvent(const Event& e);
  private:
+  void doGUI();
+  bool button(Button* b);
+  void endTurn();
+ private:
   Context& m_context;
   Level m_level;
   Hud m_hud;
@@ -31,7 +35,8 @@ class Game: public IEventReceiver {
   const float FRAME_TIME;
   std::vector<Hero*> m_heroes;
   std::map<Keyboard::KEY, bool> m_keys;
-  Npc* m_zombie;
+  Button* m_end_turn;
+  int m_current_player;
 };
 
 #endif

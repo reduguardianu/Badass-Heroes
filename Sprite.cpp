@@ -28,6 +28,10 @@ float Sprite::textureHeight() const {
   return m_frame->textureHeight();
 }
 
+Frame* Sprite::frame() const {
+  return m_frame;
+}
+
 
 
 

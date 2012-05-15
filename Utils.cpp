@@ -1,4 +1,5 @@
 #include "Utils.h"
+#include <iostream>
 
 point Utils::getPositionDiff(point pos, point dest, float dt) {
   point result;
@@ -35,4 +36,12 @@ point Utils::getPositionDiff(point pos, point dest, float dt) {
   }
     
   return result;
+}
+
+bool Utils::regionHit(int x, int y, DisplayObject* d) {
+  if (x < d->x() || y < d->y() || x > d->x() + d->width() || y > d->y() + d->height()) {
+    return false;
+  }
+
+  return true;
 }

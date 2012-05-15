@@ -4,6 +4,7 @@
 #include "ILogger.h"
 #include "Types.h"
 #include <iostream>
+#include "Utils.h"
 
 Game::Game(Context& c, char* mapfile): m_context(c),
 				       m_level(m_context),
@@ -12,9 +13,14 @@ Game::Game(Context& c, char* mapfile): m_context(c),
 				       m_elapsed_time(0.0f), 
 				       FRAME_RATE(32.0f),
 				       FRAME_TIME(1000.f / 32.0f),
-				       m_zombie(NULL) {
+				       m_end_turn(NULL),
+				       m_current_player(0) {
   
   m_hud.setPosition(m_context.screen_width - 250, 0);
+  m_end_turn = new Button(m_context, "active.png", "inactive.png", "End turn");
+  m_end_turn->setPosition(10, 400);
+  m_end_turn->setParent(&m_hud);
+  m_end_turn->setZ(1.0f);
 
   m_level.loadFromFile(mapfile);
   m_level.spawnNpcs(50);
@@ -97,6 +103,22 @@ void Game::onEvent(const Event& e) {
       m_hud.setAvatar(m_heroes.at(1)->getAvatar());
     }
   }
+
+  if (e.event_type == EventType::MouseMoved) {
+    m_context.uistate.mousex = e.mouse_data.x;
+    m_context.uistate.mousey = e.mouse_data.y;
+  }
+  else if (e.event_type == EventType::MouseDown) {
+    if (e.mouse_data.button == MouseButton::Left) {
+      m_context.uistate.mousedown = 1;
+    }
+  }
+  else if (e.event_type == EventType::MouseUp) {
+    if (e.mouse_data.button == MouseButton::Left) {
+      m_context.uistate.mousedown = 0;
+    }
+  }
+   
   
   m_level.onEvent(e);
   m_hud.onEvent(e);
@@ -107,12 +129,13 @@ void Game::tick(float dt) {
   m_level.tick(dt);
   m_elapsed_time += dt;
   if (m_elapsed_time >= FRAME_TIME) {
-
+    
     m_context.renderer->beginFrame();
     m_level.render();
     m_hud.render();
     m_context.renderer->renderText("badass heroes", "arial", 560, 250);
     m_context.renderer->renderText("finger unicorns", "arial", 560, 282);
+    doGUI();
     m_context.renderer->endFrame();
     m_elapsed_time -= FRAME_TIME;
   }
@@ -123,3 +146,47 @@ void Game::tick(float dt) {
 bool Game::isRunning() {
   return m_running;
 }
+
+void Game::endTurn() {
+  m_current_player = (m_current_player + 1) % m_heroes.size();
+  m_level.setCurrentPlayer(m_heroes.at(m_current_player));
+  m_hud.setAvatar(m_heroes.at(m_current_player)->getAvatar());
+}
+
+bool Game::button(Button* b) {
+  int id = reinterpret_cast<int>(b);
+  if (Utils::regionHit(m_context.uistate.mousex, m_context.uistate.mousey, b)) {
+    m_context.uistate.hot = id;
+    if (m_context.uistate.active == 0 && m_context.uistate.mousedown) {
+      m_context.uistate.active = id;
+    }
+  }
+
+  b->setActive((m_context.uistate.active == id));
+    
+  b->render();
+
+  if (m_context.uistate.mousedown == 0 && m_context.uistate.hot == id && 
+      m_context.uistate.active == id) {
+    return true;
+  }
+
+  return false;
+}
+
+void Game::doGUI() {
+  m_context.uistate.hot = 0;
+
+
+  if (button(m_end_turn)) {
+    endTurn();
+  }
+
+  if (m_context.uistate.mousedown == 0) {
+    m_context.uistate.active = 0;
+  }
+  else if (m_context.uistate.active == 0) {
+    m_context.uistate.active = -1;
+  }
+}
+
