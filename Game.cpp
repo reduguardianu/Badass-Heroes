@@ -5,6 +5,8 @@
 #include "Types.h"
 #include <iostream>
 #include "Utils.h"
+#include <time.h>
+#include <cstdlib>
 
 Game::Game(Context& c, char* mapfile): m_context(c),
 				       m_level(m_context),
@@ -14,13 +16,20 @@ Game::Game(Context& c, char* mapfile): m_context(c),
 				       FRAME_RATE(32.0f),
 				       FRAME_TIME(1000.f / 32.0f),
 				       m_end_turn(NULL),
-				       m_current_player(0) {
+				       m_current_player(0),
+				       m_spell(NULL) {
   
+  srand(time(NULL));
   m_hud.setPosition(m_context.screen_width - 250, 0);
-  m_end_turn = new Button(m_context, "active.png", "inactive.png", "End turn");
+  m_end_turn = new Button(m_context, "inactive.png", "active.png", "inactive.png", "End turn");
   m_end_turn->setPosition(10, 400);
   m_end_turn->setParent(&m_hud);
   m_end_turn->setZ(1.0f);
+
+  m_spell = new Button(m_context, "spell1.png", "spell1.png", "spell2.png", "");
+  m_spell->setPosition(10, 350);
+  m_spell->setParent(&m_hud);
+  m_spell->setZ(1.0f);
 
   m_level.loadFromFile(mapfile);
   m_level.spawnNpcs(50);
@@ -120,8 +129,18 @@ void Game::onEvent(const Event& e) {
   }
    
   
-  m_level.onEvent(e);
-  m_hud.onEvent(e);
+  if (e.event_type == EventType::MouseMoved || e.event_type == EventType::MouseUp || e.event_type == EventType::MouseDown) {
+    if (Utils::rectHit(e.mouse_data.x, e.mouse_data.y, m_level.bounds())) {
+      m_level.onEvent(e);
+    }
+    else {
+      m_hud.onEvent(e);
+    }
+  }
+  else {
+    m_level.onEvent(e);
+    m_hud.onEvent(e);
+  }
 }
 
 void Game::tick(float dt) {
@@ -133,8 +152,6 @@ void Game::tick(float dt) {
     m_context.renderer->beginFrame();
     m_level.render();
     m_hud.render();
-    m_context.renderer->renderText("badass heroes", "arial", 560, 250);
-    m_context.renderer->renderText("finger unicorns", "arial", 560, 282);
     doGUI();
     m_context.renderer->endFrame();
     m_elapsed_time -= FRAME_TIME;
@@ -162,12 +179,22 @@ bool Game::button(Button* b) {
     }
   }
 
-  b->setActive((m_context.uistate.active == id));
+  if (m_context.uistate.active == id) {
+    b->setPressed();
+  }
+  else if (m_context.uistate.last == id) {
+    b->setSelected();
+  }
+  else {
+    b->setNormal();
+  }
     
   b->render();
 
   if (m_context.uistate.mousedown == 0 && m_context.uistate.hot == id && 
       m_context.uistate.active == id) {
+    m_context.uistate.last = id;
+
     return true;
   }
 
@@ -181,6 +208,15 @@ void Game::doGUI() {
   if (button(m_end_turn)) {
     endTurn();
   }
+
+  if (button(m_spell)) {    
+    m_heroes.at(m_current_player)->setState(State::Spell);
+  }
+
+  if (m_heroes.at(m_current_player)->state() != State::Spell) {
+    m_context.uistate.last = 0;
+  }
+
 
   if (m_context.uistate.mousedown == 0) {
     m_context.uistate.active = 0;

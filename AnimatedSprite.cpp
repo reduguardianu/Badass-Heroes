@@ -17,16 +17,16 @@ AnimatedSprite::AnimatedSprite(Context const& c, std::string spritesheet): Sprit
   AnimationParser parser;
   parser.parse(spritesheet + ".txt");
 
-  m_frame->setSize(parser.frame_size, parser.frame_size);
+  m_frame->setSize(parser.frame_width, parser.frame_height);
 
-
+  
   for (AnimationDescription::iterator it = parser.m_animations.begin(); it != parser.m_animations.end(); ++it) {
     std::vector<Frame*> frames;
     for (std::vector<std::pair<float, float> >::iterator jt = it->second.begin(); jt != it->second.end(); ++jt) {
       Frame* f = new Frame(spritesheet + ".png");
       f->setUV(jt->first, jt->second);
-      f->setSize(parser.frame_size, parser.frame_size);
-      setScale(m_context.TILE_SIZE / parser.frame_size);
+      f->setSize(parser.frame_width, parser.frame_height);
+      setScale(m_context.TILE_SIZE / parser.frame_width);
       frames.push_back(f);
     }
 

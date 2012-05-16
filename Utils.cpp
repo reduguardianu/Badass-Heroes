@@ -45,3 +45,11 @@ bool Utils::regionHit(int x, int y, DisplayObject* d) {
 
   return true;
 }
+
+bool Utils::rectHit(int x, int y, Rectangle* r) {
+  if (x < r->x || y < r->y || x > r->x + r->width || y > r->y + r->height) {
+    return false;
+  }
+
+  return true;
+}

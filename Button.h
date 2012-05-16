@@ -5,14 +5,21 @@
 
 class Button : public DisplayObject {
  public:
-  explicit Button(Context const& c, std::string active, std::string inactive, std::string text);
+  explicit Button(Context const& c, std::string normal, std::string pressed, std::string selected, std::string text);
   void render();
-  void setActive(bool value);
+  void setPressed();
+  void setSelected();
+  void setNormal();
  private:
+  static const int SELECTED;
+  static const int PRESSED;
+  static const int NORMAL;
+
   std::string m_text;
-  Sprite* m_active_sprite;
-  Sprite* m_inactive_sprite;
-  bool m_active;
+  Sprite* m_normal_sprite;
+  Sprite* m_pressed_sprite;
+  Sprite* m_selected_sprite;
+  int m_state;
 };
 
 #endif

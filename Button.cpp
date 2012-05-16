@@ -1,28 +1,47 @@
 #include "Button.h"
 #include "SpriteSizeBehaviour.h"
 
-Button::Button(Context const& c, std::string active, std::string inactive, std::string text): DisplayObject(c),
-											      m_text(text),
-											      m_active(false){
-  m_active_sprite = new Sprite(m_context, active);
-  m_inactive_sprite = new Sprite(m_context, inactive);
-  m_active_sprite->setParent(this);
-  m_inactive_sprite->setParent(this);
+const int Button::SELECTED = 0;
+const int Button::PRESSED = 1;
+const int Button::NORMAL = 2;
 
-  m_size_behaviour = new SpriteSizeBehaviour(m_active_sprite->frame());
+Button::Button(Context const& c, std::string normal, std::string pressed, std::string selected, std::string text): DisplayObject(c),
+											      m_text(text),
+											      m_state(NORMAL){
+  m_pressed_sprite = new Sprite(m_context, pressed);
+  m_normal_sprite = new Sprite(m_context, normal);
+  m_selected_sprite = new Sprite(m_context, selected);
+  m_pressed_sprite->setParent(this);
+  m_normal_sprite->setParent(this);
+  m_selected_sprite->setParent(this);
+
+  m_size_behaviour = new SpriteSizeBehaviour(m_normal_sprite->frame());
 }
 
-void Button::setActive(bool value) {
-  m_active = value;
+void Button::setPressed() {
+  m_state = PRESSED;
+}
+
+void Button::setSelected() {
+  m_state = SELECTED;
+}
+
+void Button::setNormal() {
+  m_state = NORMAL;
 }
 
 void Button::render() {
-  if (m_active) {
-    m_active_sprite->render();
+  if (m_state == NORMAL) {
+    m_normal_sprite->render();
   }
-  else {
-    m_inactive_sprite->render();
+  else if (m_state == PRESSED) {
+    m_pressed_sprite->render();
   }
-  m_context.renderer->renderText(m_text, "arial", x(), y());
+  else if (m_state == SELECTED) {
+    m_selected_sprite->render();
+  }
+  if (m_text.size()) {
+    m_context.renderer->renderText(m_text, "arial", x(), y());
+  }
 }
 

@@ -16,7 +16,7 @@ point directions[] = {point(-1, 0), point(0, 1), point(1, 0), point(0, -1)};
 Hero::Hero(Context const& c, std::vector<std::vector<int> > const& map, std::string headgear, std::string breastplate, std::string pants): DisplayObject(c),
 																	   m_map(map),
 																	   m_path(NULL),
-																	   m_state(State::Walk),
+																	   m_state(State::Stand),
 																	   m_last_point(-1, -1) {
   initVisibleTiles(m_map);
 
@@ -52,6 +52,9 @@ void Hero::animate(std::string dir) {
 }
 
 void Hero::stop() {
+  if (m_state == State::Walk) {
+    setState(State::Stand);
+  }
   m_figure->stop();
   m_figure->setDirection(Animations::down);
 }
@@ -105,6 +108,7 @@ void Hero::findVisibleTiles() {
 void Hero::tick(float dt) {
   
   if (m_path && m_path->size()) {
+    m_state = State::Walk;
     point dest = m_path->front();
 
     point diff = Utils::getPositionDiff(point(m_x, m_y), point(dest.first * m_context.TILE_SIZE, dest.second * m_context.TILE_SIZE), dt);
@@ -150,7 +154,7 @@ void Hero::onEvent(const Event& e) {
     int x = floor((e.mouse_data.x - m_parent->x()) / m_context.TILE_SIZE);
     int y = floor((e.mouse_data.y - m_parent->y()) / m_context.TILE_SIZE);
 
-    if (m_state == State::Walk) {
+    if (m_state == State::Stand) {
       std::deque<point>* path = findPath(x, y);
       if (path->size() > 0) {
 	if (m_path) {
@@ -165,20 +169,15 @@ void Hero::onEvent(const Event& e) {
       spell->addEventListener(ET::action, this, static_cast<Listener>(&Hero::onSpellCasted));
       m_parent->addChild(spell);
       spell->cast(point(m_x / m_context.TILE_SIZE, m_y / m_context.TILE_SIZE), point(x, y));
-      m_state = State::Walk;
+      m_state = State::Stand;
       gotoFrame(1, 1);
-    }
-  }
-  else if (e.event_type == EventType::KeyDown) {
-    if (e.key_data.key == 'S') {
-      m_state = State::Spell;
     }
   }
   else if (e.event_type == EventType::MouseMoved) {
     int x = floor((e.mouse_data.x - m_parent->x()) / m_context.TILE_SIZE);
     int y = floor((e.mouse_data.y - m_parent->y()) / m_context.TILE_SIZE);
 
-    if (m_state == State::Walk) {
+    if (m_state == State::Stand) {
       drawPath(x, y);
     }    
   }
@@ -337,6 +336,17 @@ bool Hero::isMoving() const {
 
 point Hero::getTileOffset() const {
   return point(m_x - m_context.TILE_SIZE * floor(m_x / m_context.TILE_SIZE), m_y - m_context.TILE_SIZE * floor(m_y / m_context.TILE_SIZE));
+}
+
+void Hero::setState(State::STATE value) {
+  m_state = value;
+  if (m_state != State::Stand) {
+    clearGuidePath();
+  }
+}
+
+State::STATE Hero::state() const {
+  return m_state;
 }
 
 Hero::~Hero() {

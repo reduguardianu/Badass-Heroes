@@ -22,7 +22,8 @@ class ET {
 namespace State {
   enum STATE {
     Walk = 0,
-    Spell = 1
+    Spell = 1,
+    Stand = 2
   };
 };
 

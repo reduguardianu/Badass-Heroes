@@ -1,6 +1,6 @@
 #include "Tile.h"
-
-
+#include <cstdlib>
+#include "AnimatedSprite.h"
 
 Tile::Tile(Context const& c, std::string textureName, std::string shadowTexture, int row, int column, std::vector<std::vector<int> > const& map, std::vector<std::vector<int> > const& destroyed): Sprite(c, textureName),
 														       m_row(row),
@@ -9,7 +9,9 @@ Tile::Tile(Context const& c, std::string textureName, std::string shadowTexture,
 														       m_visible(false),
 														       m_shadow(NULL),
 																		  m_darkness(NULL),
-																		  m_destroyed(destroyed) {
+																								   m_destroyed(destroyed),
+																								   m_torch(NULL),
+																								   m_dead(NULL) {
 
   if (shadowTexture.size()) {
     m_shadow = new Sprite(m_context, shadowTexture);
@@ -88,11 +90,23 @@ Tile::Tile(Context const& c, std::string textureName, std::string shadowTexture,
   m_shadow_uvs[1][1][1][1] = std::make_pair(64 / tw, 192 / th);
   // m_shadow_uvs[0][0][0][0] = std::make_pair(0, 320 / th);
 
-  
+
   m_darkness = new Sprite(m_context, "darkness.png");
   m_darkness->setParent(this);
   m_darkness->setScale(m_context.DEFAULT_SCALE);
   m_darkness->setZ(1.0f);
+
+  if (m_map.at(m_row).at(m_column) == 1 && horizontal() && rand() % 10 == 0) {
+    m_torch = new AnimatedSprite(m_context, "torch");
+    dynamic_cast<AnimatedSprite*>(m_torch)->animate(Animations::idle);
+    m_torch->setParent(this);
+
+  }
+
+}
+
+bool Tile::horizontal() {
+  return !(map_up() || map_down());
 }
 
 void Tile::setVisible(bool value) {
@@ -197,6 +211,7 @@ bool Tile::visible() const {
 }
 
 void Tile::render() {
+
   if (m_map.at(m_row).at(m_column) == 1) {
     if (m_shadow) {
       m_shadow->render();
@@ -216,6 +231,12 @@ void Tile::render() {
     if (map_left()) {
       m_destroyed_left->render();
     }
+  }
+  if (m_torch && !destroyed()) {
+    m_torch->render();
+  }
+  if (m_dead) {
+    m_dead->render();
   }
 
   if (!m_visible) {
@@ -246,4 +267,26 @@ void Tile::tick(float dt) {
     m_frame->setUV(coord.first, coord.second);
   }
 
+  if (m_torch && !destroyed()) {
+    m_torch->tick(dt);
+  }
+  if (m_dead) {
+    m_dead->tick(dt);
+  }
+
+}
+
+void Tile::onDestroy() {
+  AnimatedSprite* dead = new AnimatedSprite(m_context, "walldead");
+  dead->animate(Animations::dead, 1);
+  dead->setParent(this);
+  m_dead = dead;
+  m_dead->addEventListener("animationfinish", this, static_cast<Listener>(&Tile::onDestroyed));
+}
+
+void Tile::onDestroyed(std::string e, EventDispatcher* dispatcher) {
+  if (m_dead && m_dead->parent()) {
+    delete m_dead;
+    m_dead = NULL;
+  }
 }

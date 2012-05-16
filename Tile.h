@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "Sprite.h"
+#include "EventDispatcher.h"
 
 class Tile : public Sprite {
  public:
@@ -16,6 +17,7 @@ class Tile : public Sprite {
   void setDarknessOffset(point p);
   void setNeighbours(std::vector<Tile*> neigbours);
   bool destroyed() const;
+  void onDestroy();
  private:
   bool up();
   bool right();
@@ -26,6 +28,8 @@ class Tile : public Sprite {
   bool map_right();
   bool map_down();
   bool map_left();
+  bool horizontal();
+  void onDestroyed(std::string, EventDispatcher*);
  private:
   int m_row;
   int m_column;
@@ -41,6 +45,8 @@ class Tile : public Sprite {
   Sprite* m_destroyed_right;
   Sprite* m_destroyed_up;
   Sprite* m_destroyed_down;
+  Sprite* m_torch;
+  Sprite* m_dead;
 };
 
 #endif

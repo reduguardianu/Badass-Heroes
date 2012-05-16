@@ -186,6 +186,7 @@ void Level::onSpellCasted(std::string e, EventDispatcher* dispatcher) {
       if (m_tiles.at(i)->parent()) {
 	if (m_data.at(spell->row()).at(spell->col()) == 1) {
 	  m_destroyed.at(spell->row()).at(spell->col()) = 1;
+	  m_tiles.at(i)->onDestroy();
 	}
 	m_data.at(spell->row()).at(spell->col()) = 0;
       }

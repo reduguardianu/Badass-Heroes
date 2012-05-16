@@ -13,8 +13,9 @@ struct UIState
 
   int hot;
   int active;
+  int last;
 
-UIState():mousex(0), mousey(0), mousedown(0), hot(0), active(0) {};
+UIState():mousex(0), mousey(0), mousedown(0), hot(0), active(0), last(0) {};
 };
 
 class Context {

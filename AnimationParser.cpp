@@ -8,7 +8,7 @@ void AnimationParser::parse(std::string filename) {
   std::string filepath = "../assets/" + filename;
   file = fopen(filepath.c_str(), "r");
   
-  fscanf(file, "%d\n", &frame_size);
+  fscanf(file, "%d %d\n", &frame_width, &frame_height);
   
   int animation_count = 0;
   fscanf(file, "%d\n", &animation_count);
@@ -30,4 +30,6 @@ void AnimationParser::parse(std::string filename) {
 
     m_animations[name] = anim;
   }
+
+  fclose(file);
 }

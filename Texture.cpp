@@ -7,6 +7,9 @@
 Texture::Texture(std::string name): m_name(name),
 				    m_texture(NULL) {
   m_texture = load(m_name);
+  if (m_texture == NULL) {
+    throw "no textures";
+  }
 }
 
 SDL_Surface* Texture::load(std::string name) {

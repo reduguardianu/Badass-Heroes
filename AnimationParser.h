@@ -12,7 +12,8 @@ class AnimationParser {
  public:
   void parse(std::string filename);
   AnimationDescription m_animations;
-  int frame_size;
+  int frame_width;
+  int frame_height;
 };
 
 #endif

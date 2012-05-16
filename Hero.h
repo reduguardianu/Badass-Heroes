@@ -26,6 +26,8 @@ class Hero : public DisplayObject {
   point getTileOffset() const;
   void gotoFrame(int frame, int time = -1);
   Figure* getAvatar();
+  void setState(State::STATE value);
+  State::STATE state() const;
  private:
   void initVisibleTiles(std::vector<std::vector<int> > const& map);
   void findVisibleTiles();
