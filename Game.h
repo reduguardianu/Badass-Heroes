@@ -25,6 +25,7 @@ class Game: public IEventReceiver {
   void doGUI();
   bool button(Button* b);
   void endTurn();
+  void countFPS(float dt);
  private:
   Context& m_context;
   Level m_level;
@@ -36,8 +37,11 @@ class Game: public IEventReceiver {
   std::vector<Hero*> m_heroes;
   std::map<Keyboard::KEY, bool> m_keys;
   Button* m_end_turn;
-  Button* m_spell;
+  Button* m_spell;  
   int m_current_player;
+  std::string m_fps_text;
+  int m_fps_counter;
+  float m_fps_time;
 };
 
 #endif

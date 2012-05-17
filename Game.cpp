@@ -7,6 +7,7 @@
 #include "Utils.h"
 #include <time.h>
 #include <cstdlib>
+#include <sstream>
 
 Game::Game(Context& c, char* mapfile): m_context(c),
 				       m_level(m_context),
@@ -14,10 +15,13 @@ Game::Game(Context& c, char* mapfile): m_context(c),
 				       m_running(false),
 				       m_elapsed_time(0.0f), 
 				       FRAME_RATE(32.0f),
-				       FRAME_TIME(1000.f / 32.0f),
+				       FRAME_TIME(1000.f / FRAME_RATE),
 				       m_end_turn(NULL),
 				       m_current_player(0),
-				       m_spell(NULL) {
+				       m_spell(NULL),
+				       m_fps_text("0"),
+				       m_fps_counter(0),
+				       m_fps_time(0.f) {
   
   srand(time(NULL));
   m_hud.setPosition(m_context.screen_width - 250, 0);
@@ -146,18 +150,33 @@ void Game::onEvent(const Event& e) {
 void Game::tick(float dt) {
 
   m_level.tick(dt);
-  m_elapsed_time += dt;
+  m_elapsed_time += dt;    
+  countFPS(dt);    
+
   if (m_elapsed_time >= FRAME_TIME) {
-    
+    m_fps_counter++;
     m_context.renderer->beginFrame();
     m_level.render();
     m_hud.render();
     doGUI();
+    m_context.renderer->renderText(m_fps_text, "Arial", 0, 0);
     m_context.renderer->endFrame();
     m_elapsed_time -= FRAME_TIME;
   }
 
   m_running = !glfwGetKey(GLFW_KEY_ESC) && glfwGetWindowParam(GLFW_OPENED);
+}
+
+void Game::countFPS(float dt) {
+  m_fps_time += dt;
+  if (m_fps_time >= 1000) {
+    std::ostringstream txt;
+    txt << m_fps_counter;
+    m_fps_text = txt.str();
+    m_fps_time -= 1000;
+    m_fps_counter = 0;
+  }
+
 }
 
 bool Game::isRunning() {
