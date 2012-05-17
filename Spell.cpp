@@ -24,6 +24,6 @@ void Spell::tick(float dt) {
   m_x += diff.first;
   m_y += diff.second;  
   if (m_parent && m_x == m_to.first * m_context.TILE_SIZE && m_y == m_to.second * m_context.TILE_SIZE) {    
-    dispatchEvent(ET::action, this);
+    dispatchEvent(GameEvent(ET::action), this);
   }
 }

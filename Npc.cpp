@@ -34,7 +34,7 @@ void Npc::die() {
   m_sprites.at(0)->addEventListener("animationfinish", this, static_cast<Listener>(&Npc::onDeath));
 }
 
-void Npc::onDeath(std::string e, EventDispatcher* dispatcher) {
+void Npc::onDeath(GameEvent e, EventDispatcher* dispatcher) {
   if (parent()) {
     parent()->removeChild(this);
   }

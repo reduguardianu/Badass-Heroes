@@ -5,10 +5,11 @@
 #include <map>
 #include <set>
 #include <vector>
+#include "GameEvent.h"
 
 class EventDispatcher;
 
-typedef void (EventDispatcher::*Listener)(std::string e, EventDispatcher* dispatcher);
+typedef void (EventDispatcher::*Listener)(GameEvent e, EventDispatcher* dispatcher);
 
 class ListenerComparator {
  public:
@@ -22,7 +23,7 @@ typedef std::map<std::string, Observers > ObserversMap;
 
 class EventDispatcher {
  public:
-  virtual void dispatchEvent(const std::string& event, EventDispatcher* dispatcher);
+  virtual void dispatchEvent(GameEvent event, EventDispatcher* dispatcher);
   virtual void addEventListener(const std::string& event, EventDispatcher* observer, Listener listener);
  private:
   ObserversMap m_observers;

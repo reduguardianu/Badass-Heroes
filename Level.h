@@ -28,7 +28,8 @@ class Level : public DisplayObject  {
  private:
   void initData();
   void moveCamera(float dt);
-  void onSpellCasted(std::string e, EventDispatcher* dispatcher);
+  void onSpellCasted(GameEvent e, EventDispatcher* dispatcher);
+  void onChestOpened(GameEvent e, EventDispatcher* dispatcher);
   void resetCamera();
  private:
   std::vector<std::vector<int> > m_data;

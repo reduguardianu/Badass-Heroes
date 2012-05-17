@@ -94,7 +94,7 @@ void Game::createWindow() {
         return;
     }
     else {
-      glfwSetWindowTitle("Badass Heroes baby");
+      glfwSetWindowTitle("Badass Heroes: Ninja Pirate Robot Cowboy Space Wizards from Space");
       m_context.logger->Debug("Window creation successfull");
     }
 

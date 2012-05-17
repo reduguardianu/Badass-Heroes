@@ -8,10 +8,12 @@ Tile::Tile(Context const& c, std::string textureName, std::string shadowTexture,
 														       m_map(map),
 														       m_visible(false),
 														       m_shadow(NULL),
-																		  m_darkness(NULL),
+																								   m_darkness(NULL),
 																								   m_destroyed(destroyed),
 																								   m_torch(NULL),
-																								   m_dead(NULL) {
+																								   m_dead(NULL),
+																								   m_chest(NULL),
+																								   m_action(NULL) {
 
   if (shadowTexture.size()) {
     m_shadow = new Sprite(m_context, shadowTexture);
@@ -102,7 +104,32 @@ Tile::Tile(Context const& c, std::string textureName, std::string shadowTexture,
     m_torch->setParent(this);
 
   }
+  else if (m_map.at(m_row).at(m_column) == 0 && rand() % 20 == 0) {
+    m_chest = new Chest(m_context);
+    m_chest->setParent(this);
+  }
 
+  if (m_chest) {
+    m_action = new Action(Action::OPEN_CHEST, point(m_row, m_column));
+  }
+  else {
+    m_action = new Action(Action::WALK, point(m_row, m_column));
+  }
+}
+
+void Tile::openChest() {
+  if (m_chest) {
+    m_chest->open();
+    delete m_action;
+    m_action = new Action(Action::WALK, point(m_row, m_column));
+  }
+  else {
+    m_context.logger->Error("Tried to open chest on tile with no chest.");
+  }
+}
+
+Action Tile::action() {
+  return *m_action;
 }
 
 bool Tile::horizontal() {
@@ -238,6 +265,9 @@ void Tile::render() {
   if (m_dead) {
     m_dead->render();
   }
+  if (m_chest) {
+    m_chest->render();
+  }
 
   if (!m_visible) {
     bool onBorder = false;
@@ -273,6 +303,9 @@ void Tile::tick(float dt) {
   if (m_dead) {
     m_dead->tick(dt);
   }
+  if (m_chest) {
+    m_chest->tick(dt);
+  }
 
 }
 
@@ -284,7 +317,7 @@ void Tile::onDestroy() {
   m_dead->addEventListener("animationfinish", this, static_cast<Listener>(&Tile::onDestroyed));
 }
 
-void Tile::onDestroyed(std::string e, EventDispatcher* dispatcher) {
+void Tile::onDestroyed(GameEvent e, EventDispatcher* dispatcher) {
   if (m_dead && m_dead->parent()) {
     delete m_dead;
     m_dead = NULL;

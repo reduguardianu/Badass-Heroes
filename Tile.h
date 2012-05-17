@@ -4,6 +4,8 @@
 #include <vector>
 #include "Sprite.h"
 #include "EventDispatcher.h"
+#include "Chest.h"
+#include "Action.h"
 
 class Tile : public Sprite {
  public:
@@ -18,6 +20,8 @@ class Tile : public Sprite {
   void setNeighbours(std::vector<Tile*> neigbours);
   bool destroyed() const;
   void onDestroy();
+  Action action();
+  void openChest();
  private:
   bool up();
   bool right();
@@ -29,7 +33,7 @@ class Tile : public Sprite {
   bool map_down();
   bool map_left();
   bool horizontal();
-  void onDestroyed(std::string, EventDispatcher*);
+  void onDestroyed(GameEvent, EventDispatcher*);
  private:
   int m_row;
   int m_column;
@@ -47,6 +51,8 @@ class Tile : public Sprite {
   Sprite* m_destroyed_down;
   Sprite* m_torch;
   Sprite* m_dead;
+  Chest* m_chest;
+  Action* m_action;
 };
 
 #endif

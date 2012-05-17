@@ -165,6 +165,7 @@ void Level::tick(float dt) {
 void Level::setCurrentPlayer(Hero* hero) {
   m_hero = hero;  
   m_hero->addEventListener(ET::action, this, static_cast<Listener>(&Level::onSpellCasted));
+  m_hero->addEventListener(ET::open_chest, this, static_cast<Listener>(&Level::onChestOpened));
   resetCamera();
 }
 
@@ -172,7 +173,7 @@ void Level::resetCamera() {
   m_reset_camera = true;
 }
 
-void Level::onSpellCasted(std::string e, EventDispatcher* dispatcher) {
+void Level::onSpellCasted(GameEvent e, EventDispatcher* dispatcher) {
   Spell* spell = dynamic_cast<Spell*>(dispatcher);
 
   for (int i = 0; i < m_npcs.size(); ++i) {
@@ -190,6 +191,14 @@ void Level::onSpellCasted(std::string e, EventDispatcher* dispatcher) {
 	}
 	m_data.at(spell->row()).at(spell->col()) = 0;
       }
+    }
+  }
+}
+
+void Level::onChestOpened(GameEvent e, EventDispatcher* dispatcher) {
+  for (int i = 0; i < m_tiles.size(); ++i) {
+    if (m_tiles.at(i)->row() == e.x() && m_tiles.at(i)->col() == e.y()) {
+      m_tiles.at(i)->openChest();
     }
   }
 }
@@ -249,6 +258,20 @@ void Level::onEvent(const Event& e) {
   }
   else if (e.event_type == EventType::Resize) {
     setBounds(new Rectangle(0, 0, m_context.screen_width - 250, m_context.screen_height));
+  }
+  else if (e.event_type == EventType::MouseDown) {
+    int x = floor((e.mouse_data.x - this->x()) / m_context.TILE_SIZE);
+    int y = floor((e.mouse_data.y - this->y()) / m_context.TILE_SIZE);
+
+    for (int i = 0; i < m_tiles.size(); ++i) {
+      int row = m_tiles.at(i)->row();
+      int col = m_tiles.at(i)->column();
+      if (y == row && x == col) {
+	Action a = m_tiles.at(i)->action();
+	m_hero->onAction(a);
+	break;
+      }
+    }      
   }
 
   m_hero->onEvent(e);

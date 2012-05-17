@@ -8,3 +8,4 @@ const std::string Animations::idle = "idle";
 const std::string Animations::dead = "dead";
 
 const std::string ET::action = "action";
+const std::string ET::open_chest = "open_chest";

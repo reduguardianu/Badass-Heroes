@@ -2,8 +2,8 @@
 
 #define CALL_MEMBER_FN(object, ptrToMember) ((object)->*(ptrToMember))
 
-void EventDispatcher::dispatchEvent(const std::string& event, EventDispatcher* dispatcher) {
-  ObserversMap::iterator it = m_observers.find(event);
+void EventDispatcher::dispatchEvent(GameEvent event, EventDispatcher* dispatcher) {
+  ObserversMap::iterator it = m_observers.find(event.name());
   if (it != m_observers.end()) {
     Observers::iterator it2 = it->second.begin();
     for (; it2 != it->second.end(); ++it2) {

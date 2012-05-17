@@ -11,6 +11,7 @@
 #include <set>
 #include "Sprite.h"
 #include "Figure.h"
+#include "Action.h"
 
 class Hero : public DisplayObject {
  public:
@@ -28,13 +29,14 @@ class Hero : public DisplayObject {
   Figure* getAvatar();
   void setState(State::STATE value);
   State::STATE state() const;
+  void onAction(Action& a);
  private:
   void initVisibleTiles(std::vector<std::vector<int> > const& map);
   void findVisibleTiles();
   int posToTile(float p) const;
   int tileDistance(point const& a, point const& b) const;
   bool addStartToPath(point start, std::deque<point>* path);
-  void onSpellCasted(std::string e, EventDispatcher* dispatcher);
+  void onSpellCasted(GameEvent e, EventDispatcher* dispatcher);
   void clearGuidePath();
   void drawPath(int col, int row);
  private:
@@ -47,6 +49,7 @@ class Hero : public DisplayObject {
   State::STATE m_state;
   std::vector<Sprite*> m_guide_path;
   point m_last_point;
+  std::vector<Action> m_actions;
 };
 
 #endif

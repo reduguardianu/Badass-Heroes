@@ -107,38 +107,51 @@ void Hero::findVisibleTiles() {
 
 void Hero::tick(float dt) {
   
-  if (m_path && m_path->size()) {
-    m_state = State::Walk;
-    point dest = m_path->front();
-
-    point diff = Utils::getPositionDiff(point(m_x, m_y), point(dest.first * m_context.TILE_SIZE, dest.second * m_context.TILE_SIZE), dt);
-
-    m_x += diff.first;
-    m_y += diff.second;
-
-    float dx = dest.first * m_context.TILE_SIZE - m_x;
-    float dy = dest.second * m_context.TILE_SIZE - m_y;
-    if (abs(dx) < 1 && abs(dy) < 1) {
-      m_x = dest.first * m_context.TILE_SIZE;
-      m_y = dest.second * m_context.TILE_SIZE;
-      m_path->pop_front();
-    }
-    else {
-      if (diff.first < 0) {
-	animate(Animations::left);
-      }
-      else if (diff.first > 0) {
-	animate(Animations::right);
-      }
-      else if (diff.second > 0) {
-	animate(Animations::down);
-      }
-      else if (diff.second < 0) {
-	animate(Animations::up);
-      }
+  if (m_actions.size()) {
+    if (m_actions.at(0).type() == Action::WALK) {
+      if (m_path && m_path->size()) {
+	m_state = State::Walk;
+	point dest = m_path->front();
+      
+	point diff = Utils::getPositionDiff(point(m_x, m_y), point(dest.first * m_context.TILE_SIZE, dest.second * m_context.TILE_SIZE), dt);
+      
+	m_x += diff.first;
+	m_y += diff.second;
+      
+	float dx = dest.first * m_context.TILE_SIZE - m_x;
+	float dy = dest.second * m_context.TILE_SIZE - m_y;
+	if (abs(dx) < 1 && abs(dy) < 1) {
+	  m_x = dest.first * m_context.TILE_SIZE;
+	  m_y = dest.second * m_context.TILE_SIZE;
+	  m_path->pop_front();
+	}
+	else {
+	  if (diff.first < 0) {
+	    animate(Animations::left);
+	  }
+	  else if (diff.first > 0) {
+	    animate(Animations::right);
+	  }
+	  else if (diff.second > 0) {
+	    animate(Animations::down);
+	  }
+	  else if (diff.second < 0) {
+	    animate(Animations::up);
+	  }
+	  
+	}
 	
+      }
+      else {
+	m_actions.erase(m_actions.begin());
+      }
     }
-
+    else if (m_actions.at(0).type() == Action::OPEN_CHEST) {
+      Action a = m_actions.at(0);
+      dispatchEvent(GameEvent(ET::open_chest, a.dest().first, a.dest().second), this);
+      
+      m_actions.erase(m_actions.begin());
+    }
   }
   else {
     stop();
@@ -154,17 +167,7 @@ void Hero::onEvent(const Event& e) {
     int x = floor((e.mouse_data.x - m_parent->x()) / m_context.TILE_SIZE);
     int y = floor((e.mouse_data.y - m_parent->y()) / m_context.TILE_SIZE);
 
-    if (m_state == State::Stand) {
-      std::deque<point>* path = findPath(x, y);
-      if (path->size() > 0) {
-	if (m_path) {
-	  delete m_path;
-	}
-	clearGuidePath();
-	m_path = path;
-      }
-    }
-    else if (m_state == State::Spell) {
+    if (m_state == State::Spell) {
       Spell* spell = new Spell(m_context, "magic-bullet");
       spell->addEventListener(ET::action, this, static_cast<Listener>(&Hero::onSpellCasted));
       m_parent->addChild(spell);
@@ -183,6 +186,30 @@ void Hero::onEvent(const Event& e) {
   }
 }
 
+void Hero::onAction(Action& action) {
+  if (m_state == State::Stand) {
+    std::deque<point>* path = findPath(action.dest().second, action.dest().first);
+    if (path->size() > 0) {
+      m_actions.clear();
+      
+      if (m_path) {
+	delete m_path;
+      }
+      clearGuidePath();
+      m_path = path;
+      
+      if (action.type() != Action::WALK && m_path->size() > 1) {
+	point p = m_path->back();
+	m_path->pop_back();
+	
+	m_actions.push_back(Action(Action::WALK, m_path->back()));
+      }
+      m_actions.push_back(action);
+    }
+  }
+
+  
+}
 
 void Hero::clearGuidePath() {
   for (int i = 0; i < m_guide_path.size(); ++i) {
@@ -244,7 +271,7 @@ void Hero::drawPath(int col, int row) {
   }
 }
 
-void Hero::onSpellCasted(std::string e, EventDispatcher* dispatcher) {
+void Hero::onSpellCasted(GameEvent e, EventDispatcher* dispatcher) {
   Spell* spell = dynamic_cast<Spell*>(dispatcher);
   if (spell) {
     gotoFrame(0);

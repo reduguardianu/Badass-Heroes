@@ -17,6 +17,7 @@ class Animations {
 class ET {
  public:
   static const std::string action;
+  static const std::string open_chest;
 };
 
 namespace State {
