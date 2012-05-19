@@ -114,6 +114,12 @@ DisplayObject::~DisplayObject() {
 }
 
 void DisplayObject::addChild(DisplayObject* child) {
+
+  for (std::vector<DisplayObject*>::iterator it = m_children.begin(); it != m_children.end(); ++it) {
+    if (*it == child) {
+      return;
+    }
+  }
   child->setParent(this);
   m_children.push_back(child);
 }
@@ -122,7 +128,7 @@ void DisplayObject::removeChild(DisplayObject* child) {
   child->setParent(NULL);			
   for (std::vector<DisplayObject*>::iterator it = m_children.begin(); it != m_children.end(); ++it) {
     if (*it == child) {
-      m_children.erase(it, it + 1);
+      m_children.erase(it);
       return;
     }
   }

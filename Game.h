@@ -38,6 +38,7 @@ class Game: public IEventReceiver {
   std::map<Keyboard::KEY, bool> m_keys;
   Button* m_end_turn;
   Button* m_spell;  
+  Button* m_build_spell;
   int m_current_player;
   std::string m_fps_text;
   int m_fps_counter;

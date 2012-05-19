@@ -72,7 +72,7 @@ void AnimatedSprite::tick(float dt) {
     m_counter--;
     if (m_counter == 0) {
       stop();
-      dispatchEvent(GameEvent("animationfinish"), this);
+      dispatchEvent(new GameEvent("animationfinish"), this);
     }
   }
 }

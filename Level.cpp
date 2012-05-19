@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <time.h>
 #include "Spell.h"
+#include "SpellEvent.h"
 
 Level::Level(Context const& c): DisplayObject(c),
 				m_camera_moved(false),
@@ -164,7 +165,7 @@ void Level::tick(float dt) {
 
 void Level::setCurrentPlayer(Hero* hero) {
   m_hero = hero;  
-  m_hero->addEventListener(ET::action, this, static_cast<Listener>(&Level::onSpellCasted));
+  m_hero->addEventListener(ET::spell, this, static_cast<Listener>(&Level::onSpellCasted));
   m_hero->addEventListener(ET::open_chest, this, static_cast<Listener>(&Level::onChestOpened));
   resetCamera();
 }
@@ -173,31 +174,48 @@ void Level::resetCamera() {
   m_reset_camera = true;
 }
 
-void Level::onSpellCasted(GameEvent e, EventDispatcher* dispatcher) {
-  Spell* spell = dynamic_cast<Spell*>(dispatcher);
-
-  for (int i = 0; i < m_npcs.size(); ++i) {
-    if (m_npcs.at(i)->row() == spell->row() && m_npcs.at(i)->col() == spell->col()) {
-      m_npcs.at(i)->die();
-    }
+void Level::onSpellCasted(GameEventPointer event, EventDispatcher* dispatcher) {
+  SpellEvent* e = dynamic_cast<SpellEvent*>(event.get());
+  if (e == NULL) {
+    m_context.logger->Error("LEVEL.CPP: upcasting spell event failed.");
+    return;
   }
 
-  for (int i = 0; i < m_tiles.size(); ++i) {
-    if (m_tiles.at(i)->row() == spell->row() && m_tiles.at(i)->col() == spell->col()) {
-      if (m_tiles.at(i)->parent()) {
-	if (m_data.at(spell->row()).at(spell->col()) == 1) {
-	  m_destroyed.at(spell->row()).at(spell->col()) = 1;
-	  m_tiles.at(i)->onDestroy();
+  if (e->type() == SpellType::magic_bullet) {
+    for (int i = 0; i < m_npcs.size(); ++i) {
+      if (m_npcs.at(i)->row() == e->y() && m_npcs.at(i)->col() == e->x()) {
+	m_npcs.at(i)->die();
+      }
+    }
+    
+    for (int i = 0; i < m_tiles.size(); ++i) {
+      if (m_tiles.at(i)->row() == e->y() && m_tiles.at(i)->col() == e->x()) {
+	if (m_tiles.at(i)->parent()) {
+	  if (m_data.at(e->y()).at(e->x()) == 1) {
+	    m_destroyed.at(e->y()).at(e->x()) = 1;
+	    m_tiles.at(i)->onDestroy();
+	  }
+	  m_data.at(e->y()).at(e->x()) = 0;
 	}
-	m_data.at(spell->row()).at(spell->col()) = 0;
       }
     }
   }
+  else if (e->type() == SpellType::build_wall) {
+    for (int i = 0; i < m_tiles.size(); ++i) {
+      if (m_tiles.at(i)->row() == e->y() && m_tiles.at(i)->col() == e->x()) {
+	m_destroyed.at(e->y()).at(e->x()) = 0;
+	m_data.at(e->y()).at(e->x()) = 1;
+	m_tiles.at(i)->rebuild();
+	
+      }
+    }
+    
+  }
 }
 
-void Level::onChestOpened(GameEvent e, EventDispatcher* dispatcher) {
+void Level::onChestOpened(GameEventPointer e, EventDispatcher* dispatcher) {
   for (int i = 0; i < m_tiles.size(); ++i) {
-    if (m_tiles.at(i)->row() == e.x() && m_tiles.at(i)->col() == e.y()) {
+    if (m_tiles.at(i)->row() == e->x() && m_tiles.at(i)->col() == e->y()) {
       m_tiles.at(i)->openChest();
     }
   }

@@ -1,6 +1,7 @@
 #include "Tile.h"
 #include <cstdlib>
 #include "AnimatedSprite.h"
+#include <algorithm>
 
 Tile::Tile(Context const& c, std::string textureName, std::string shadowTexture, int row, int column, std::vector<std::vector<int> > const& map, std::vector<std::vector<int> > const& destroyed): Sprite(c, textureName),
 														       m_row(row),
@@ -13,7 +14,15 @@ Tile::Tile(Context const& c, std::string textureName, std::string shadowTexture,
 																								   m_torch(NULL),
 																								   m_dead(NULL),
 																								   m_chest(NULL),
-																								   m_action(NULL) {
+																								   m_action(NULL),
+																								   m_up(1), 
+																								   m_right(1), 
+																								   m_down(1), 
+																								   m_left(1),
+																								   m_memory_up(0), 
+																								   m_memory_right(0), 
+																								   m_memory_down(0), 
+																								   m_memory_left(0) {
 
   if (shadowTexture.size()) {
     m_shadow = new Sprite(m_context, shadowTexture);
@@ -115,6 +124,17 @@ Tile::Tile(Context const& c, std::string textureName, std::string shadowTexture,
   else {
     m_action = new Action(Action::WALK, point(m_row, m_column));
   }
+
+  rebuild();
+}
+
+void Tile::rebuild() {
+
+  m_memory_up = map_up();
+  m_memory_right = map_right();
+  m_memory_down = map_down();
+  m_memory_left = map_left();
+
 }
 
 void Tile::openChest() {
@@ -153,8 +173,10 @@ bool Tile::left() {
   if (c < 0) {
     return 0;
   }
+
+  m_memory_left = std::max(m_memory_left, m_map.at(m_row).at(c));
   
-  return m_map.at(m_row).at(c) + m_destroyed.at(m_row).at(c);
+  return m_memory_left;
 }
 
 bool Tile::right() {
@@ -163,7 +185,8 @@ bool Tile::right() {
     return 0;
   }
   
-  return m_map.at(m_row).at(c) + m_destroyed.at(m_row).at(c);
+  m_memory_right = std::max(m_memory_right, m_map.at(m_row).at(c));
+  return m_memory_right;
 }
 
 bool Tile::up() {
@@ -172,7 +195,8 @@ bool Tile::up() {
     return 0;
   }
 
-  return m_map.at(r).at(m_column) + m_destroyed.at(r).at(m_column);
+  m_memory_up = std::max(m_memory_up, m_map.at(r).at(m_column));
+  return m_memory_up;
 }
 
 bool Tile::down() {
@@ -181,7 +205,8 @@ bool Tile::down() {
     return 0;
   }
 
-  return m_map.at(r).at(m_column) + m_destroyed.at(r).at(m_column);
+  m_memory_down = std::max(m_memory_down, m_map.at(r).at(m_column));
+  return m_memory_down;
 }
 
 bool Tile::map_left() {
@@ -190,7 +215,8 @@ bool Tile::map_left() {
     return 0;
   }
   
-  return m_map.at(m_row).at(c);
+  m_left = std::min(m_left, m_map.at(m_row).at(c));
+  return m_left;
 }
 
 bool Tile::map_right() {
@@ -199,7 +225,8 @@ bool Tile::map_right() {
     return 0;
   }
   
-  return m_map.at(m_row).at(c);
+  m_right = std::min(m_right, m_map.at(m_row).at(c));
+  return m_right;
 }
 
 bool Tile::map_up() {
@@ -208,7 +235,8 @@ bool Tile::map_up() {
     return 0;
   }
 
-  return m_map.at(r).at(m_column);
+  m_up = std::min(m_up, m_map.at(r).at(m_column));
+  return m_up;;
 }
 
 bool Tile::map_down() {
@@ -217,7 +245,8 @@ bool Tile::map_down() {
     return 0;
   }
 
-  return m_map.at(r).at(m_column);
+  m_down = std::min(m_down, m_map.at(r).at(m_column));
+  return m_down;
 }
 
 
@@ -310,6 +339,12 @@ void Tile::tick(float dt) {
 }
 
 void Tile::onDestroy() {
+  m_up = 1;
+  m_right = 1;
+  m_down = 1;
+  m_left = 1;
+
+
   AnimatedSprite* dead = new AnimatedSprite(m_context, "walldead");
   dead->animate(Animations::dead, 1);
   dead->setParent(this);
@@ -317,7 +352,7 @@ void Tile::onDestroy() {
   m_dead->addEventListener("animationfinish", this, static_cast<Listener>(&Tile::onDestroyed));
 }
 
-void Tile::onDestroyed(GameEvent e, EventDispatcher* dispatcher) {
+void Tile::onDestroyed(GameEventPointer e, EventDispatcher* dispatcher) {
   if (m_dead && m_dead->parent()) {
     delete m_dead;
     m_dead = NULL;

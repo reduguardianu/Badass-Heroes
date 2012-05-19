@@ -8,6 +8,7 @@
 #include <time.h>
 #include <cstdlib>
 #include <sstream>
+#include "BuildSpell.h"
 
 Game::Game(Context& c, char* mapfile): m_context(c),
 				       m_level(m_context),
@@ -26,7 +27,7 @@ Game::Game(Context& c, char* mapfile): m_context(c),
   srand(time(NULL));
   m_hud.setPosition(m_context.screen_width - 250, 0);
   m_end_turn = new Button(m_context, "inactive.png", "active.png", "inactive.png", "End turn");
-  m_end_turn->setPosition(10, 400);
+  m_end_turn->setPosition(10, 500);
   m_end_turn->setParent(&m_hud);
   m_end_turn->setZ(1.0f);
 
@@ -34,6 +35,11 @@ Game::Game(Context& c, char* mapfile): m_context(c),
   m_spell->setPosition(10, 350);
   m_spell->setParent(&m_hud);
   m_spell->setZ(1.0f);
+
+  m_build_spell = new Button(m_context, "buildspell1.png", "buildspell1.png", "buildspell2.png", "");
+  m_build_spell->setPosition(74, 350);
+  m_build_spell->setParent(&m_hud);
+  m_build_spell->setZ(1.0f);
 
   m_level.loadFromFile(mapfile);
   m_level.spawnNpcs(50);
@@ -228,13 +234,15 @@ void Game::doGUI() {
     endTurn();
   }
 
-  if (button(m_spell)) {    
-    m_heroes.at(m_current_player)->setState(State::Spell);
+  if (button(m_build_spell)) {
+    m_heroes.at(m_current_player)->spell(new BuildSpell(m_context));
   }
 
-  if (m_heroes.at(m_current_player)->state() != State::Spell) {
-    m_context.uistate.last = 0;
+
+  if (button(m_spell)) {    
+    m_heroes.at(m_current_player)->spell(new Spell(m_context, "magic-bullet") );
   }
+
 
 
   if (m_context.uistate.mousedown == 0) {
@@ -242,6 +250,10 @@ void Game::doGUI() {
   }
   else if (m_context.uistate.active == 0) {
     m_context.uistate.active = -1;
+  }
+
+  if (m_context.uistate.mousedown == 1 && m_context.uistate.last != 0) {
+    m_context.uistate.last = 0;
   }
 }
 

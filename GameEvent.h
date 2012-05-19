@@ -9,6 +9,7 @@ class GameEvent {
   std::string name() const;
   int x() const;
   int y() const;
+  virtual ~GameEvent();
  private:
   std::string m_name;
   int m_x;

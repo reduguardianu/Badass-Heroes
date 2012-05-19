@@ -9,3 +9,7 @@ const std::string Animations::dead = "dead";
 
 const std::string ET::action = "action";
 const std::string ET::open_chest = "open_chest";
+const std::string ET::spell = "spell";
+
+const std::string SpellType::magic_bullet = "magic_bullet";
+const std::string SpellType::build_wall = "build_wall";

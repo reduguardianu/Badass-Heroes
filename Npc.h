@@ -12,7 +12,7 @@ class Npc : public DisplayObject {
   void die();
   void tick(float dt);
  private:
-  void onDeath(GameEvent e, EventDispatcher* dispatcher);
+  void onDeath(GameEventPointer e, EventDispatcher* dispatcher);
  private:
   std::vector<DisplayObject*> m_sprites;
 };

@@ -17,7 +17,8 @@ Hero::Hero(Context const& c, std::vector<std::vector<int> > const& map, std::str
 																	   m_map(map),
 																	   m_path(NULL),
 																	   m_state(State::Stand),
-																	   m_last_point(-1, -1) {
+																	   m_last_point(-1, -1),
+																	   m_spell(NULL) {
   initVisibleTiles(m_map);
 
   m_figure = new Figure(c, headgear, breastplate, pants);
@@ -148,7 +149,7 @@ void Hero::tick(float dt) {
     }
     else if (m_actions.at(0).type() == Action::OPEN_CHEST) {
       Action a = m_actions.at(0);
-      dispatchEvent(GameEvent(ET::open_chest, a.dest().first, a.dest().second), this);
+      dispatchEvent(new GameEvent(ET::open_chest, a.dest().first, a.dest().second), this);
       
       m_actions.erase(m_actions.begin());
     }
@@ -167,11 +168,9 @@ void Hero::onEvent(const Event& e) {
     int x = floor((e.mouse_data.x - m_parent->x()) / m_context.TILE_SIZE);
     int y = floor((e.mouse_data.y - m_parent->y()) / m_context.TILE_SIZE);
 
-    if (m_state == State::Spell) {
-      Spell* spell = new Spell(m_context, "magic-bullet");
-      spell->addEventListener(ET::action, this, static_cast<Listener>(&Hero::onSpellCasted));
-      m_parent->addChild(spell);
-      spell->cast(point(m_x / m_context.TILE_SIZE, m_y / m_context.TILE_SIZE), point(x, y));
+    if (m_state == State::Spell && m_spell) {
+      m_spell->addEventListener(ET::spell, this, static_cast<Listener>(&Hero::onSpellCasted));
+      m_spell->cast(point(m_x / m_context.TILE_SIZE, m_y / m_context.TILE_SIZE), point(x, y));
       m_state = State::Stand;
       gotoFrame(1, 1);
     }
@@ -183,6 +182,9 @@ void Hero::onEvent(const Event& e) {
     if (m_state == State::Stand) {
       drawPath(x, y);
     }    
+    if (m_state == State::Spell) {
+      m_spell->onEvent(e);
+    }
   }
 }
 
@@ -271,17 +273,18 @@ void Hero::drawPath(int col, int row) {
   }
 }
 
-void Hero::onSpellCasted(GameEvent e, EventDispatcher* dispatcher) {
-  Spell* spell = dynamic_cast<Spell*>(dispatcher);
-  if (spell) {
+void Hero::onSpellCasted(GameEventPointer e, EventDispatcher* dispatcher) {
+  if (m_spell) {
     gotoFrame(0);
     dispatchEvent(e, dispatcher);
 
-    if (spell->parent()) {
-      spell->parent()->removeChild(spell);
+    if (m_spell->parent()) {
+      m_spell->parent()->removeChild(m_spell);
     }
 
-    delete spell;
+    m_spell = NULL;
+
+
   }
 
 }
@@ -374,6 +377,19 @@ void Hero::setState(State::STATE value) {
 
 State::STATE Hero::state() const {
   return m_state;
+}
+
+void Hero::spell(Spell* s) {
+  if (m_spell) {
+    if (m_spell->parent()) {
+      m_spell->parent()->removeChild(m_spell);
+    }
+    delete m_spell;
+  }
+
+  m_spell = s;
+  m_parent->addChild(m_spell);
+  setState(State::Spell);
 }
 
 Hero::~Hero() {

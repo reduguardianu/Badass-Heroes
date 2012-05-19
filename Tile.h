@@ -22,6 +22,7 @@ class Tile : public Sprite {
   void onDestroy();
   Action action();
   void openChest();
+  void rebuild();
  private:
   bool up();
   bool right();
@@ -33,7 +34,7 @@ class Tile : public Sprite {
   bool map_down();
   bool map_left();
   bool horizontal();
-  void onDestroyed(GameEvent, EventDispatcher*);
+  void onDestroyed(GameEventPointer, EventDispatcher*);
  private:
   int m_row;
   int m_column;
@@ -53,6 +54,14 @@ class Tile : public Sprite {
   Sprite* m_dead;
   Chest* m_chest;
   Action* m_action;
+  int m_up;
+  int m_right;
+  int m_down;
+  int m_left;
+  int m_memory_up;
+  int m_memory_right;
+  int m_memory_down;
+  int m_memory_left;
 };
 
 #endif

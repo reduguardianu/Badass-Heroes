@@ -18,6 +18,13 @@ class ET {
  public:
   static const std::string action;
   static const std::string open_chest;
+  static const std::string spell;
+};
+
+class SpellType {
+ public:
+  static const std::string magic_bullet;
+  static const std::string build_wall;
 };
 
 namespace State {

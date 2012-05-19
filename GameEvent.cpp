@@ -16,3 +16,6 @@ int GameEvent::x() const {
 int GameEvent::y() const {
   return m_y;
 }
+
+GameEvent::~GameEvent() {
+}
