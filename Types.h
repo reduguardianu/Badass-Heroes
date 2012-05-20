@@ -21,12 +21,14 @@ class ET {
   static const std::string spell;
   static const std::string npc_turn_ended;
   static const std::string came;
+  static const std::string change_player;
 };
 
 class SpellType {
  public:
   static const std::string magic_bullet;
   static const std::string build_wall;
+  static const std::string mind_control;
 };
 
 namespace State {

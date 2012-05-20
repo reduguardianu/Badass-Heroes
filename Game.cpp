@@ -9,6 +9,8 @@
 #include <cstdlib>
 #include <sstream>
 #include "BuildSpell.h"
+#include "MindControlSpell.h"
+#include "ChangePlayerEvent.h"
 
 Game::Game(Context& c, char* mapfile): m_context(c),
 				       m_level(m_context),
@@ -41,6 +43,11 @@ Game::Game(Context& c, char* mapfile): m_context(c),
   m_build_spell->setParent(&m_hud);
   m_build_spell->setZ(1.0f);
 
+  m_mind_control_spell = new Button(m_context, "yoda1.png", "yoda1.png", "yoda2.png", "");
+  m_mind_control_spell->setPosition(138, 350);
+  m_mind_control_spell->setParent(&m_hud);
+  m_mind_control_spell->setZ(1.0f);
+
   m_level.loadFromFile(mapfile);
   m_level.spawnNpcs(50);
 
@@ -59,7 +66,7 @@ Game::Game(Context& c, char* mapfile): m_context(c),
   hero2->setScale(m_context.DEFAULT_SCALE);
   hero2->animate(Animations::down);
   m_level.addChild(hero2);
-  //  m_heroes.push_back(hero2);
+  m_heroes.push_back(hero2);
 
 
   m_level.setPlayers(&m_heroes);
@@ -70,6 +77,8 @@ Game::Game(Context& c, char* mapfile): m_context(c),
   m_context.renderer->setSize(m_context.screen_width, m_context.screen_height);
   createWindow();
 
+
+  m_level.addEventListener(ET::change_player, this, static_cast<Listener>(&Game::onChangePlayer));
 
   m_running = true;
     
@@ -190,14 +199,19 @@ bool Game::isRunning() {
 }
 
 void Game::endTurn() {  
-  if (m_current_player == m_heroes.size() - 1) {
-    m_level.npcTurn();
-    m_level.addEventListener(ET::npc_turn_ended, this, static_cast<Listener>(&Game::onNpcTurnEnd));
+  if (m_heroes.at(m_current_player) != m_level.currentPlayer()) {
+    m_level.setCurrentPlayer(m_heroes.at(m_current_player));
   }
   else {
-    m_current_player = (m_current_player + 1) % m_heroes.size();
-    m_level.setCurrentPlayer(m_heroes.at(m_current_player));
-    m_hud.setAvatar(m_heroes.at(m_current_player)->getAvatar());
+    if (m_current_player == m_heroes.size() - 1) {
+      m_level.npcTurn();
+      m_level.addEventListener(ET::npc_turn_ended, this, static_cast<Listener>(&Game::onNpcTurnEnd));
+    }
+    else {
+      m_current_player = (m_current_player + 1) % m_heroes.size();
+      m_level.setCurrentPlayer(m_heroes.at(m_current_player));
+      m_hud.setAvatar(m_heroes.at(m_current_player)->getAvatar());
+    }
   }
 }
 
@@ -205,6 +219,14 @@ void Game::onNpcTurnEnd(GameEventPointer event, EventDispatcher* dispatcher) {
   m_current_player = 0;
   m_level.setCurrentPlayer(m_heroes.at(m_current_player));
   m_hud.setAvatar(m_heroes.at(m_current_player)->getAvatar());
+}
+
+void Game::onChangePlayer(GameEventPointer event, EventDispatcher* dispatcher) {
+  ChangePlayerEvent* e = dynamic_cast<ChangePlayerEvent*>(event.get());
+  if (e) {
+    Character* character = e->character();
+    m_level.setCurrentPlayer(character);
+  }
 }
 
 bool Game::button(Button* b) {
@@ -253,6 +275,10 @@ void Game::doGUI() {
 
   if (button(m_spell)) {    
     m_heroes.at(m_current_player)->spell(new Spell(m_context, "magic-bullet") );
+  }
+
+  if (button(m_mind_control_spell)) {
+    m_heroes.at(m_current_player)->spell(new MindControlSpell(m_context));
   }
 
 

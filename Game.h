@@ -27,6 +27,7 @@ class Game: public EventDispatcher, public IEventReceiver {
   void endTurn();
   void countFPS(float dt);
   void onNpcTurnEnd(GameEventPointer event, EventDispatcher* dispatcher);
+  void onChangePlayer(GameEventPointer event, EventDispatcher* dispatcher);
  private:
   Context& m_context;
   Level m_level;
@@ -40,6 +41,7 @@ class Game: public EventDispatcher, public IEventReceiver {
   Button* m_end_turn;
   Button* m_spell;  
   Button* m_build_spell;
+  Button* m_mind_control_spell;
   int m_current_player;
   std::string m_fps_text;
   int m_fps_counter;

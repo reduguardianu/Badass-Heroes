@@ -26,7 +26,7 @@ class EventDispatcher {
  public:
   virtual void dispatchEvent(GameEventPointer event, EventDispatcher* dispatcher);
   virtual void addEventListener(const std::string& event, EventDispatcher* observer, Listener listener);
-  virtual void removeEventListener(const std::string& event, EventDispatcher* observer,o Listener listener);
+  virtual void removeEventListener(const std::string& event, EventDispatcher* observer, Listener listener);
  private:
   ObserversMap m_observers;
 };

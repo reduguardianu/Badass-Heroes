@@ -10,6 +10,7 @@
 #include "SpellEvent.h"
 #include <queue>
 #include "Utils.h"
+#include "ChangePlayerEvent.h"
 
 point dirs[] = {point(-1, 0), point(0, 1), point(1, 0), point(0, -1)};
 
@@ -125,6 +126,10 @@ std::vector<std::vector<int> > const& Level::getData() {
   return m_data;
 }
 
+Character* Level::currentPlayer() const {
+  return m_current_player;
+}
+
 
 void Level::tick(float dt) {  
   float dx = 0;
@@ -173,8 +178,8 @@ void Level::tick(float dt) {
   computeScents();
 }
 
-void Level::setCurrentPlayer(Hero* hero) {
-  m_current_player = hero;  
+void Level::setCurrentPlayer(Character* player) {
+  m_current_player = player;  
   m_current_player->addEventListener(ET::spell, this, static_cast<Listener>(&Level::onSpellCasted));
   m_current_player->addEventListener(ET::open_chest, this, static_cast<Listener>(&Level::onChestOpened));
   resetCamera();
@@ -222,6 +227,14 @@ void Level::onSpellCasted(GameEventPointer event, EventDispatcher* dispatcher) {
       }
     }
     
+  }
+  else if (e->type() == SpellType::mind_control) {
+    for (int i = 0; i < m_npcs.size(); ++i) {
+      if (m_npcs.at(i)->row() == e->y() && m_npcs.at(i)->col() == e->x()) {
+	dispatchEvent(new ChangePlayerEvent(m_npcs.at(i)), this);
+	break;
+      }
+    }
   }
 }
 

@@ -23,11 +23,11 @@ class Level : public DisplayObject  {
   ~Level();
   std::vector<std::vector<int> > const& getData();
 
-  void setCurrentPlayer(Hero* hero);
+  void setCurrentPlayer(Character* player);
   void spawnNpcs(int count);
   void setPlayers(std::vector<Hero*>* players);
   void npcTurn();
-
+  Character* currentPlayer() const;
  private:
   void initData();
   void moveCamera(float dt);
