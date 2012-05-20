@@ -2,6 +2,7 @@
 #include "TextureFactory.h"
 #include "SpriteRenderBehaviour.h"
 #include <iostream>
+#include <sstream>
 #include "AnimationParser.h"
 
 AnimatedSprite::AnimatedSprite(Context const& c, std::string spritesheet): Sprite(c, spritesheet + ".png"),
@@ -41,11 +42,18 @@ std::string AnimatedSprite::spritesheet() const {
 }
 
 void AnimatedSprite::animate(std::string dir, int count) {
-  m_animate = true;
-  m_counter = count;
-  if (dir != m_direction) {
-    m_frame_nr = 0;
-    m_direction = dir;
+  if (m_frames.find(dir) != m_frames.end()) {
+    m_animate = true;
+    m_counter = count;
+    if (dir != m_direction) {
+      m_frame_nr = 0;
+      m_direction = dir;
+    }
+  }
+  else {
+    std::ostringstream msg;
+    msg << "Tried to run animation " << dir << ", but there's no such animation in " << m_spritesheet << ".";
+    //    m_context.logger->Error(msg.str());
   }
 }
 

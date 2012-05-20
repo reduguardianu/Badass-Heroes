@@ -1,12 +1,15 @@
 #ifndef NPC_H__
 #define NPC_H__
 
-#include "DisplayObject.h"
+#include "Character.h"
 #include <vector>
+#include <deque>
+#include <queue>
+#include "Action.h"
 
-class Npc : public DisplayObject {
+class Npc : public Character {
  public:
-  Npc(Context const& c);
+  Npc(Context const& c, std::vector<std::vector<int> > const& map);
   virtual void animate(const std::string& dir, int count = -1);
   virtual void stop();
   void die();
@@ -15,6 +18,7 @@ class Npc : public DisplayObject {
   void onDeath(GameEventPointer e, EventDispatcher* dispatcher);
  private:
   std::vector<DisplayObject*> m_sprites;
+
 };
 
 #endif

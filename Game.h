@@ -12,7 +12,7 @@
 #include "Hud.h"
 #include "Button.h"
 
-class Game: public IEventReceiver {
+class Game: public EventDispatcher, public IEventReceiver {
  public:
   explicit Game(Context& c, char* mapfile = NULL);
   ~Game();
@@ -26,6 +26,7 @@ class Game: public IEventReceiver {
   bool button(Button* b);
   void endTurn();
   void countFPS(float dt);
+  void onNpcTurnEnd(GameEventPointer event, EventDispatcher* dispatcher);
  private:
   Context& m_context;
   Level m_level;

@@ -45,7 +45,7 @@ Game::Game(Context& c, char* mapfile): m_context(c),
   m_level.spawnNpcs(50);
 
 
-
+  
 
   Hero* hero1 = new Hero(m_context, m_level.getData(), "headgear_01", "breastplate_01", "tights_01");
   hero1->setPosition(32.0f * m_context.DEFAULT_SCALE, 32.0f * m_context.DEFAULT_SCALE);
@@ -59,10 +59,10 @@ Game::Game(Context& c, char* mapfile): m_context(c),
   hero2->setScale(m_context.DEFAULT_SCALE);
   hero2->animate(Animations::down);
   m_level.addChild(hero2);
-  m_heroes.push_back(hero2);
+  //  m_heroes.push_back(hero2);
 
 
-
+  m_level.setPlayers(&m_heroes);
   m_level.setCurrentPlayer(hero1);
   m_hud.setAvatar(hero1->getAvatar());
 
@@ -189,8 +189,20 @@ bool Game::isRunning() {
   return m_running;
 }
 
-void Game::endTurn() {
-  m_current_player = (m_current_player + 1) % m_heroes.size();
+void Game::endTurn() {  
+  if (m_current_player == m_heroes.size() - 1) {
+    m_level.npcTurn();
+    m_level.addEventListener(ET::npc_turn_ended, this, static_cast<Listener>(&Game::onNpcTurnEnd));
+  }
+  else {
+    m_current_player = (m_current_player + 1) % m_heroes.size();
+    m_level.setCurrentPlayer(m_heroes.at(m_current_player));
+    m_hud.setAvatar(m_heroes.at(m_current_player)->getAvatar());
+  }
+}
+
+void Game::onNpcTurnEnd(GameEventPointer event, EventDispatcher* dispatcher) {
+  m_current_player = 0;
   m_level.setCurrentPlayer(m_heroes.at(m_current_player));
   m_hud.setAvatar(m_heroes.at(m_current_player)->getAvatar());
 }

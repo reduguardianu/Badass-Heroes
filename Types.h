@@ -19,6 +19,8 @@ class ET {
   static const std::string action;
   static const std::string open_chest;
   static const std::string spell;
+  static const std::string npc_turn_ended;
+  static const std::string came;
 };
 
 class SpellType {

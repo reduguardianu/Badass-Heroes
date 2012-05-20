@@ -12,6 +12,7 @@
 #include "Tile.h"
 #include "Hero.h"
 #include "Npc.h"
+#include "Character.h"
 
 class Level : public DisplayObject  {
  public:
@@ -24,6 +25,8 @@ class Level : public DisplayObject  {
 
   void setCurrentPlayer(Hero* hero);
   void spawnNpcs(int count);
+  void setPlayers(std::vector<Hero*>* players);
+  void npcTurn();
 
  private:
   void initData();
@@ -31,6 +34,8 @@ class Level : public DisplayObject  {
   void onSpellCasted(GameEventPointer e, EventDispatcher* dispatcher);
   void onChestOpened(GameEventPointer e, EventDispatcher* dispatcher);
   void resetCamera();
+  void computeScents();
+  void npcCame(GameEventPointer, EventDispatcher* dispatcher);
  private:
   std::vector<std::vector<int> > m_data;
   std::vector<std::vector<int> > m_destroyed;
@@ -38,11 +43,13 @@ class Level : public DisplayObject  {
   std::vector<Tile*> m_tiles;
   int m_level_width;
   int m_level_height;
-  Hero* m_hero;
+  Character* m_current_player;
   bool m_camera_moved;
   bool m_reset_camera;
   std::vector<Npc*> m_npcs;
-
+  std::vector<std::vector<float> > m_scents;
+  std::vector<Hero*>* m_players;
+  int m_current_npc;
 };
 
 #endif

@@ -2,8 +2,9 @@
 #include <cstdlib>
 #include "AnimatedSprite.h"
 #include <algorithm>
+#include <sstream>
 
-Tile::Tile(Context const& c, std::string textureName, std::string shadowTexture, int row, int column, std::vector<std::vector<int> > const& map, std::vector<std::vector<int> > const& destroyed): Sprite(c, textureName),
+Tile::Tile(Context const& c, std::string textureName, std::string shadowTexture, int row, int column, std::vector<std::vector<int> > const& map, std::vector<std::vector<int> > const& destroyed, std::vector<std::vector<float> > const& scents): Sprite(c, textureName),
 														       m_row(row),
 														       m_column(column),
 														       m_map(map),
@@ -22,7 +23,8 @@ Tile::Tile(Context const& c, std::string textureName, std::string shadowTexture,
 																								   m_memory_up(0), 
 																								   m_memory_right(0), 
 																								   m_memory_down(0), 
-																								   m_memory_left(0) {
+																														   m_memory_left(0),
+																														   m_scents(scents) {
 
   if (shadowTexture.size()) {
     m_shadow = new Sprite(m_context, shadowTexture);
@@ -312,6 +314,8 @@ void Tile::render() {
     }
     m_darkness->render();
   }
+
+
 }
 
 void Tile::tick(float dt) {

@@ -1,5 +1,8 @@
 #include "Utils.h"
 #include <iostream>
+#include <cmath>
+
+point Utils::directions[] = {point(-1, 0), point(0, 1), point(1, 0), point(0, -1)};
 
 point Utils::getPositionDiff(point pos, point dest, float dt) {
   point result;
@@ -53,3 +56,8 @@ bool Utils::rectHit(int x, int y, Rectangle* r) {
 
   return true;
 }
+
+int Utils::taxiDistance(point const& a, point const& b) {
+  return fabs(a.first - b.first) + fabs(a.second - b.second);
+}
+

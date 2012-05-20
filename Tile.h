@@ -9,7 +9,7 @@
 
 class Tile : public Sprite {
  public:
-  explicit Tile(Context const& c, std::string textureName, std::string shadowTexture, int row, int column, std::vector<std::vector<int> > const& map, std::vector<std::vector<int> > const& destroyed);
+  explicit Tile(Context const& c, std::string textureName, std::string shadowTexture, int row, int column, std::vector<std::vector<int> > const& map, std::vector<std::vector<int> > const& destroyed, std::vector<std::vector<float> > const& scents);
   void tick(float dt);
   int row() const;
   int column() const;
@@ -62,6 +62,7 @@ class Tile : public Sprite {
   int m_memory_right;
   int m_memory_down;
   int m_memory_left;
+  std::vector<std::vector<float> > const& m_scents;
 };
 
 #endif

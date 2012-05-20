@@ -8,6 +8,10 @@
 #include <time.h>
 #include "Spell.h"
 #include "SpellEvent.h"
+#include <queue>
+#include "Utils.h"
+
+point dirs[] = {point(-1, 0), point(0, 1), point(1, 0), point(0, -1)};
 
 Level::Level(Context const& c): DisplayObject(c),
 				m_camera_moved(false),
@@ -34,11 +38,13 @@ void Level::loadFromFile(std::string filename) {
   for (int i = 0; i < m_level_height; ++i) {
     m_data.push_back(std::vector<int>());
     m_destroyed.push_back(std::vector<int>());
+    m_scents.push_back(std::vector<float>());
     for (int j = 0; j < m_level_width; ++j) {
       int block = 0;
       fscanf(file, "%d", &block);
       m_data.at(i).push_back(block);
       m_destroyed.at(i).push_back(0);
+      m_scents.at(i).push_back(0.0f);
     }
     fscanf(file, "\n");
   }
@@ -55,12 +61,11 @@ void Level::initData() {
   floor->setSize(m_level_width * m_context.TILE_SIZE, m_level_height * m_context.TILE_SIZE);
   floor->setScale(m_context.DEFAULT_SCALE);
   floor->setZ(-1);
-  std::cout << "floor: " << floor << std::endl;
   addChild(floor);
 
   for (unsigned int i = 0; i < m_data.size(); ++i) {
     for (unsigned int j = 0; j < m_data.at(i).size(); ++j) {
-      Tile* tile = new Tile(m_context, "tileset2.png", "tileset2-shadows.png", i, j, m_data, m_destroyed);      
+      Tile* tile = new Tile(m_context, "tileset2.png", "tileset2-shadows.png", i, j, m_data, m_destroyed, m_scents);      
       tile->setScale(m_context.DEFAULT_SCALE);
       tile->setPosition(j * tile->width() * tile->scaleX(), i * tile->height() * tile->scaleY());
       addChild(tile);
@@ -90,11 +95,15 @@ void Level::initData() {
 
 }
 
+void Level::setPlayers(std::vector<Hero*>* players) {
+  m_players = players;
+}
+
 void Level::spawnNpcs(int count) {
   srand ( time(NULL) );
   std::set<std::pair<int, int> > marked;
   for (int i = 0; i < count; ++i) {
-    Npc* npc = new Npc(m_context);
+    Npc* npc = new Npc(m_context, m_data);
     
     int row = 0;
     int col = 0;
@@ -144,7 +153,7 @@ void Level::tick(float dt) {
   for (int i = 0; i < m_tiles.size(); ++i) {
     int row = m_tiles.at(i)->row();
     int col = m_tiles.at(i)->column();
-    bool visible = m_hero->isTileVisible(row, col);    
+    bool visible = m_current_player->isTileVisible(row, col);    
     m_tiles.at(i)->setVisible(visible);
     //    m_tiles.at(i)->setDarknessOffset(m_hero->getTileOffset());
   }
@@ -154,19 +163,20 @@ void Level::tick(float dt) {
   }
 
 
-  if ((m_hero->isMoving() || m_reset_camera) && !m_camera_moved) {
+  if ((m_current_player->isMoving() || m_reset_camera) && !m_camera_moved) {
     moveCamera(dt);
   }
-  else if (!m_hero->isMoving()) {
+  else if (!m_current_player->isMoving()) {
     m_camera_moved = false;
   }
 
+  computeScents();
 }
 
 void Level::setCurrentPlayer(Hero* hero) {
-  m_hero = hero;  
-  m_hero->addEventListener(ET::spell, this, static_cast<Listener>(&Level::onSpellCasted));
-  m_hero->addEventListener(ET::open_chest, this, static_cast<Listener>(&Level::onChestOpened));
+  m_current_player = hero;  
+  m_current_player->addEventListener(ET::spell, this, static_cast<Listener>(&Level::onSpellCasted));
+  m_current_player->addEventListener(ET::open_chest, this, static_cast<Listener>(&Level::onChestOpened));
   resetCamera();
 }
 
@@ -185,6 +195,8 @@ void Level::onSpellCasted(GameEventPointer event, EventDispatcher* dispatcher) {
     for (int i = 0; i < m_npcs.size(); ++i) {
       if (m_npcs.at(i)->row() == e->y() && m_npcs.at(i)->col() == e->x()) {
 	m_npcs.at(i)->die();
+	m_npcs.erase(m_npcs.begin() + i);
+	break;
       }
     }
     
@@ -225,7 +237,7 @@ void Level::moveCamera(float dt) {
   
   Rectangle* b = bounds();
 
-  float dx = -(m_hero->x() - b->width / 2) / 2 ;
+  float dx = -(m_current_player->x() - b->width / 2) / 2 ;
   if (fabs(dx) > 3) {
     dx *= (dt / 200.0f);
   }
@@ -241,7 +253,7 @@ void Level::moveCamera(float dt) {
     m_x = b->width - m_level_width * m_context.TILE_SIZE;
   }
 
-  float dy = -(m_hero->y() - b->height / 2) / 2;
+  float dy = -(m_current_player->y() - b->height / 2) / 2;
   if (fabs(dy) > 3) {
     dy *= dt / 200.0f;
   }
@@ -257,8 +269,8 @@ void Level::moveCamera(float dt) {
   }
 
 
-  float adx = fabs(m_hero->x() - b->width / 2) / 2;
-  float ady = fabs(m_hero->y() - b->height / 2) / 2;
+  float adx = fabs(m_current_player->x() - b->width / 2) / 2;
+  float ady = fabs(m_current_player->y() - b->height / 2) / 2;
   if (adx < 1 && ady < 1) {
     m_reset_camera = false;
   }
@@ -286,14 +298,119 @@ void Level::onEvent(const Event& e) {
       int col = m_tiles.at(i)->column();
       if (y == row && x == col) {
 	Action a = m_tiles.at(i)->action();
-	m_hero->onAction(a);
+	m_current_player->onAction(a);
 	break;
       }
     }      
   }
 
-  m_hero->onEvent(e);
+  Hero* h = dynamic_cast<Hero*>(m_current_player);
+  if (h) {
+    h->onEvent(e);
+  }
 }
+
+void Level::npcTurn() {
+  computeScents();
+
+  m_current_npc = 0;
+  for (int i = 0; i < m_npcs.size(); ++i) {
+    Npc* npc = m_npcs.at(i);
+    if (m_scents.at(npc->row()).at(npc->col()) > 0) {
+      float max_scent = m_scents.at(npc->row()).at(npc->col());
+      point pos = point(npc->row(), npc->col());
+      for (int j = 0; j < 4; ++j) {
+	if (m_scents.at(npc->row() + dirs[j].first).at(npc->col() + dirs[j].second) > max_scent) {
+	  max_scent = m_scents.at(npc->row() + dirs[j].first).at(npc->col() + dirs[j].second);
+	  pos = point(npc->row() + dirs[j].first, npc->col() + dirs[j].second);
+	}
+      }
+
+      if (pos.first != npc->row() || pos.second != npc->col()) {
+	m_current_player = npc;
+	m_current_npc = i;
+	npc->addEventListener(ET::came, this, static_cast<Listener>(&Level::npcCame));
+	npc->onAction(Action(Action::WALK, point(pos.first, pos.second)));
+	return;
+      }
+    }
+  }
+
+}
+
+void Level::npcCame(GameEventPointer event, EventDispatcher* dispatcher) {
+  m_current_player->removeEventListener(ET::came, this, static_cast<Listener>(&Level::npcCame));
+
+  for (int i = m_current_npc + 1; i < m_npcs.size(); ++i) {
+    Npc* npc = m_npcs.at(i);
+    if (m_scents.at(npc->row()).at(npc->col()) > 0) {
+      float max_scent = m_scents.at(npc->row()).at(npc->col());
+      point pos = point(npc->row(), npc->col());
+      for (int j = 0; j < 4; ++j) {
+	if (m_scents.at(npc->row() + dirs[j].first).at(npc->col() + dirs[j].second) > max_scent) {
+	  max_scent = m_scents.at(npc->row() + dirs[j].first).at(npc->col() + dirs[j].second);
+	  pos = point(npc->row() + dirs[j].first, npc->col() + dirs[j].second);
+	}
+      }
+
+      if (pos.first != npc->row() || pos.second != npc->col()) {
+	m_current_player = npc;
+	m_current_npc = i;
+	npc->addEventListener(ET::came, this, static_cast<Listener>(&Level::npcCame));
+	npc->onAction(Action(Action::WALK, point(pos.first, pos.second)));
+	return;
+      }
+    }
+  }
+
+
+  dispatchEvent(new GameEvent(ET::npc_turn_ended), this);
+  
+}
+
+void Level::computeScents() {
+  for (int i = 0; i < m_scents.size(); ++i) {
+    for (int j = 0; j < m_scents.at(i).size(); ++j) {
+      m_scents.at(i).at(j) = 0.0f;
+    }
+  }
+
+  std::set<point> marked;
+  std::queue<point> open_list;
+  
+  for (int i = 0; i < m_players->size(); ++i) {
+    point p(m_players->at(i)->row(), m_players->at(i)->col());
+    open_list.push(p);
+    marked.insert(p);
+    m_scents.at(p.first).at(p.second) = 1000;
+  }
+
+  while (!open_list.empty()) {
+    point loc = open_list.front();
+    open_list.pop();
+    
+    for (int i = 0; i < 4; ++i) {
+      point new_loc(loc.first + dirs[i].first, loc.second + dirs[i].second);
+      if (marked.find(new_loc) == marked.end() && m_data.at(new_loc.first).at(new_loc.second) == 0) {
+
+	float scent = 0.0f;
+	for (int j = 0; j < 4; ++j) {
+	  scent += m_scents.at(new_loc.first + dirs[j].first).at(new_loc.second + dirs[j].second);
+	}
+
+	scent *= 0.25f;
+
+	if (scent >= 0.1) {
+	  marked.insert(new_loc);
+	  open_list.push(new_loc);
+	  
+	  m_scents.at(new_loc.first).at(new_loc.second) = scent;
+	}
+      }
+    }
+  }
+}
+
 
 Level::~Level() {
   for (unsigned int i = 0; i < m_children.size(); ++i) {
