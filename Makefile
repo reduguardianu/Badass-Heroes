@@ -15,7 +15,7 @@ LDFLAGS += $(foreach librarydir,$(program_LIBRARY_DIRS),-L$(librarydir))
 LDFLAGS += $(foreach library,$(program_LIBRARIES),-l$(library))
 
 $(OBJ_DIR)/%.o:%.cpp
-	$(CC) -c -o $@ $<
+	$(CC) -c -ggdb -o $@ $<
 
 $(program_NAME): $(program_CXX_OBJS)
 	$(LINK.cc) $(program_CXX_OBJS) -o bin/$(program_NAME)

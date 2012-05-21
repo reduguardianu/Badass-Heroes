@@ -174,7 +174,7 @@ void Game::tick(float dt) {
     m_level.render();
     m_hud.render();
     doGUI();
-    m_context.renderer->renderText(m_fps_text, "Arial", 0, 0);
+    m_context.renderer->renderText(m_fps_text, "arial", 0, 0);
     m_context.renderer->endFrame();
     m_elapsed_time -= FRAME_TIME;
   }
@@ -198,7 +198,7 @@ bool Game::isRunning() {
   return m_running;
 }
 
-void Game::endTurn() {  
+void Game::endTurn() {
   if (m_heroes.at(m_current_player) != m_level.currentPlayer()) {
     m_level.setCurrentPlayer(m_heroes.at(m_current_player));
   }

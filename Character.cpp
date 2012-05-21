@@ -3,7 +3,7 @@
 #include "Utils.h"
 #include <sstream>
 
-Character::Character(Context const& c, int health, std::vector<std::vector<int> > const& map): DisplayObject(c), 
+Character::Character(Context const& c, int health, std::vector<std::vector<int> > const& map): DisplayObject(c),
 											       m_health(health),
 											       m_map(map),
 											       m_path(NULL){
@@ -18,16 +18,16 @@ void Character::onAction(Action action) {
   std::deque<point>* path = findPath(action.dest().second, action.dest().first);
   if (path->size() > 0) {
     m_actions.clear();
-    
+
     if (m_path) {
       delete m_path;
     }
     m_path = path;
-    
+
     if (action.type() != Action::WALK && m_path->size() > 1) {
       point p = m_path->back();
       m_path->pop_back();
-      
+
       m_actions.push_back(Action(Action::WALK, m_path->back()));
     }
     m_actions.push_back(action);
@@ -66,7 +66,7 @@ void Character::tick(float dt) {
 	  m_x = dest.first * m_context.TILE_SIZE;
 	  m_y = dest.second * m_context.TILE_SIZE;
 	  m_path->pop_front();
-       
+
 	}
 	else {
 	  if (diff.first < 0) {
@@ -81,7 +81,7 @@ void Character::tick(float dt) {
 	  else if (diff.second < 0) {
 	    animate(Animations::up);
 	  }
-	  
+	
 	}
       }
       else {
@@ -121,10 +121,10 @@ void Character::notifications(float dt) {
 
  if (m_notifications.size()) {
    Sprite* heart = m_notifications.at(0).first;
-   Textfield* damage = m_notifications.at(0).second;   
+   Textfield* damage = m_notifications.at(0).second;
    if (heart->localY() < -60) {
      if (heart->parent()) {
-       heart->parent()->removeChild(heart);       
+       heart->parent()->removeChild(heart);
      }
      if (damage->parent()) {
        damage->parent()->removeChild(damage);
@@ -153,7 +153,7 @@ bool Character::isMoving() const {
 
 
 void Character::animate(const std::string& dir, int count) {
-  
+
 }
 
 std::deque<point>* Character::findPath(int x, int y) {
@@ -193,9 +193,9 @@ std::deque<point>* Character::findPath(int x, int y) {
     }
 
   }
-  
+
   return new std::deque<point>();
-    
+
 
 }
 
@@ -227,7 +227,7 @@ bool Character::addStartToPath(point start, std::deque<point>* path) {
 Character::~Character() {
   for (int i = 0; i < m_notifications.size(); ++i) {
     if (m_notifications.at(i).first) {
-      delete m_notifications.at(i).first;      
+      delete m_notifications.at(i).first;
     }
     if (m_notifications.at(i).second) {
       delete m_notifications.at(i).second;
