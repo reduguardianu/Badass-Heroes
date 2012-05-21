@@ -13,6 +13,8 @@ public:
   virtual ~DisplayObject();
     virtual int x() const;
     virtual int y() const;
+    virtual float localX() const;
+    virtual float localY() const;
     virtual float z() const;
     virtual float scaleX() const;
     virtual float scaleY() const;
@@ -26,7 +28,7 @@ public:
 
     virtual void tick(float dt);
     virtual void render();
-    virtual void setPosition(int x, int y);
+    virtual void setPosition(float x, float y);
     virtual void setScale(float scale_x, float scale_y);
     virtual void setScale(float scale);
     virtual void setParent(DisplayObject*);

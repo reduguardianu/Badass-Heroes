@@ -104,7 +104,7 @@ void Level::spawnNpcs(int count) {
   srand ( time(NULL) );
   std::set<std::pair<int, int> > marked;
   for (int i = 0; i < count; ++i) {
-    Npc* npc = new Npc(m_context, m_data);
+    Npc* npc = new Npc(m_context, 10, m_data);
     
     int row = 0;
     int col = 0;
@@ -199,8 +199,11 @@ void Level::onSpellCasted(GameEventPointer event, EventDispatcher* dispatcher) {
   if (e->type() == SpellType::magic_bullet) {
     for (int i = 0; i < m_npcs.size(); ++i) {
       if (m_npcs.at(i)->row() == e->y() && m_npcs.at(i)->col() == e->x()) {
-	m_npcs.at(i)->die();
-	m_npcs.erase(m_npcs.begin() + i);
+	m_npcs.at(i)->damage(5);
+	if (m_npcs.at(i)->health() <= 0) {
+	  m_npcs.at(i)->die();
+	  m_npcs.erase(m_npcs.begin() + i);
+	}
 	break;
       }
     }

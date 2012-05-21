@@ -31,6 +31,14 @@ int DisplayObject::y() const {
   return value;
 }
 
+float DisplayObject::localX() const {
+  return m_x;
+}
+
+float DisplayObject::localY() const {
+  return m_y;
+}
+
 void DisplayObject::setZ(float value) {
   m_z = value;
 }
@@ -82,7 +90,7 @@ void DisplayObject::render() {
   m_render_behaviour->onRender(m_context.renderer, *this);
 }
 
-void DisplayObject::setPosition(int x, int y) {
+void DisplayObject::setPosition(float x, float y) {
   m_x = x;
   m_y = y;
 }

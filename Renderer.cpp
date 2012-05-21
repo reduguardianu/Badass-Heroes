@@ -147,7 +147,7 @@ void Renderer::renderSprite(const DisplayObject& d, const Frame* frame) {
     }
 }
 
-void Renderer::renderText(const std::string& text, const std::string& font, int x, int y) {
+void Renderer::renderText(const std::string& text, const std::string& font, int x, int y, float alpha) {
   Frame frame("fonts/" + font + ".png");
   GLuint texture_id = getTexture(&frame);
   
@@ -185,6 +185,10 @@ void Renderer::renderText(const std::string& text, const std::string& font, int 
       glLoadIdentity();
       glTranslatef( 2 * (x + ox)  / m_window_width - 1, -2 * (y + oy) / m_window_height + 1, -1.0f);
       glScalef(2 * ch->srcW / m_window_width, -2 * ch->srcH / m_window_height, 1.0f);	
+
+      glColor4f(1.0f,1.0f,1.0f,alpha);
+
+
       glEnable(GL_TEXTURE_2D);
       glBindTexture(GL_TEXTURE_2D, texture_id);
 

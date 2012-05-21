@@ -13,7 +13,7 @@
 
 
 
-Hero::Hero(Context const& c, std::vector<std::vector<int> > const& map, std::string headgear, std::string breastplate, std::string pants): Character(c, map),
+Hero::Hero(Context const& c, std::vector<std::vector<int> > const& map, std::string headgear, std::string breastplate, std::string pants): Character(c, 30, map),
 																	   m_state(State::Stand),
 																	   m_last_point(-1, -1),
 																	   m_spell(NULL) {

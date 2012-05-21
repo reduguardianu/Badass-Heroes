@@ -1,10 +1,16 @@
 #include "Character.h"
 #include <cmath>
 #include "Utils.h"
+#include <sstream>
 
-Character::Character(Context const& c, std::vector<std::vector<int> > const& map): DisplayObject(c), m_map(map),
-										   m_path(NULL) {
-  
+Character::Character(Context const& c, int health, std::vector<std::vector<int> > const& map): DisplayObject(c), 
+											       m_health(health),
+											       m_map(map),
+											       m_path(NULL){
+}
+
+int Character::health() const {
+  return m_health;
 }
 
 void Character::onAction(Action action) {
@@ -27,6 +33,18 @@ void Character::onAction(Action action) {
     m_actions.push_back(action);
   }
 
+}
+
+void Character::damage(int value) {
+  m_health -= value;
+
+  std::ostringstream ss;
+  ss << (-value);
+
+  Sprite* heart = new Sprite(m_context, "heart.png");
+  heart->setPosition(0, -10);
+  Textfield* damage = new Textfield(m_context, ss.str(), "arialsmall");
+  m_notifications.push_back(std::make_pair(heart, damage));
 }
 
 void Character::tick(float dt) {
@@ -72,6 +90,51 @@ void Character::tick(float dt) {
       }
     }
   }
+
+  notifications(dt);
+}
+
+void Character::notifications(float dt) {
+ for (int i = 0; i < m_notifications.size(); ++i) {
+   Sprite* heart = m_notifications.at(i).first;
+   Textfield* damage = m_notifications.at(i).second;
+   if (heart->parent() != NULL) {
+     heart->setPosition(heart->localX(), heart->localY() - dt / 1000.f * 20);
+     damage->setPosition(heart->localX() + 30, heart->localY() + 8);
+     heart->setAlpha(1.0f + (heart->localY() + 10) / 50.f);
+     damage->setAlpha(heart->alpha());
+   }
+   else {
+     if (i == 0) {
+       addChild(heart);
+       addChild(damage);
+     }
+     else {
+       Sprite* prev = m_notifications.at(i-1).first;
+       if (prev->localY() < -30) {
+	 addChild(heart);
+	 addChild(damage);
+       }
+     }
+   }
+ }
+
+ if (m_notifications.size()) {
+   Sprite* heart = m_notifications.at(0).first;
+   Textfield* damage = m_notifications.at(0).second;   
+   if (heart->localY() < -60) {
+     if (heart->parent()) {
+       heart->parent()->removeChild(heart);       
+     }
+     if (damage->parent()) {
+       damage->parent()->removeChild(damage);
+     }
+
+     delete heart;
+     delete damage;
+     m_notifications.erase(m_notifications.begin());
+   }
+ }
 
 }
 
@@ -159,4 +222,15 @@ bool Character::addStartToPath(point start, std::deque<point>* path) {
 
   return add_start;
 
+}
+
+Character::~Character() {
+  for (int i = 0; i < m_notifications.size(); ++i) {
+    if (m_notifications.at(i).first) {
+      delete m_notifications.at(i).first;      
+    }
+    if (m_notifications.at(i).second) {
+      delete m_notifications.at(i).second;
+    }
+  }
 }

@@ -6,14 +6,12 @@
 #include <cmath>
 #include "Utils.h"
 
-Npc::Npc(Context const& c, std::vector<std::vector<int> > const& map): Character(c, map) {
+Npc::Npc(Context const& c, int health, std::vector<std::vector<int> > const& map): Character(c, health, map) {
   DisplayObject* sprite = new AnimatedSprite(c, "zombie");
-  sprite->setParent(this);
-
-  m_sprites.push_back(sprite);
+  addChild(sprite);
   
-  m_render_behaviour = new ContainerRenderBehaviour(m_sprites);
-  m_size_behaviour = new ContainerSizeBehaviour(m_sprites);
+  m_render_behaviour = new ContainerRenderBehaviour(m_children);
+  m_size_behaviour = new ContainerSizeBehaviour(m_children);
 
 
 
@@ -27,8 +25,11 @@ Npc::Npc(Context const& c, std::vector<std::vector<int> > const& map): Character
 }
 
 void Npc::animate(const std::string& dir, int count) {  
-  for (int i = 0; i < m_sprites.size(); ++i) {
-    dynamic_cast<AnimatedSprite*>(m_sprites.at(i))->animate(dir, count);
+  for (int i = 0; i < m_children.size(); ++i) {
+    AnimatedSprite* sprite = dynamic_cast<AnimatedSprite*>(m_children.at(i));
+    if (sprite) {
+      sprite->animate(dir, count);
+    }
   }
 
 }
@@ -42,7 +43,7 @@ void Npc::stop() {
 
 void Npc::die() {
   animate(Animations::dead, 1);
-  m_sprites.at(0)->addEventListener("animationfinish", this, static_cast<Listener>(&Npc::onDeath));
+  m_children.at(0)->addEventListener("animationfinish", this, static_cast<Listener>(&Npc::onDeath));
 }
 
 void Npc::onDeath(GameEventPointer e, EventDispatcher* dispatcher) {
@@ -55,8 +56,8 @@ void Npc::onDeath(GameEventPointer e, EventDispatcher* dispatcher) {
 void Npc::tick(float dt) {
   Character::tick(dt);
 
-  for (int i = 0; i < m_sprites.size(); ++i) {
-    m_sprites.at(i)->tick(dt);
+  for (int i = 0; i < m_children.size(); ++i) {
+    m_children.at(i)->tick(dt);
   }
 
 }
