@@ -213,9 +213,10 @@ void Level::onSpellCasted(GameEventPointer event, EventDispatcher* dispatcher) {
                 if (m_tiles.at(i)->parent()) {
                     if (m_data.at(e->y()).at(e->x()) == 1) {
                         m_destroyed.at(e->y()).at(e->x()) = 1;
-                        m_tiles.at(i)->onDestroy();
                     }
-                    m_data.at(e->y()).at(e->x()) = 0;
+                    if (m_tiles.at(i)->onDestroy()) {
+                        m_data.at(e->y()).at(e->x()) = 0;
+                    }
                 }
             }
         }
@@ -226,7 +227,6 @@ void Level::onSpellCasted(GameEventPointer event, EventDispatcher* dispatcher) {
                 m_destroyed.at(e->y()).at(e->x()) = 0;
                 m_data.at(e->y()).at(e->x()) = 1;
                 m_tiles.at(i)->rebuild();
-	
             }
         }
 
