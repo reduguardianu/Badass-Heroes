@@ -12,6 +12,8 @@
 #include "Utils.h"
 #include "ChangePlayerEvent.h"
 
+
+
 point dirs[] = {point(-1, 0), point(0, 1), point(1, 0), point(0, -1)};
 
 Level::Level(Context const& c): DisplayObject(c),
@@ -21,6 +23,10 @@ Level::Level(Context const& c): DisplayObject(c),
     m_keys[Keyboard::Right] = false;
     m_keys[Keyboard::Down] = false;
     m_keys[Keyboard::Left] = false;
+
+    m_spell_handlers[SpellType::magic_bullet] = &Level::magicBullet;
+    m_spell_handlers[SpellType::build_wall] = &Level::buildWall;
+    m_spell_handlers[SpellType::mind_control] = &Level::mindControl;
 
     m_render_behaviour = new ContainerRenderBehaviour(m_children);
     m_size_behaviour = new ContainerSizeBehaviour(m_children);
@@ -189,56 +195,112 @@ void Level::resetCamera() {
     m_reset_camera = true;
 }
 
+bool Level::inRangedSpellRange(int spellX, int spellY, int x, int y, int range) {
+    int dx = spellX - x;
+    if (dx < 0) {
+        dx *= -1;
+    }
+
+    int dy = spellY - y;
+    if (dy < 0) {
+        dy *= -1;
+    }
+
+    int dist = dx - dy;
+    if (dist < 0) {
+        dist *= -1;
+    }
+
+    dx = dy = dx > dy ? dy : dx;
+
+    if (!dx % 2) {
+        dist += 3 * dx / 2;
+    }
+    else {
+        dist += 3 * (dx - 1) / 2;
+        dist++;
+    }
+
+    return dist <= range;
+}
+
+void Level::fireball(SpellEvent* e) {
+    for (int i = 0; i < m_npcs.size(); ++i) {
+        if (inRangedSpellRange(e->x(), e->y(), m_npcs.at(i)->col(), m_npcs.at(i)->row(), 3)) {
+            m_npcs.at(i)->damage(5);
+            if (m_npcs.at(i)->health() <= 0) {
+                m_npcs.at(i)->die();
+                m_npcs.erase(m_npcs.begin() + i);
+            }
+        }
+    }
+
+    for (int i = 0; i < m_tiles.size(); ++i) {
+        if (inRangedSpellRange(e->x(), e->y(), m_tiles.at(i)->col(), m_tiles.at(i)->row(), 3)) {
+            if (m_tiles.at(i)->parent()) {
+                if (m_data.at(e->y()).at(e->x()) == 1) {
+                    m_destroyed.at(e->y()).at(e->x()) = 1;
+                }
+                if (m_tiles.at(i)->onDestroy()) {
+                    m_data.at(e->y()).at(e->x()) = 0;
+                }
+            }
+        }
+    }
+}
+
+void Level::magicBullet(SpellEvent* e) {
+    for (int i = 0; i < m_npcs.size(); ++i) {
+        if (m_npcs.at(i)->row() == e->y() && m_npcs.at(i)->col() == e->x()) {
+            m_npcs.at(i)->damage(5);
+            if (m_npcs.at(i)->health() <= 0) {
+                m_npcs.at(i)->die();
+                m_npcs.erase(m_npcs.begin() + i);
+            }
+            break;
+        }
+    }
+
+    for (int i = 0; i < m_tiles.size(); ++i) {
+        if (m_tiles.at(i)->row() == e->y() && m_tiles.at(i)->col() == e->x()) {
+            if (m_tiles.at(i)->parent()) {
+                if (m_data.at(e->y()).at(e->x()) == 1) {
+                    m_destroyed.at(e->y()).at(e->x()) = 1;
+                }
+                if (m_tiles.at(i)->onDestroy()) {
+                    m_data.at(e->y()).at(e->x()) = 0;
+                }
+            }
+        }
+    }
+}
+
+void Level::buildWall(SpellEvent* e) {
+    for (int i = 0; i < m_tiles.size(); ++i) {
+        if (m_tiles.at(i)->row() == e->y() && m_tiles.at(i)->col() == e->x()) {
+            m_destroyed.at(e->y()).at(e->x()) = 0;
+            m_data.at(e->y()).at(e->x()) = 1;
+            m_tiles.at(i)->rebuild();
+        }
+    }
+}
+
+void Level::mindControl(SpellEvent* e) {
+    for (int i = 0; i < m_npcs.size(); ++i) {
+        if (m_npcs.at(i)->row() == e->y() && m_npcs.at(i)->col() == e->x()) {
+            dispatchEvent(new ChangePlayerEvent(m_npcs.at(i)), this);
+            break;
+        }
+    }
+}
+
 void Level::onSpellCasted(GameEventPointer event, EventDispatcher* dispatcher) {
     SpellEvent* e = dynamic_cast<SpellEvent*>(event.get());
     if (e == NULL) {
         m_context.logger->Error("LEVEL.CPP: upcasting spell event failed.");
         return;
     }
-
-    if (e->type() == SpellType::magic_bullet) {
-        for (int i = 0; i < m_npcs.size(); ++i) {
-            if (m_npcs.at(i)->row() == e->y() && m_npcs.at(i)->col() == e->x()) {
-                m_npcs.at(i)->damage(5);
-                if (m_npcs.at(i)->health() <= 0) {
-                    m_npcs.at(i)->die();
-                    m_npcs.erase(m_npcs.begin() + i);
-                }
-                break;
-            }
-        }
-
-        for (int i = 0; i < m_tiles.size(); ++i) {
-            if (m_tiles.at(i)->row() == e->y() && m_tiles.at(i)->col() == e->x()) {
-                if (m_tiles.at(i)->parent()) {
-                    if (m_data.at(e->y()).at(e->x()) == 1) {
-                        m_destroyed.at(e->y()).at(e->x()) = 1;
-                    }
-                    if (m_tiles.at(i)->onDestroy()) {
-                        m_data.at(e->y()).at(e->x()) = 0;
-                    }
-                }
-            }
-        }
-    }
-    else if (e->type() == SpellType::build_wall) {
-        for (int i = 0; i < m_tiles.size(); ++i) {
-            if (m_tiles.at(i)->row() == e->y() && m_tiles.at(i)->col() == e->x()) {
-                m_destroyed.at(e->y()).at(e->x()) = 0;
-                m_data.at(e->y()).at(e->x()) = 1;
-                m_tiles.at(i)->rebuild();
-            }
-        }
-
-    }
-    else if (e->type() == SpellType::mind_control) {
-        for (int i = 0; i < m_npcs.size(); ++i) {
-            if (m_npcs.at(i)->row() == e->y() && m_npcs.at(i)->col() == e->x()) {
-                dispatchEvent(new ChangePlayerEvent(m_npcs.at(i)), this);
-                break;
-            }
-        }
-    }
+    (this->*m_spell_handlers[e->type()])(e);
 }
 
 void Level::onChestOpened(GameEventPointer e, EventDispatcher* dispatcher) {

@@ -34,9 +34,9 @@ Figure* Hero::getAvatar() {
 }
 
 void Hero::initVisibleTiles(std::vector<std::vector<int> > const& map) {
-  for (int i = 0; i < m_map.size(); ++i) {
+  for (unsigned int i = 0; i < m_map.size(); ++i) {
     m_seen.push_back(std::vector<bool>());
-    for (int j = 0; j < m_map.at(i).size(); ++j) {
+    for (unsigned int j = 0; j < m_map.at(i).size(); ++j) {
       m_seen.at(i).push_back(false);
     }
   }
@@ -161,7 +161,7 @@ void Hero::onAction(Action action) {
 }
 
 void Hero::clearGuidePath() {
-  for (int i = 0; i < m_guide_path.size(); ++i) {
+  for (unsigned int i = 0; i < m_guide_path.size(); ++i) {
     Sprite* s = m_guide_path.at(i);
     if (s->parent()) {
       s->parent()->removeChild(s);
@@ -179,7 +179,7 @@ void Hero::drawPath(int col, int row) {
 
     clearGuidePath();
     
-    int index = 0;
+    unsigned int index = 0;
     int rotation = 0;
     Sprite* s = NULL;
     for (std::deque<point>::iterator it = path->begin(); it != path->end(); ++it) {

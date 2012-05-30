@@ -5,7 +5,7 @@
 #include <string>
 
 class Animations {
- public: 
+ public:
   static const std::string up;
   static const std::string down;
   static const std::string left;
@@ -26,9 +26,10 @@ class ET {
 
 class SpellType {
  public:
-  static const std::string magic_bullet;
-  static const std::string build_wall;
-  static const std::string mind_control;
+    static const std::string magic_bullet;
+    static const std::string build_wall;
+    static const std::string mind_control;
+    static const std::string fireball;
 };
 
 namespace State {
@@ -37,7 +38,7 @@ namespace State {
     Spell = 1,
     Stand = 2
   };
-};
+}
 
 typedef std::pair<float, float> point;
 
@@ -50,4 +51,4 @@ class Rectangle {
  Rectangle(float _x, float _y, float _width, float _height):x(_x),y(_y),width(_width),height(_height) {}
 };
 
-#endif 
+#endif

@@ -11,4 +11,4 @@ class SpellEvent : public GameEvent {
   std::string m_type;
 };
 
-#endif 
+#endif

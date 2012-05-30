@@ -15,7 +15,6 @@ void BuildSpell::onEvent(const Event& e) {
 }
 
 void BuildSpell::tick(float dt) {
-  
 }
 
 void BuildSpell::cast(std::pair<int, int> from, std::pair<int, int> to) {

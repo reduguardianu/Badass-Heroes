@@ -17,3 +17,4 @@ const std::string ET::change_player = "change_player";
 const std::string SpellType::magic_bullet = "magic_bullet";
 const std::string SpellType::build_wall = "build_wall";
 const std::string SpellType::mind_control = "mind_control";
+const std::string SpellType::fireball = "fire_ball";
